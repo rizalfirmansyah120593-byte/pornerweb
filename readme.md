@@ -25,7 +25,7 @@
 ---
 
 ## 📝 Tentang Proyek
-Jelaskan apa proyek Anda di sini. Kenapa proyek ini dibuat? Masalah apa yang diselesaikan? Gunakan paragraf yang singkat dan padat.
+PornerWeb adalah platform agregator konten berbasis Node.js dan Express yang dirancang untuk mengumpulkan dan menyajikan data dari berbagai sumber secara terorganisir. Proyek ini dikembangkan sebagai sarana eksplorasi mendalam mengenai teknik web scraping, efisiensi pemrosesan data, serta implementasi server-side rendering menggunakan EJS. Dengan memanfaatkan arsitektur yang modular, aplikasi ini menyelesaikan masalah fragmentasi informasi dengan menyatukan data yang tersebar ke dalam satu antarmuka yang responsif, cepat, dan mudah dinavigasi oleh pengguna.
 
 ---
 
@@ -69,17 +69,6 @@ npm start
 
 ```
 ---
-
-## 📋 Struktur Proyek
-
-├── public/          # Assets (CSS, Images, Scripts)
-├── routes/          # Definisi rute aplikasi
-├── views/           # Template EJS (Frontend)
-├── server.js        # Entry point utama aplikasi
-└── package.json     # Konfigurasi dependensi
-
----
-
 ## 👥 Kontribusi
 
 Kami sangat terbuka untuk kontribusi! Silakan buka **Pull Request** atau **Issue** jika ada saran atau perbaikan.
