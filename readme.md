@@ -1,0 +1,87 @@
+<div align="center">
+
+# Porner Web 🕸️
+
+**PornerWeb adalah platform web agregator yang dibangun menggunakan Node.js dan Express. Proyek ini bertujuan untuk mengolah data dari sumber eksternal melalui teknik web scraping, lalu menyajikannya secara terstruktur dan responsif kepada pengguna melalui antarmuka berbasis template engine (EJS)**
+
+<!-- Badges (Tombol Keren) -->
+[![GitHub issues](https://img.shields.io/github/issues/username/repo-name)](https://github.com/username/repo-name/issues)
+[![GitHub forks](https://img.shields.io/github/forks/username/repo-name)](https://github.com/username/repo-name/network)
+[![GitHub stars](https://img.shields.io/github/stars/username/repo-name)](https://github.com/username/repo-name/stargazers)
+[![License](https://img.shields.io/github/license/username/repo-name)](https://github.com/username/repo-name/blob/main/LICENSE)
+
+<br>
+
+<!-- Link Tombol Utama -->
+<a href="https://link-demo-anda.com">
+  <img src="https://img.shields.io/badge/Lihat_Demo-blue?style=for-the-badge&logo=appveyor" alt="Demo">
+</a>
+<a href="https://github.com/rizalfirmansyah120593-byte/pornerweb/issues">
+  <img src="https://img.shields.io/badge/Laporkan_Bug-red?style=for-the-badge&logo=github" alt="Report Bug">
+</a>
+
+</div>
+
+---
+
+## 📝 Tentang Proyek
+Jelaskan apa proyek Anda di sini. Kenapa proyek ini dibuat? Masalah apa yang diselesaikan? Gunakan paragraf yang singkat dan padat.
+
+---
+
+## 🛠️ Tech Stack
+Berikut adalah teknologi yang digunakan dalam proyek ini:
+
+- **Frontend:** `React.js`, `Tailwind CSS`
+- **Backend:** `Node.js`, `Express`
+- **Database:** `MongoDB`
+- **Tools:** `Git`, `VS Code`
+
+---
+
+## 🚀 Fitur Utama
+- **Dynamic Data Aggregation**: Mengambil dan mengolah data secara real-time dari sumber target.
+
+- **Responsive UI**: Tampilan antarmuka yang dioptimalkan untuk berbagai perangkat (Mobile & Desktop).
+
+- **Pagination System**: Navigasi halaman yang efisien untuk menelusuri data dalam jumlah besar.
+
+- **Clean Architecture**: Struktur kode yang modular untuk kemudahan pemeliharaan dan pengembangan fitur.
+
+---
+
+## ⚙️ Cara Instalasi
+
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di komputer Anda:
+
+```bash
+# Clone repository
+git clone [https://github.com/rizalfirmansyah120593-byte/pornerweb.git](https://github.com/rizalfirmansyah120593-byte/pornerweb.git)
+
+# Masuk ke direktori
+cd pornerweb
+
+# Install dependencies
+npm install
+
+# Jalankan proyek
+npm start
+
+```
+---
+
+## 📋 Struktur Proyek
+
+├── public/          # Assets (CSS, Images, Scripts)
+├── routes/          # Definisi rute aplikasi
+├── views/           # Template EJS (Frontend)
+├── server.js        # Entry point utama aplikasi
+└── package.json     # Konfigurasi dependensi
+
+---
+
+## 👥 Kontribusi
+
+Kami sangat terbuka untuk kontribusi! Silakan buka **Pull Request** atau **Issue** jika ada saran atau perbaikan.
+
+---

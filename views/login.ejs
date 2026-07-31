@@ -1,0 +1,129 @@
+<style>
+    /* Styling dasar untuk seluruh halaman */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121212; /* Warna latar belakang gelap (dark theme) */
+    color: #fff;
+    display: flex;
+    justify-content: center; /* Memusatkan secara horizontal */
+    align-items: center;     /* Memusatkan secara vertikal */
+    min-height: 100vh;       /* Menggunakan tinggi layar penuh */
+}
+
+/* Kontainer utama untuk kotak login/signup */
+.auth-container {
+    background-color: #1e1e1e; /* Sedikit lebih terang dari background */
+    padding: 40px;
+    border-radius: 12px;       /* Sudut membulat */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Bayangan lembut */
+    width: 100%;
+    max-width: 400px;          /* Lebar maksimum */
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Judul Halaman */
+h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #f0f0f0;
+}
+
+/* Grup input agar rapi */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* Label (Opsional, tapi bagus untuk aksesibilitas) */
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #b0b0b0;
+}
+
+/* Styling Modern untuk Input Field */
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background-color: #2c2c2c; /* Warna input field gelap */
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease; /* Efek transisi saat diklik */
+}
+
+/* Efek saat input field sedang difokuskan */
+.input-group input:focus {
+    outline: none;
+    border-color: #ff4500; /* Warna aksen oranye saat fokus */
+}
+
+/* Tombol Login/Signup */
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff4500; /* Warna aksen oranye */
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 10px;
+}
+
+/* Efek saat tombol diklik */
+.btn-submit:hover {
+    background-color: #e03d00; /* Warna sedikit lebih gelap saat hover */
+}
+
+.btn-submit:active {
+    transform: scale(0.98); /* Sedikit menekan saat diklik */
+}
+
+/* Teks link di bawah tombol (untuk beralih antara login/signup) */
+.auth-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #b0b0b0;
+}
+
+.auth-link a {
+    color: #ff4500;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+</style>
+
+<div class="auth-container">
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Masuk</button>
+    </form>
+    
+    <div class="auth-link">
+        Belum punya akun? <a href="/signup">Daftar sekarang</a>
+    </div>
+</div>
