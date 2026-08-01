@@ -1,159 +1,81 @@
-<style>
-    :root {
-        --accent-color: #ff6600;
-        --bg-header: #1a1a1a;
-        --text-color: #ffffff;
-    }
-    .light-mode {
-            --bg-color: #f4f4f4;
-            --text-color: #161616;
-            --accent-color: #d13a00;
-            --sidebar-bg: #e0e0e0;
-            --card-bg: #ffffff;
-        }
-
-    header {
-        position: fixed;
-        top: 0;
-        left: 230px; /* Menyesuaikan lebar sidebar */
-        right: 0;    /* Otomatis mengisi sisa layar */
-        padding: 15px 30px;
-        background: var(--bg-header);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    main {
-        margin-left: 260px;
-        padding: 40px;
-        flex: 1;
-    }
-
-    /* --- Search & Controls --- */
-        .search-box input { padding: 8px; border-radius: 4px; border: none; width: 200px; }
-        .controls { display: flex; gap: 10px; }
-        /* Styling Header agar rapi */
-        .top-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 30px;
-        background: #222;
-        gap: 20px; /* Jarak antar elemen */
-    }
-
-        /* Membuat Search Bar fleksibel */
-        .search-box {
-        display: flex;
-        flex-grow: 1; /* Mengisi ruang kosong */
-        max-width: 600px; /* Batas maksimal panjang */
-    }
-
-        .search-box input {
-        flex-grow: 1; /* Input mengambil semua ruang */
-        padding: 10px;
-        border-radius: 4px 0 0 4px;
-        border: 1px solid #444;
-        background: #333;
-        color: white;
-    }
-        .search-box button {
-        padding: 10px 15px;
-        border-radius: 0 4px 4px 0;
-        border: none;
-        background: var(--accent-color);
-        cursor: pointer;
-    }
-
-    .search-bar button:hover {
-        background-color: #e65c00;
-    }
-
-    /* --- Tombol (Auth) --- */
-    .auth-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .btn {
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .btn-login {
-        background: transparent;
-        color: var(--text-color);
-        border: 1px solid #444;
-    }
-
-    .btn-login:hover {
-        background-color: #333;
-        border-color: #555;
-    }
-
-    .btn-signup {
-        background-color: #ff4500;
-        color: white;
-        border: none;
-    }
-
-    .btn-signup:hover {
-        background-color: #e03d00;
-        box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
-    }
-
-    /* --- Lain-lain --- */
-    .logo { 
-        padding: 25px; 
-        font-size: 22px; 
-        font-weight: 800; 
-        color: var(--accent-color); 
-    }
-
-    .user-greeting {
-        color: var(--text-color);
-        font-weight: bold;
-    }
-</style>
-
 <header class="main-header">
-    
-    <form action="/" method="GET" class="search-box">
-            <input type="text" name="q" placeholder="<%= t.placeholder %>" required>
-            <button type="submit">🔍</button>
-        </form>
-        <!-- Controls -->
-    <div class="controls">
-        <button id="theme-toggle" onclick="toggleTheme()" style="padding: 8px; cursor: pointer;">☀️/🌙</button>
-        
-        <select id="lang-selector" onchange="changeLanguage(this.value)">
-            <option value="id" <%= (typeof lang !== 'undefined' && lang === 'id') ? 'selected' : '' %>>ID</option>
-            <option value="en" <%= (typeof lang !== 'undefined' && lang === 'en') ? 'selected' : '' %>>EN</option>        </select>
+    <a href="/" class="brand-pill" aria-label="Kembali ke beranda">
+        <span class="brand-mark">▶</span>
+        <span class="brand-text">PORNERWEB</span>
+    </a>
 
-        <script>
-            function changeLanguage(lang) {
-            // Mengirim request ke server untuk mengganti bahasa
-            console.log("Mengganti bahasa ke:", lang);
-            window.location.href = `/set-lang?lang=${lang}`;
-            }
-        </script>
+    <form action="/" method="GET" class="search-box">
+        <input type="text" name="q" placeholder="<%= t.placeholder %>" required>
+        <button type="submit" aria-label="Cari">🔍</button>
+    </form>
+
+    <div class="header-controls">
+        <div class="theme-switcher" aria-label="Pilihan tema">
+            <button data-theme-choice="light" aria-label="Light Mode">☀️</button>
+            <button data-theme-choice="dark" aria-label="Dark Mode">🌙</button>
         </div>
 
+        <select id="language-selector" aria-label="Pilih bahasa">
+            <option value="id" <%= (typeof lang !== 'undefined' && lang === 'id') ? 'selected' : '' %>>ID</option>
+            <option value="en" <%= (typeof lang !== 'undefined' && lang === 'en') ? 'selected' : '' %>>EN</option>
+        </select>
+
         <div class="auth-container">
-    <% if (user) { %>
-        <span class="user-greeting">Halo, <%= user.fullname %></span>
-        <a href="/logout" class="btn btn-login">Logout</a>
-    <% } else { %>
-        <a href="/login" class="btn btn-login">Login</a>
-        <a href="/signup" class="btn btn-signup">Sign Up</a>
-    <% } %>
-</div>
+            <% if (user) { %>
+                <span class="user-greeting">Halo, <%= user.fullname %></span>
+                <a href="/logout" class="btn btn-login">Logout</a>
+            <% } else { %>
+                <a href="/login" class="btn btn-login">Login</a>
+                <a href="/signup" class="btn btn-signup">Sign Up</a>
+            <% } %>
+        </div>
+    </div>
 </header>
+
+<script>
+(() => {
+    const root = document.documentElement;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeButtons = document.querySelectorAll('[data-theme-choice]');
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+    const getStoredTheme = () => {
+        try { return localStorage.getItem('theme') || 'auto'; } catch { return 'auto'; }
+    };
+
+    function applyTheme(preference, persist = true) {
+        const safePreference = ['light', 'dark', 'auto'].includes(preference) ? preference : 'auto';
+        const resolvedTheme = safePreference === 'auto' ? (media.matches ? 'dark' : 'light') : safePreference;
+        root.dataset.theme = resolvedTheme;
+        root.dataset.themePreference = safePreference;
+
+        if (persist) {
+            try { localStorage.setItem('theme', safePreference); } catch {}
+        }
+
+        themeButtons.forEach((button) => {
+            const isActive = button.dataset.themeChoice === resolvedTheme;
+            button.setAttribute('aria-pressed', String(isActive));
+            button.classList.toggle('is-active', isActive);
+        });
+
+        if (themeMeta) {
+            themeMeta.setAttribute('content', resolvedTheme === 'dark' ? '#09090b' : '#f4f5f8');
+        }
+    }
+
+    themeButtons.forEach((button) => {
+        button.addEventListener('click', () => applyTheme(button.dataset.themeChoice));
+    });
+
+    media.addEventListener('change', () => {
+        if (getStoredTheme() === 'auto') applyTheme('auto', false);
+    });
+
+    applyTheme(getStoredTheme(), false);
+
+    document.getElementById('language-selector')?.addEventListener('change', (event) => {
+        window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;
+    });
+})();
+</script>

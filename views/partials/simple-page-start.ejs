@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang='<%= lang %>'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <%- include('seo-head') %>
+    <link rel='stylesheet' href='/css/site.css'>
+</head>
+<body>
+    <%- include('header') %>
+    <div class='layout'>
+        <aside class='sidebar'>
+            <%- include('sidebar') %>
+        </aside>
+        <main id='main-content' class='content'>
+            <section class='page-hero'>
+                <div>
+                    <span class='eyebrow'><%= typeof pageBadge !== 'undefined' ? pageBadge : 'Informasi' %></span>
+                    <h1><%= typeof pageTitle !== 'undefined' ? pageTitle : 'PORNERWEB' %></h1>
+                    <p class='intro'><%= typeof pageIntro !== 'undefined' ? pageIntro : 'Jelajahi konten dengan pengalaman yang lebih nyaman.' %></p>
+                </div>
+            </section>
+            <div class='page-shell'>
+                <div class='page-main-column'>
+                    <div class='simple-page-card'>

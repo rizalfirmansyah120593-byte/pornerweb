@@ -1,0 +1,42 @@
+<title><%= seo.title %></title>
+<meta name='theme-color' content='#09090b'>
+<script>
+(() => {
+    const root = document.documentElement;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    let preference = 'auto';
+    try { preference = localStorage.getItem('theme') || 'auto'; } catch {}
+    const resolved = preference === 'auto'
+        ? (media.matches ? 'dark' : 'light')
+        : preference;
+    root.dataset.theme = resolved;
+    root.dataset.themePreference = preference;
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', resolved === 'dark' ? '#09090b' : '#f4f5f8');
+})();
+</script>
+<link rel='icon' href='/favicon.svg' type='image/svg+xml'>
+<meta name='description' content='<%= seo.description %>'>
+<meta name='robots' content='<%= seo.robots %>'>
+<meta name='googlebot' content='<%= seo.robots %>'>
+<link rel='canonical' href='<%= seo.canonical %>'>
+<% if (seo.prev) { %><link rel='prev' href='<%= seo.prev %>'><% } %>
+<% if (seo.next) { %><link rel='next' href='<%= seo.next %>'><% } %>
+<% if (seo.explicit) { %><meta name='rating' content='adult'><% } %>
+<% if (site.googleSiteVerification) { %>
+<meta name='google-site-verification' content='<%= site.googleSiteVerification %>'>
+<% } %>
+<meta property='og:type' content='<%= seo.type %>'>
+<meta property='og:site_name' content='<%= site.name %>'>
+<meta property='og:locale' content='<%= lang === 'en' ? 'en_US' : 'id_ID' %>'>
+<meta property='og:title' content='<%= seo.title %>'>
+<meta property='og:description' content='<%= seo.description %>'>
+<meta property='og:url' content='<%= seo.canonical %>'>
+<% if (seo.image) { %><meta property='og:image' content='<%= seo.image %>'><% } %>
+<% if (seo.video) { %><meta property='og:video' content='<%= seo.video %>'><% } %>
+<meta name='twitter:card' content='<%= seo.image ? 'summary_large_image' : 'summary' %>'>
+<meta name='twitter:title' content='<%= seo.title %>'>
+<meta name='twitter:description' content='<%= seo.description %>'>
+<% if (seo.image) { %><meta name='twitter:image' content='<%= seo.image %>'><% } %>
+<% if (seo.jsonLd) { %>
+<script type='application/ld+json'><%- safeJson(seo.jsonLd) %></script>
+<% } %>

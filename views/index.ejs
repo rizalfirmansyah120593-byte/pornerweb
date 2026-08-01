@@ -1,641 +1,91 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang='<%= lang %>'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Ganti <%= title %> dengan ini -->
-<h1><%= typeof title !== 'undefined' ? title : 'Website Saya' %></h1>
-    </a>
-    <style>
-        /* --- Variabel Warna --- */
-        :root {
-            --bg-color: #161616;
-            --text-color: #ffffff;
-            --accent-color: #ff4500;
-            --sidebar-bg: #161616;
-            --card-bg: #1e1e1e;
-        }
-
-        .light-mode {
-            --bg-color: #f4f4f4;
-            --text-color: #161616;
-            --accent-color: #d13a00;
-            --sidebar-bg: #e0e0e0;
-            --card-bg: #ffffff;
-        }
-
-        /* --- Global Reset --- */
-        body { 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            transition: background 0.3s, color 0.3s;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Memaksa halaman memenuhi tinggi layar */
-        }
-
-        /* --- Layout Utama --- */
-        aside {
-            width: 260px;
-            height: 100vh;
-            background: var(--sidebar-bg);
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #333;
-            z-index: 1001;
-        }
-
-        header {
-            position: fixed;
-            margin-left: 260px;
-            padding: 15px 30px;
-            background: #1a1a1a;;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            width: 77%;
-            top: 0;
-            left: 0;
-        }
-
-        main {
-            margin-left: 260px;
-            padding: 40px;
-            flex: 1;
-        }
-
-        /* --- Sidebar & Scroll --- */
-        .logo { 
-            padding: 25px; font-size: 22px; font-weight: 800; color: var(--accent-color); 
-        }
-        .logo-link {
-        text-decoration: none;
-        color: inherit; /* agar warna teks tetap mengikuti desain */
-        }
-
-        .scroll-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        .scroll-container::-webkit-scrollbar { width: 5px; }
-        .scroll-container::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
-
-        /* --- Menu & Card --- */
-        .menu-title { font-weight: bold; color: var(--accent-color); padding: 10px; cursor: pointer; list-style: none; user-select: none; }
-        .menu-item { display: block; color: var(--text-color); text-decoration: none; padding: 8px 10px; border-radius: 5px; font-size: 0.9rem; opacity: 0.7; }
-        .menu-item:hover { background: #333; opacity: 1; }
-        
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid #333; transition: 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card h4 { padding: 10px; font-size: 0.9rem; }
-
-        /* --- Search & Controls --- */
-        .search-box input { padding: 8px; border-radius: 4px; border: none; width: 200px; }
-        .controls { display: flex; gap: 10px; }
-        /* Styling Header agar rapi */
-        .top-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 30px;
-        background: #222;
-        gap: 20px; /* Jarak antar elemen */
-    }
-
-        /* Membuat Search Bar fleksibel */
-        .search-box {
-        display: flex;
-        flex-grow: 1; /* Mengisi ruang kosong */
-        max-width: 600px; /* Batas maksimal panjang */
-    }
-
-        .search-box input {
-        flex-grow: 1; /* Input mengambil semua ruang */
-        padding: 10px;
-        border-radius: 4px 0 0 4px;
-        border: 1px solid #444;
-        background: #333;
-        color: white;
-    }
-        .search-box button {
-        padding: 10px 15px;
-        border-radius: 0 4px 4px 0;
-        border: none;
-        background: var(--accent-color);
-        cursor: pointer;
-    }
-    .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 30px 0;
-}
-
-.pagination a {
-    padding: 8px 16px;
-    background: #222;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    border: 1px solid #444;
-    transition: 0.3s;
-}
-
-.pagination a:hover {
-    background: #ff6600;
-    border-color: #ff6600;
-}
-
-.pagination a.active {
-    background: #ff6600;
-    font-weight: bold;
-    border-color: #ff6600;
-}
-
-.btn-nav {
-    padding: 10px 20px;
-    background: #333;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: 0.3s;
-    font-weight: 500;
-}
-
-.btn-nav:hover {
-    background: var(--accent-color); /* Menggunakan warna aksen Anda */
-}
-
-/* --- Footer yang Bagus --- */
-footer {
-    text-align: center;
-    padding: 20px 0;      /* Diperkecil dari 40px */
-    background: #1e1e1e00;
-    border-top: none;
-    color: #888;
-    margin-top: 20px;     /* Diperkecil dari 50px */
-    width: 100%;
-}
-
-footer a {
-    color: var(--accent-color);
-    text-decoration: none;
-}
-.page-container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 40px;
-    background-color: #1e1e1e;
-    border-radius: 12px;
-    line-height: 1.6;
-    color: #ccc;
-}
-
-.page-container h2 { color: #fff; margin-bottom: 20px; }
-.page-container p { margin-bottom: 15px; }
-.page-container ul { margin-left: 20px; margin-bottom: 15px; }
-
-.duration-meta {
-    font-size: 12px;
-    color: #888; /* Abu-abu agar tidak terlalu kontras dengan judul */
-    margin: 5px 0;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.duration-value {
-    color: #fff; /* Angka durasi dibuat sedikit lebih terang */
-    font-weight: bold;
-}
-/* Kontainer harus relative agar badge bisa diposisikan di dalamnya */
-.thumbnail-wrapper {
-    position: relative;
-    width: 100%;
-}
-.video-title {
-    margin: 0;
-    padding: 0;
-    line-height: 1.4;
-}
-/* Badge Durasi */
-.duration-badge {
-    position: absolute;
-    bottom: 8px;    /* Jarak dari bawah */
-    right: 8px;     /* Jarak dari kanan */
-    background: rgba(0, 0, 0, 0.7); /* Hitam transparan */
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    pointer-events: none; /* Agar tidak mengganggu klik */
-    z-index: 10;          /* Agar muncul di atas gambar */
-}
-
-/* Pastikan gambar mengisi container */
-.thumbnail-wrapper img {
-    width: 100%;
-    display: block;
-    border-radius: 6px; /* opsional untuk sudut melengkung */
-}
-.auth-container {
-    display: flex;
-    gap: 12px; /* Jarak antara tombol Login dan Sign Up */
-    align-items: center;
-}
-
-.btn {
-    padding: 8px 16px;
-    border-radius: 6px; /* Sudut tombol sedikit melengkung */
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease; /* Efek transisi halus */
-}
-
-/* Tampilan tombol Login (Gaya Outline/Ghost) */
-.btn-login {
-    color: #ffffff;
-    border: 1px solid #444;
-}
-
-.btn-login:hover {
-    background-color: #333;
-    border-color: #555;
-}
-
-/* Tampilan tombol Sign Up (Gaya Accent) */
-.btn-signup {
-    background-color: #ff4500; /* Warna aksen (bisa Anda ganti) */
-    color: white;
-}
-
-.btn-signup:hover {
-    background-color: #e03d00;
-    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
-}
-.view-number {
-    font-weight: bold;      /* Menebalkan angka */
-    font-size: 1.2em;       /* Memperbesar ukuran (1.2x lebih besar dari teks normal) */
-    color: #fff;            /* Opsional: membuat angka lebih terang agar kontras */
-}
-/* Pastikan ini adalah wadah utama card video Anda */
-.video-card {
-    display: flex;
-    flex-direction: column; /* Membuat elemen di dalamnya menumpuk dari atas ke bawah */
-    width: 250px;           /* Berikan lebar yang wajar (sesuaikan kebutuhan) */
-    margin: 10px;           /* Beri jarak antar card */
-    overflow: hidden;       /* Mencegah konten meluap */
-}
-
-/* Bagian judul video */
-.video-title {
-    width: 100%;            /* Memastikan judul menggunakan seluruh lebar card */
-    font-size: 14px;
-    margin-top: 8px;
-    display: block;         /* Pastikan block */
-}
-
-/* Bagian Durasi dan Views */
-.video-meta {
-    display: block;         /* Pastikan ini ada di bawah judul, bukan di samping */
-    margin-top: 5px;
-    color: #888;
-}
-    </style>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <%- include('partials/seo-head') %>
+    <link rel='stylesheet' href='/css/site.css'>
 </head>
 <body>
-    <header>
-        <form action="/" method="GET" class="search-box">
-            <input type="text" name="q" placeholder="<%= t.placeholder %>" required>
-            <button type="submit">🔍</button>
-        </form>
-        <!-- Controls -->
-    <div class="controls">
-        <button id="theme-toggle" onclick="toggleTheme()" style="padding: 8px; cursor: pointer;">☀️/🌙</button>
-        
-        <select id="lang-selector" onchange="changeLanguage(this.value)">
-            <option value="id" <%= (typeof lang !== 'undefined' && lang === 'id') ? 'selected' : '' %>>ID</option>
-            <option value="en" <%= (typeof lang !== 'undefined' && lang === 'en') ? 'selected' : '' %>>EN</option>        </select>
-
-        <script>
-            function changeLanguage(lang) {
-            // Mengirim request ke server untuk mengganti bahasa
-            console.log("Mengganti bahasa ke:", lang);
-            window.location.href = `/set-lang?lang=${lang}`;
-            }
-        </script>
-        </div>
-
-        <div class="auth-container">
-    <% if (user) { %>
-        <span class="user-greeting">Halo, <%= user.fullname %></span>
-        <a href="/logout" class="btn btn-login">Logout</a>
-    <% } else { %>
-        <a href="/login" class="btn btn-login">Login</a>
-        <a href="/signup" class="btn btn-signup">Sign Up</a>
-    <% } %>
-</div>
-    </header>
-    
-    <aside>
-    <div class="sidebar-wrapper"></div>
-    <div class="logo">PORNERWEB</div>
-    <div class="menu-box"></div>
-
-<div class="scroll-container">
-    <details class="menu-group" open>
-        <summary class="menu-title">RECOMMENDATIONS ▾</summary>
-        <a href="/?q=pornstar" class="menu-item">⭐ Pornstar</a>
-        <a href="/?q=profesional" class="menu-item">🎲 Profesional</a>
-        <a href="/?q=4K Ultra HD" class="menu-item">4K Ultra HD</a>
-        <a href="/?q=Amateur" class="menu-item">Amateur</a>
-    </details>
-    <details class="menu-group" open>
-        <summary class="menu-title">POPULAR ▾</summary>
-        <a href="/?q=random" class="menu-item">🎲 Random</a>
-        <a href="/?q=indonesian" class="menu-item">🇮🇩 Indonesian</a>
-        <a href="/?q=japanese" class="menu-item">🇯🇵 Japanese</a>
-    </details>
-
-    <details class="menu-group">
-        <summary class="menu-title">COUNTRY ▾</summary>
-            <a href="/?q=argentina" class="menu-item">🇦🇷 Argentina</a>
-            <a href="/?q=australia" class="menu-item">🇦🇺 Australia</a>
-            <a href="/?q=austria" class="menu-item">🇦🇹 Austria</a>
-            <a href="/?q=belgium" class="menu-item">🇧🇪 Belgium</a>
-            <a href="/?q=brazil" class="menu-item">🇧🇷 Brazil</a>
-            <a href="/?q=bulgaria" class="menu-item">🇧🇬 Bulgaria</a>
-            <a href="/?q=canada" class="menu-item">🇨🇦 Canada</a>
-            <a href="/?q=chile" class="menu-item">🇨🇱 Chile</a>
-            <a href="/?q=croatia" class="menu-item">🇭🇷 Croatia</a>
-            <a href="/?q=czech+republic" class="menu-item">🇨🇿 Czech Republic</a>
-            <a href="/?q=denmark" class="menu-item">🇩🇰 Denmark</a>
-            <a href="/?q=egypt" class="menu-item">🇪🇬 Egypt</a>
-            <a href="/?q=finland" class="menu-item">🇫🇮 Finland</a>
-            <a href="/?q=france" class="menu-item">🇫🇷 France</a>
-            <a href="/?q=germany" class="menu-item">🇩🇪 Germany</a>
-            <a href="/?q=greece" class="menu-item">🇬🇷 Greece</a>
-            <a href="/?q=hungary" class="menu-item">🇭🇺 Hungary</a>
-            <a href="/?q=india" class="menu-item">🇮🇳 India</a>
-            <a href="/?q=ireland" class="menu-item">🇮🇪 Ireland</a>
-            <a href="/?q=israel" class="menu-item">🇮🇱 Israel</a>
-            <a href="/?q=italy" class="menu-item">🇮🇹 Italy</a>
-            <a href="/?q=japan" class="menu-item">🇯🇵 Japan</a>
-            <a href="/?q=korea" class="menu-item">🇰🇷 Korea</a>
-            <a href="/?q=mexico" class="menu-item">🇲🇽 Mexico</a>
-            <a href="/?q=morocco" class="menu-item">🇲🇦 Morocco</a>
-            <a href="/?q=netherlands" class="menu-item">🇳🇱 Netherlands</a>
-            <a href="/?q=new+zealand" class="menu-item">🇳🇿 New Zealand</a>
-            <a href="/?q=norway" class="menu-item">🇳🇴 Norway</a>
-            <a href="/?q=pakistan" class="menu-item">🇵🇰 Pakistan</a>
-            <a href="/?q=poland" class="menu-item">🇵🇱 Poland</a>
-            <a href="/?q=portugal" class="menu-item">🇵🇹 Portugal</a>
-            <a href="/?q=romania" class="menu-item">🇷🇴 Romania</a>
-            <a href="/?q=russia" class="menu-item">🇷🇺 Russia</a>
-            <a href="/?q=serbia" class="menu-item">🇷🇸 Serbia</a>
-            <a href="/?q=slovakia" class="menu-item">🇸🇰 Slovakia</a>
-            <a href="/?q=spain" class="menu-item">🇪🇸 Spain</a>
-            <a href="/?q=sweden" class="menu-item">🇸🇪 Sweden</a>
-            <a href="/?q=switzerland" class="menu-item">🇨🇭 Switzerland</a>
-            <a href="/?q=united+kingdom" class="menu-item">🇬🇧 United Kingdom</a>
-            <a href="/?q=ukraine" class="menu-item">🇺🇦 Ukraine</a>
-            <a href="/?q=united+states" class="menu-item">🇺🇸 United States</a>
-            <a href="/?q=world" class="menu-item">🌍 World</a>
-        </details>
-
-    <details class="menu-group">
-        <summary class="menu-title">CATEGORY ▾</summary>
-            <a href="/?q=indonesian" class="menu-item">🇮🇩 Indonesian</a>
-            <a href="/?q=japanese" class="menu-item">🇯🇵 Japanese</a>
-            <a href="/?q=anal" class="menu-item">🍑 Anal</a>
-            <a href="/?q=blowjob" class="menu-item">💋 Blowjob</a>
-            <a href="/?q=teen" class="menu-item">👧 Teen</a>
-            <a href="/?q=4K Ultra HD" class="menu-item">4K Ultra HD</a>
-            <a href="/?q=Amateur" class="menu-item">Amateur</a>
-            <a href="/?q=Anal" class="menu-item">Anal</a>
-            <a href="/?q=Asian" class="menu-item">Asian</a>
-            <a href="/?q=ASMR" class="menu-item">ASMR</a>
-            <a href="/?q=BBW" class="menu-item">BBW</a>
-            <a href="/?q=BDSM" class="menu-item">BDSM</a>
-            <a href="/?q=BDSM" class="menu-item">BDSM</a>
-            <a href="/?q=big+ass" class="menu-item">🍑 Big Ass</a>
-            <a href="/?q=big+dick" class="menu-item">🍆 Big Dick</a>
-            <a href="/?q=big+tits" class="menu-item">🍈 Big Tits</a>
-            <a href="/?q=bisexual" class="menu-item">🌈 Bisexual</a>
-            <a href="/?q=blonde" class="menu-item">👱‍♀️ Blonde</a>
-            <a href="/?q=blowjob" class="menu-item">👄 Blowjob</a>
-            <a href="/?q=bondage" class="menu-item">⛓️ Bondage</a>
-            <a href="/?q=brunette" class="menu-item">👩 Brunette</a>
-            <a href="/?q=bukkake" class="menu-item">💦 Bukkake</a>
-            <a href="/?q=casting" class="menu-item">🎬 Casting</a>
-            <a href="/?q=compilation" class="menu-item">📀 Compilation</a>
-            <a href="/?q=cosplay" class="menu-item">🎭 Cosplay</a>
-            <a href="/?q=creampie" class="menu-item">🥛 Creampie</a>
-            <a href="/?q=cuckold" class="menu-item">🦌 Cuckold</a>
-            <a href="/?q=cumshot" class="menu-item">💥 Cumshot</a>
-            <a href="/?q=double+penetration" class="menu-item">👯‍♀️ Double Penetration</a>
-            <a href="/?q=ebony" class="menu-item">🖤 Ebony</a>
-            <a href="/?q=fat" class="menu-item">🍔 Fat</a>
-            <a href="/?q=fetish" class="menu-item">👠 Fetish</a>
-            <a href="/?q=fisting" class="menu-item">👊 Fisting</a>
-            <a href="/?q=footjob" class="menu-item">🦶 Footjob</a>
-            <a href="/?q=for+women" class="menu-item">👩 For Women</a>
-            <a href="/?q=gay" class="menu-item">🏳️‍🌈 Gay</a>
-            <a href="/?q=gangbang" class="menu-item">👩‍❤️‍👩 Gangbang</a>
-            <a href="/?q=Brutal" class="menu-item">💃 Brutal</a>
-            <a href="/?q=gloryhole" class="menu-item">🕳️ Gloryhole</a>
-            <a href="/?q=group+sex" class="menu-item">👥 Group Sex</a>
-            <a href="/?q=handjob" class="menu-item">✋ Handjob</a>
-            <a href="/?q=hardcore" class="menu-item">🔥 Hardcore</a>
-            <a href="/?q=hd+porn+1080p" class="menu-item">📺 HD Porn 1080p</a>
-            <a href="/?q=hd+sex" class="menu-item">🖥️ HD Sex</a>
-            <a href="/?q=hentai" class="menu-item">👺 Hentai</a>
-            <a href="/?q=homemade" class="menu-item">🏠 Homemade</a>
-            <a href="/?q=hotel" class="menu-item">🏨 Hotel</a>
-            <a href="/?q=hotwife" class="menu-item">💍 Hotwife</a>
-            <a href="/?q=housewives" class="menu-item">🏡 Housewives</a>
-            <a href="/?q=hq+porn" class="menu-item">💎 HQ Porn</a>
-            <a href="/?q=indian" class="menu-item">🇮🇳 Indian</a>
-            <a href="/?q=indonesia" class="menu-item">🇮🇩 Indonesia</a>
-            <a href="/?q=interracial" class="menu-item">🌍 Interracial</a>
-            <a href="/?q=japanese" class="menu-item">🇯🇵 Japanese</a>
-            <a href="/?q=latina" class="menu-item">💃 Latina</a>
-            <a href="/?q=lesbian" class="menu-item">👩‍❤️‍👩 Lesbian</a>
-            <a href="/?q=lingerie" class="menu-item">👙 Lingerie</a>
-            <a href="/?q=massage" class="menu-item">💆‍♀️ Massage</a>
-            <a href="/?q=masturbation" class="menu-item">🫳 Masturbation</a>
-            <a href="/?q=mature" class="menu-item">👵 Mature</a>
-            <a href="/?q=milf" class="menu-item">👩 MILF</a>
-            <a href="/?q=nurses" class="menu-item">👩‍⚕️ Nurses</a>
-            <a href="/?q=office" class="menu-item">💼 Office</a>
-            <a href="/?q=older+men" class="menu-item">👴 Older Men</a>
-            <a href="/?q=orgy" class="menu-item">💃 Orgy</a>
-            <a href="/?q=outdoor" class="menu-item">🌳 Outdoor</a>
-            <a href="/?q=pawg" class="menu-item">🍑 PAWG</a>
-            <a href="/?q=petite" class="menu-item">🤏 Petite</a>
-            <a href="/?q=pinay" class="menu-item">🇵🇭 Pinay</a>
-            <a href="/?q=pornstar" class="menu-item">⭐ Pornstar</a>
-            <a href="/?q=pov" class="menu-item">📹 POV</a>
-            <a href="/?q=pregnant" class="menu-item">🤰 Pregnant</a>
-            <a href="/?q=public" class="menu-item">⛲ Public</a>
-            <a href="/?q=redhead" class="menu-item">👩‍🦰 Redhead</a>
-            <a href="/?q=shemale" class="menu-item">⚧️ Shemale</a>
-            <a href="/?q=sleep" class="menu-item">😴 Sleep</a>
-            <a href="/?q=small+tits" class="menu-item">🍒 Small Tits</a>
-            <a href="/?q=squirt" class="menu-item">💦 Squirt</a>
-            <a href="/?q=stepmom" class="menu-item">👠 Stepmom</a>
-            <a href="/?q=stepsister" class="menu-item">👧 Stepsister</a>
-            <a href="/?q=striptease" class="menu-item">💃 Striptease</a>
-            <a href="/?q=students" class="menu-item">🎓 Students</a>
-            <a href="/?q=swinger" class="menu-item">🥂 Swinger</a>
-            <a href="/?q=teen+18+" class="menu-item">🔞 Teen 18+</a>
-            <a href="/?q=threesome" class="menu-item">3️⃣ Threesome</a>
-            <a href="/?q=toys" class="menu-item">🧸 Toys</a>
-            <a href="/?q=uncategorized" class="menu-item">📁 Uncategorized</a>
-            <a href="/?q=uniform" class="menu-item">👮‍♀️ Uniform</a>
-            <a href="/?q=vintage" class="menu-item">🎞️ Vintage</a>
-            <a href="/?q=vr+porn" class="menu-item">🕶️ VR Porn</a>
-            <a href="/?q=webcam" class="menu-item">📷 Webcam</a>
-        </details>
+    <%- include('partials/header') %>
+    <div class='layout'>
+        <aside class='sidebar'>
+            <div class='sidebar-scroll-area'>
+                <%- include('partials/sidebar') %>
+            </div>
         </aside>
 
-    <main>
-        <h1><%= title %></h1>
+        <main id='main-content' class='content'>
+            <section class='page-hero'>
+                <div>
+                    <span class='eyebrow'><%= t.collection %></span>
+                    <h1><%= title %></h1>
+                    <p class='intro'><%= intro %></p>
+                    <div class='hero-actions'>
+                        <a class='hero-primary-cta' href='/?q=popular'>Watch now</a>
+                        <a class='hero-secondary-cta' href='/?q=trending'>Trending</a>
+                    </div>
+                </div>
+                <div class='hero-stat' aria-label='<%= data.length %> video pada halaman ini'>
+                    <strong><%= data.length %></strong>
+                    <span><%= t.available %></span>
+                </div>
+            </section>
 
-<div class="video-grid">
-    <% data.forEach(item => { %>
-        <!-- Kita kirim 'item.viewKey' ATAU 'item.video_id' jika viewKey kosong -->
-        <div class="card" onclick="openPlayer('<%= item.viewKey || item.video_id %>')">
-            <!-- Kontainer thumbnail -->
-            <div class="thumbnail-wrapper" style="position: relative; display: inline-block; width: 100%;">
-                <a href="/watch?url=<%= encodeURIComponent(item.url) %>" style="text-decoration: none; color: white;">                <img src="<%= item.preview %>" alt="<%= item.title %>">
-                <!-- Badge Durasi -->
-                <span class="duration-badge"><%= item.formattedDuration %></span>
-            </div>
-                <div class="duration-meta">
-                <span class="duration-label">Durasi:</span>
-                <span class="duration-value"><%= item.duration %></span>
-                <span class="views"> | Views: 
-                    <strong style="color: #FFFFFF;"><%= item.views %></strong>
-                </span>
-            </div>
-            <!-- Judul video di dalam loop (menggunakan item, bukan video) -->
-            <a href="/watch?url=<%= encodeURIComponent(item.url) %>" style="text-decoration: none; color: inherit;"></a>
-            <h4 class="video-title"><%= item.title %></h4>
-        </div>
-    <% }) %>
-</div>
+            <% if (data.length) { %>
+                <section class='featured-banner' aria-label='Featured categories'>
+                    <div class='featured-banner__content'>
+                        <span class='featured-pill'>Hot picks</span>
+                        <h2><%= title %></h2>
+                        <p>Browse the latest collection with cinematic previews and instant access.</p>
+                    </div>
+                    <a class='featured-cta' href='/?q=popular'>Watch now</a>
+                </section>
 
-<div class="search-results">
-    <h2>Search Results: <%= query %></h2>
-</div>
-        <!-- Pagination -->
-<div class="pagination">
-    <% 
-        // Logika untuk menentukan range angka yang tampil
-        let startPage = Math.max(1, currentPage - 2);
-        let endPage = Math.min(10, currentPage + 2); // 10 adalah batas maksimal halaman
-    %>
-    <!-- Tombol Previous -->
-    <% if (currentPage > 1) { %>
-        <a href="/?q=<%= query %>&page=<%= currentPage - 1 %>">«</a>
-    <% } %>
+                <section class='video-grid' aria-label='<%= title %>'>
+                    <% data.forEach((item, index) => { %>
+                        <article class='video-card'>
+                            <a href='<%= videoPath(item) %>'>
+                                <div class='thumbnail'>
+                                    <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index < 4 ? 'eager' : 'lazy' %>' decoding='async'>
+                                    <span class='play-indicator' aria-hidden='true'></span>
+                                    <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
+                                </div>
+                                <div class='card-body'>
+                                    <h2><%= item.title %></h2>
+                                    <div class='card-meta'>
+                                        <% if (item.views) { %><span><%= item.views %> views</span><% } %>
+                                        <span class='watch-label'><%= t.watchNow %></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </article>
+                    <% }) %>
+                </section>
+            <% } else { %>
+                <div class='empty'>
+                    <span class='empty-icon' aria-hidden='true'>!</span>
+                    <strong><%= t.noVideos %></strong>
+                    <p><%= t.tryAnother %></p>
+                </div>
+            <% } %>
 
-    <!-- Loop Angka Halaman -->
-    <% for(let i = 1; i <= 10; i++) { %>
-        <a href="/?q=<%= query %>&page=<%= i %>" 
-           class="<%= currentPage == i ? 'active' : '' %>">
-           <%= i %>
-        </a>
-    <% } %>
-
-    <!-- Tombol Next -->
-    <% if (currentPage < 20) { %>
-        <a href="/?q=<%= query %>&page=<%= currentPage + 1 %>">Next »</a>
-    <% } %>
-</div>
-
-<!-- Footer -->
-<footer>
-    <p>&copy; 2026 <strong>PORNERWEB</strong>. All rights reserved.</p>
-    <p>
-        <a href="/terms">Terms of Service</a> | 
-        <a href="/privacy">Privacy Policy</a> | 
-        <a href="/contact">Contact</a>
-    </p>
-</footer>
-    </main>
-
-    <!-- Modal Player -->
-<div id="playerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center;">
-    <div style="width: 80%; max-width: 800px;">
-        <button onclick="closePlayer()" style="color:white; background:red; border:none; padding:10px; cursor:pointer;">Tutup (X)</button>
-        <iframe id="videoFrame" width="100%" height="450px" frameborder="0" allowfullscreen></iframe>
+            <% if (totalPages > 1) { %>
+                <% const maxVisiblePages = 10; %>
+                <% const halfWindow = Math.floor(maxVisiblePages / 2); %>
+                <% const startPage = Math.max(1, Math.min(currentPage - halfWindow, totalPages - maxVisiblePages + 1)); %>
+                <% const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1); %>
+                <nav class='pagination' aria-label='Navigasi halaman'>
+                    <% if (currentPage > 1) { %><a class='page-nav' rel='prev' href='<%= paginationPath(currentPage - 1) %>'>← <%= t.previous %></a><% } %>
+                    <% for (let page = startPage; page <= endPage; page += 1) { %>
+                        <a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %><a class='page-nav' rel='next' href='<%= paginationPath(currentPage + 1) %>'><%= t.next %> →</a><% } %>
+                </nav>
+            <% } %>
+        </main>
     </div>
-</div>
 
-    <script>
-        function openPlayer(viewKey) {
-            if (!viewKey) {
-            console.error("ViewKey tidak ditemukan!");
-            return;
-        }
-            const embedUrl = `https://www.pornhub.com/embed/${viewKey}`;
-            document.getElementById('videoFrame').src = embedUrl;
-            document.getElementById('playerModal').style.display = 'flex';
-        }
-        function closePlayer() {
-            document.getElementById('videoFrame').src = '';
-            document.getElementById('playerModal').style.display = 'none';
-        }
-        // 1. Fungsionalitas Tema
-        function toggleTheme() {
-        const body = document.body;
-    body.classList.toggle('light-mode');
-    
-    // Simpan preferensi ke browser
-    if(body.classList.contains('light-mode')) {
-        localStorage.setItem('theme', 'light');
-    } else {
-        localStorage.setItem('theme', 'dark');
-    }
-}
-
-        // 2. Fungsionalitas Bahasa
-        function changeLang() {
-            const lang = document.getElementById('language').value;
-        // Mengarahkan user ke URL yang sama dengan tambahan query lang
-        // Contoh: domain.com/?lang=en
-        const url = new URL(window.location.href);
-             url.searchParams.set('lang', lang);
-            window.location.href = url.toString();
-    }
-
-// 3. Init: Pastikan tema sesuai saat halaman dibuka
-window.onload = () => {
-    // Terapkan Tema
-    if(localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-mode');
-    }
-
-    // Tampilkan bahasa yang terpilih di dropdown
-    const urlParams = new URLSearchParams(window.location.search);
-    const lang = urlParams.get('lang');
-    if(lang) {
-        document.getElementById('language').value = lang;
-    }
-}
-    </script>
+    <%- include('partials/footer') %>
 </body>
 </html>

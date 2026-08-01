@@ -1,0 +1,38 @@
+                    </div>
+                </div>
+
+                <% if (typeof featuredVideos !== 'undefined' && featuredVideos && featuredVideos.length) { %>
+                    <aside class='page-side-column' aria-label='Video unggulan'>
+                        <div class='page-side-panel'>
+                            <div class='section-heading'>
+                                <h2>Video unggulan</h2>
+                                <p>Ruang ini diisi konten video agar tampilan terasa lebih hidup.</p>
+                            </div>
+                            <div class='featured-stack'>
+                                <% featuredVideos.forEach((item, index) => { %>
+                                    <article class='video-card small-video-card'>
+                                        <a href='<%= videoPath(item) %>'>
+                                            <div class='thumbnail'>
+                                                <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' loading='<%= index < 3 ? 'eager' : 'lazy' %>' decoding='async'>
+                                                <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
+                                            </div>
+                                            <div class='card-body'>
+                                                <h2><%= item.title %></h2>
+                                                <div class='card-meta'>
+                                                    <% if (item.views) { %><span><%= item.views %> views</span><% } %>
+                                                    <span class='watch-label'>Tonton</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </aside>
+                <% } %>
+            </div>
+        </main>
+    </div>
+    <%- include('footer') %>
+</body>
+</html>

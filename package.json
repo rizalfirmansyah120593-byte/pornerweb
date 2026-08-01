@@ -2,6 +2,10 @@
   "name": "my-website",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check config/seo.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "connect-flash": "^0.1.1",

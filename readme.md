@@ -65,9 +65,24 @@ cd pornerweb
 npm install
 
 # Jalankan proyek
-npm start
+npm.cmd start
 
 ```
+
+## Konfigurasi SEO Produksi
+
+Sebelum deploy, isi environment variable berikut agar canonical URL, sitemap, dan verifikasi Google memakai domain produksi:
+
+```env
+SITE_URL=https://domain-anda.com
+SITE_NAME=PORNERWEB
+SITE_DESCRIPTION=Deskripsi singkat situs Anda
+GOOGLE_SITE_VERIFICATION=token-dari-google-search-console
+SESSION_SECRET=secret-yang-panjang-dan-acak
+MONGODB_URI=mongodb://alamat-database/PORNERWEB
+```
+
+Setelah deploy, kirim `https://domain-anda.com/sitemap.xml` melalui Google Search Console dan uji beberapa URL dengan URL Inspection.
 ---
 ## 👥 Kontribusi
 

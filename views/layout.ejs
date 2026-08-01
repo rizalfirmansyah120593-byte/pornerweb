@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORNERWEB</title>
+    <!-- Hubungkan file CSS utama Anda -->
+    <link rel="stylesheet" href="/css/site.css">
+    <%- include('partials/seo-head') %>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-scroll-area">
+                <%- include('partials/sidebar') %>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="page-hero">
+                <div>
+                    <span class="eyebrow">Collection</span>
+                    <h1>Featured content</h1>
+                    <p class="intro">Enjoy a cleaner and more immersive browsing experience.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <%- include('partials/footer') %>
+</body>
+</html>
