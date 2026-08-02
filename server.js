@@ -15,6 +15,7 @@ import {
     getSiteUrl, absoluteUrl, safeJson, parsePage, normalizeQuery, extractVideoId, videoPath,
     isoDuration, buildSeo, collectionJsonLd, xmlEscape,
 } from './config/seo.js';
+import { get } from 'http';
 
 const app = express();
 const ph = new PornHub();
@@ -261,13 +262,53 @@ app.get('/watch', (req, res) => {
 app.get('/watch/:id', async (req, res, next) => {
     const id = extractVideoId(req.params.id);
     if (!id) return next();
+    
     try {
         const videoData = await ph.video(id);
+
+        let recommendations = [];
+        try {
+            const searchQuery = Array.isArray(videoData?.tags) && videoData.tags.filter(Boolean).length
+                ? videoData.tags.find(Boolean)
+                : 'popular';
+            const pagesToCheck = [1, 2, 3];
+            const seenIds = new Set([id]);
+            const pool = [];
+
+            for (const page of pagesToCheck) {
+                const searchResult = await ph.searchVideo(searchQuery, { page });
+                const results = Array.isArray(searchResult?.data) ? searchResult.data : [];
+
+                for (const item of results) {
+                    if (!item?.id || seenIds.has(item.id)) continue;
+                    seenIds.add(item.id);
+                    pool.push({
+                        id: item.id,
+                        title: item.title || (res.locals.lang === 'en' ? 'Recommended video' : 'Video rekomendasi'),
+                        url: item.url || `/watch/${encodeURIComponent(item.id)}`,
+                        preview: item.preview || '',
+                        views: item.views,
+                        duration: item.duration,
+                    });
+
+                    if (pool.length >= 12) break;
+                }
+
+                if (pool.length >= 12) break;
+            }
+
+            recommendations = [...pool].sort(() => Math.random() - 0.5).slice(0, 12);
+        } catch (error) {
+            console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
+            recommendations = [];
+        }
+
         const thumbnail = videoData.preview || videoData.thumb || undefined;
         const tags = Array.isArray(videoData.tags) ? videoData.tags.filter(Boolean).slice(0, 8) : [];
         const description = `Tonton ${videoData.title}.${tags.length ? ` Tag: ${tags.join(', ')}.` : ''} Konten khusus dewasa 18+.`;
         const pathname = `/watch/${encodeURIComponent(id)}`;
         const embedUrl = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
+        
         const uploadDate = videoData.uploadDate instanceof Date
             && !Number.isNaN(videoData.uploadDate.valueOf())
             && videoData.uploadDate.getFullYear() > 1970
@@ -292,14 +333,21 @@ app.get('/watch/:id', async (req, res, next) => {
                 userInteractionCount: videoData.views,
             } : undefined,
         } : undefined;
-
         return res.render('watch', {
-            video: { ...videoData, description },
+            video: { ...videoData, description, },
+            recommendations,
             seo: buildSeo(req, {
-                title: videoData.title, description, pathname, image: thumbnail, type: 'video.other',
-                explicit: true, jsonLd, video: embedUrl,
+                title: videoData.title, 
+                description, 
+                pathname, 
+                image: thumbnail, 
+                type: 'video.other',
+                explicit: true, 
+                jsonLd, 
+                video: embedUrl
             }),
         });
+        
     } catch (error) {
         console.error(`Gagal memuat video ${id}:`, error.message);
         res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -307,8 +355,10 @@ app.get('/watch/:id', async (req, res, next) => {
             statusCode: 502,
             message: 'Video sedang tidak dapat dimuat. Silakan coba kembali nanti.',
             seo: buildSeo(req, {
-                title: 'Video Tidak Tersedia', description: 'Video sedang tidak dapat dimuat.',
-                pathname: `/watch/${encodeURIComponent(id)}`, robots: 'noindex, nofollow',
+                title: 'Video Tidak Tersedia', 
+                description: 'Video sedang tidak dapat dimuat.',
+                pathname: `/watch/${encodeURIComponent(id)}`, 
+                robots: 'noindex, nofollow',
             }),
         });
     }

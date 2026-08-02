@@ -48,6 +48,39 @@
                     </nav>
                 <% } %>
             </section>
+            <section class="recommendations-section" aria-label="Rekomendasi video">
+                <div class="section-heading">
+                    <h2><%= t.recommendations %></h2>
+                    <p><%= lang === 'en' ? 'Twelve random picks to keep watching.' : 'Dua belas pilihan acak untuk melanjutkan menonton.' %></p>
+                </div>
+
+                <div class="video-grid">
+                    <% if (typeof recommendations !== 'undefined' && recommendations.length > 0) { %>
+                        <% recommendations.forEach(rec => { %>
+                            <article class="video-card">
+                                <a class="video-card-link" href="<%= rec.url %>">
+                                    <img src="<%= rec.preview || '/images/placeholder.svg' %>"
+                                         alt="<%= rec.title %>"
+                                         width="320"
+                                         height="180"
+                                         loading="lazy">
+                                    <div class="video-card-body">
+                                        <h3><%= rec.title %></h3>
+                                        <% if (rec.views || rec.duration) { %>
+                                            <div class="video-card-meta">
+                                                <% if (rec.views) { %><span><%= rec.views %></span><% } %>
+                                                <% if (rec.duration) { %><span><%= rec.duration %></span><% } %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </a>
+                            </article>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="empty-state"><%= lang === 'en' ? 'No recommendations are available right now.' : 'Tidak ada rekomendasi yang tersedia saat ini.' %></p>
+                    <% } %>
+                </div>
+            </section>
         </main>
     </div>
 
