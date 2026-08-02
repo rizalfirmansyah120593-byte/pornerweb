@@ -58,7 +58,7 @@
                     <% if (typeof recommendations !== 'undefined' && recommendations.length > 0) { %>
                         <% recommendations.forEach(rec => { %>
                             <article class="video-card">
-                                <a class="video-card-link" href="<%= rec.url %>">
+                                <a class="video-card-link" href="/watch/<%= rec.id %>">
                                     <img src="<%= rec.preview || '/images/placeholder.svg' %>"
                                          alt="<%= rec.title %>"
                                          width="320"

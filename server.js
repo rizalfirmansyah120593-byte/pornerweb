@@ -336,6 +336,7 @@ app.get('/watch/:id', async (req, res, next) => {
         return res.render('watch', {
             video: { ...videoData, description, },
             recommendations,
+            localUrl: `/watch/${id}`,
             seo: buildSeo(req, {
                 title: videoData.title, 
                 description, 
@@ -344,7 +345,7 @@ app.get('/watch/:id', async (req, res, next) => {
                 type: 'video.other',
                 explicit: true, 
                 jsonLd, 
-                video: embedUrl
+                video: embedUrl,
             }),
         });
         
