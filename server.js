@@ -55,6 +55,13 @@ app.use((req, res, next) => {
         name: SITE_NAME, url: getSiteUrl(req),
         googleSiteVerification: process.env.GOOGLE_SITE_VERIFICATION || '',
     };
+    // Adsterra occasionally rotates its delivery domains. Keep the host
+    // configurable so a provider-issued code can be adopted without editing
+    // every view partial again.
+    res.locals.adScriptHost = String(process.env.ADSTERRA_SCRIPT_HOST || 'www.highperformanceformat.com')
+        .trim()
+        .replace(/^https?:\/\//i, '')
+        .replace(/\/+$/, '');
     res.locals.categories = INDEXABLE_CATEGORIES;
     res.locals.countries = COUNTRY_FILTERS;
     res.locals.currentPath = req.path;
