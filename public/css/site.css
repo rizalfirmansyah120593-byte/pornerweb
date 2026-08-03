@@ -200,34 +200,6 @@ img {
     min-width: 56px;
 }
 
-.auth-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.user-greeting {
-    color: var(--muted);
-    font-size: 0.95rem;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.btn-signup {
-    background: linear-gradient(135deg, var(--accent), #ff9156);
-    border-color: transparent;
-}
-
 .layout {
     display: flex;
     flex: 1;

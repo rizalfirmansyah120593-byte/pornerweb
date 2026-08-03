@@ -78,9 +78,9 @@ SITE_URL=https://domain-anda.com
 SITE_NAME=PORNERWEB
 SITE_DESCRIPTION=Deskripsi singkat situs Anda
 GOOGLE_SITE_VERIFICATION=token-dari-google-search-console
-SESSION_SECRET=secret-yang-panjang-dan-acak
-MONGODB_URI=mongodb://alamat-database/PORNERWEB
 ```
+
+Aplikasi ini tidak menggunakan database atau fitur login.
 
 Setelah deploy, kirim `https://domain-anda.com/sitemap.xml` melalui Google Search Console dan uji beberapa URL dengan URL Inspection.
 ---

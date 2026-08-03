@@ -1,14 +1,9 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
-import session from 'express-session';
-import passport from 'passport';
-import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
 import { PornHub } from './Pornhub.js-master/dist/index.mjs';
-import authRoutes from './routes/auth.js';
-import configurePassport from './config/passport.js';
 import {
     SITE_NAME, SITE_DESCRIPTION, INDEXABLE_CATEGORIES, COUNTRY_FILTERS,
     categoriesBySlug, categoriesByQuery, countriesBySlug,
@@ -50,30 +45,10 @@ app.use((req, res, next) => {
 });
 app.use(express.static(join(__dirname, 'public'), { maxAge: isProduction ? '7d' : 0 }));
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/PORNERWEB')
-    .then(() => console.log('Berhasil terhubung ke MongoDB!'))
-    .catch((error) => console.error('Gagal terhubung ke MongoDB:', error.message));
-
-configurePassport(passport);
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret-key-anda',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        domain: undefined,
-    },
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use((req, res, next) => {
     const savedLanguage = ['id', 'en'].includes(req.cookies.lang) ? req.cookies.lang : null;
     const detectedLanguage = req.acceptsLanguages('id', 'en') || 'id';
     const lang = savedLanguage || detectedLanguage;
-    res.locals.user = req.user || null;
     res.locals.lang = lang;
     res.locals.langPreference = savedLanguage || 'auto';
     res.locals.site = {
@@ -123,21 +98,12 @@ app.use((req, res, next) => {
         },
     }[lang];
 
-    const privatePages = {
-        '/login': ['Login', 'Masuk ke akun PORNERWEB.'],
-        '/signup': ['Daftar', 'Buat akun PORNERWEB.'],
-    };
-    const page = privatePages[req.path];
-    res.locals.seo = buildSeo(req, page
-        ? { title: page[0], description: page[1], pathname: req.path, robots: 'noindex, nofollow' }
-        : {});
-    if (page || ['/logout', '/set-lang'].includes(req.path)) {
+    res.locals.seo = buildSeo(req, {});
+    if (req.path === '/set-lang') {
         res.set('X-Robots-Tag', 'noindex, nofollow');
     }
     next();
 });
-
-app.use('/', authRoutes);
 
 async function renderVideoListing(req, res, { query, heading, description, canonicalBase, indexFirstPage }) {
     const page = parsePage(req.query.page);
@@ -419,8 +385,7 @@ for (const [pathname, [view, title, description]] of Object.entries(contentPages
 
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send([
-        'User-agent: *', 'Allow: /', 'Disallow: /login', 'Disallow: /signup',
-        'Disallow: /logout', 'Disallow: /set-lang', '',
+        'User-agent: *', 'Allow: /', 'Disallow: /set-lang', '',
         `Sitemap: ${absoluteUrl(req, '/sitemap.xml')}`, '',
     ].join('\n'));
 });

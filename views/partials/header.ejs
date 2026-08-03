@@ -20,15 +20,6 @@
             <option value="en" <%= (typeof lang !== 'undefined' && lang === 'en') ? 'selected' : '' %>>EN</option>
         </select>
 
-        <div class="auth-container">
-            <% if (user) { %>
-                <span class="user-greeting">Halo, <%= user.fullname %></span>
-                <a href="/logout" class="btn btn-login">Logout</a>
-            <% } else { %>
-                <a href="/login" class="btn btn-login">Login</a>
-                <a href="/signup" class="btn btn-signup">Sign Up</a>
-            <% } %>
-        </div>
     </div>
 </header>
 
