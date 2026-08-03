@@ -396,10 +396,25 @@ app.get('/robots.txt', (req, res) => {
 });
 
 app.get('/sitemap.xml', (req, res) => {
-    const paths = ['/', ...INDEXABLE_CATEGORIES.map(({ slug }) => `/category/${slug}`),
-        ...COUNTRY_FILTERS.map(({ slug }) => `/country/${slug}`),
-        '/recommended', '/models', '/terms', '/privacy', '/contact'];
-    const urls = paths.map((path) => `  <url><loc>${xmlEscape(absoluteUrl(req, path))}</loc></url>`).join('\n');
+    const configuredLastmod = String(process.env.SITEMAP_LASTMOD || '').trim();
+    const lastmod = /^\d{4}-\d{2}-\d{2}$/.test(configuredLastmod) ? configuredLastmod : '';
+    const paths = [
+        { path: '/' },
+        ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}` })),
+        ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
+        { path: '/recommended' },
+        { path: '/models' },
+        { path: '/terms' },
+        { path: '/privacy' },
+        { path: '/contact' },
+    ];
+    const urls = paths.map(({ path }) => [
+        '  <url>',
+        `    <loc>${xmlEscape(absoluteUrl(req, path))}</loc>`,
+        lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
+        '  </url>',
+    ].filter(Boolean).join('\n')).join('\n');
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400');
     res.type('application/xml').send([
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

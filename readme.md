@@ -18,6 +18,9 @@
   <a href="https://github.com/rizalfirmansyah120593-byte/pornerweb/issues">
     <img src="https://img.shields.io/badge/🐛_Laporkan_Bug-Open_Issue-d73a4a?style=for-the-badge&logo=github" alt="Laporkan bug PornerWeb">
   </a>
+  <a href="https://saweria.co/RizalFirmansyah">
+    <img src="https://img.shields.io/badge/💖_Dukung_Pengembangan-Saweria-ff4f81?style=for-the-badge" alt="Dukung pengembangan PornerWeb melalui Saweria">
+  </a>
 </p>
 
 <p>
@@ -126,9 +129,11 @@ SITE_URL=https://domain-anda.com
 SITE_NAME=PORNERWEB
 SITE_DESCRIPTION=Deskripsi singkat dan relevan tentang situs Anda.
 GOOGLE_SITE_VERIFICATION=token-dari-google-search-console
+SITEMAP_LASTMOD=2026-08-03
 ```
 
 `MONGODB_URI` dan `SESSION_SECRET` tidak diperlukan karena aplikasi tidak menggunakan database atau autentikasi pengguna.
+`SITEMAP_LASTMOD` bersifat opsional; ubah hanya ketika halaman publik memang diperbarui.
 
 > Jangan commit file `.env`. File tersebut sudah tercantum di `.gitignore`.
 
@@ -206,6 +211,22 @@ npm run check
 
 Pastikan perubahan tidak memasukkan credential, token, cookie, atau file `.env` ke repository.
 
+## Dukung Pengembangan
+
+Jika PornerWeb membantu Anda atau Anda menikmati hasil pengembangannya, dukungan melalui Saweria sangat berarti. Donasi yang terkumpul membantu membiayai domain, server, bandwidth, pemeliharaan keamanan, perbaikan bug, dan pengembangan fitur baru agar proyek ini tetap aktif serta nyaman digunakan.
+
+Tidak ada kewajiban untuk berdonasi—dukungan sekecil apa pun tetap membantu dan sangat dihargai. Jika ingin ikut menjaga proyek ini tetap berjalan, Anda dapat memberikan dukungan melalui tombol berikut:
+
+<div align="center">
+
+<a href="https://saweria.co/RizalFirmansyah">
+  <img src="https://img.shields.io/badge/💝_Berikan_Dukungan_Sekarang-Saweria-ff4f81?style=for-the-badge" alt="Berikan dukungan melalui Saweria">
+</a>
+
+<p><em>Dukungan Anda membantu PornerWeb terus dirawat, ditingkatkan, dan tersedia secara online.</em></p>
+
+</div>
+
 ## Lisensi dan Tanggung Jawab
 
 Tambahkan file `LICENSE` sesuai lisensi yang ingin digunakan pemilik repository. Dependency pihak ketiga tetap mengikuti lisensi masing-masing. Pengelola deployment bertanggung jawab memastikan penggunaan aplikasi mematuhi hukum dan kebijakan layanan yang berlaku.
@@ -219,6 +240,9 @@ Tambahkan file `LICENSE` sesuai lisensi yang ingin digunakan pemilik repository.
 </a>
 <a href="https://github.com/rizalfirmansyah120593-byte/pornerweb/issues/new">
   <img src="https://img.shields.io/badge/💬_Beri_Feedback-5865F2?style=for-the-badge" alt="Beri feedback">
+</a>
+<a href="https://saweria.co/RizalFirmansyah">
+  <img src="https://img.shields.io/badge/💖_Support_Saweria-ff4f81?style=for-the-badge" alt="Support PornerWeb melalui Saweria">
 </a>
 
 <p>Made with Node.js, Express, EJS, and ❤️</p>
