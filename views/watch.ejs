@@ -27,6 +27,8 @@
                 <iframe src='https://www.pornhub.com/embed/<%= video.id %>' title='<%= video.title %>' allow='fullscreen; picture-in-picture' allowfullscreen loading='eager'></iframe>
             </div>
 
+            <%- include('partials/ad-banner-468') %>
+
             <section class='video-info' aria-label='Informasi video'>
                 <div class='video-stats'>
                     <span><small><%= t.views %></small><strong><%= video.views ? video.views.toLocaleString() : '0' %></strong></span>
@@ -48,6 +50,7 @@
                     </nav>
                 <% } %>
             </section>
+            <%- include('partials/ad-native-banner') %>
             <section class="recommendations-section" aria-label="Rekomendasi video">
                 <div class="section-heading">
                     <h2><%= t.recommendations %></h2>
@@ -85,5 +88,6 @@
     </div>
 
     <%- include('partials/footer') %>
+    <%- include('partials/ad-global') %>
 </body>
 </html>

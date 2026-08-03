@@ -5,6 +5,10 @@
     <div class="sidebar-toolbar">
         <button type="button" class="sidebar-toggle" id="toggle-all-sidebar">Collapse all</button>
     </div>
+    <% if (adsEnabled) { %>
+        <%- include('ad-banner-300') %>
+        <%- include('ad-smartlink') %>
+    <% } %>
     <details class="sidebar-nav" open>
         <summary class="group-title">RECOMMENDATIONS <span class="chevron">▾</span></summary>
         <ul class="nav-links">

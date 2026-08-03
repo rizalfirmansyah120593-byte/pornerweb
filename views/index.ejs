@@ -42,6 +42,8 @@
                     <a class='featured-cta' href='/?q=popular'>Watch now</a>
                 </section>
 
+                <%- include('partials/ad-banner-728') %>
+
                 <section class='video-grid' aria-label='<%= title %>'>
                     <% data.forEach((item, index) => { %>
                         <article class='video-card'>
@@ -70,6 +72,10 @@
                 </div>
             <% } %>
 
+            <% if (data.length) { %>
+                <%- include('partials/ad-native-banner') %>
+            <% } %>
+
             <% if (totalPages > 1) { %>
                 <% const maxVisiblePages = 10; %>
                 <% const halfWindow = Math.floor(maxVisiblePages / 2); %>
@@ -87,5 +93,6 @@
     </div>
 
     <%- include('partials/footer') %>
+    <%- include('partials/ad-global') %>
 </body>
 </html>

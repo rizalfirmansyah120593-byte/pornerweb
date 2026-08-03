@@ -58,6 +58,11 @@ app.use((req, res, next) => {
     res.locals.categories = INDEXABLE_CATEGORIES;
     res.locals.countries = COUNTRY_FILTERS;
     res.locals.currentPath = req.path;
+    res.locals.adsEnabled = req.path === '/'
+        || ['/recommended', '/models'].includes(req.path)
+        || req.path.startsWith('/category/')
+        || req.path.startsWith('/country/')
+        || req.path.startsWith('/watch/');
     res.locals.isActive = (pathname) => req.path === pathname;
     res.locals.safeJson = safeJson;
     res.locals.videoPath = videoPath;
