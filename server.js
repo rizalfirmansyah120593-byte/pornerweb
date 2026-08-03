@@ -15,7 +15,6 @@ import {
     getSiteUrl, absoluteUrl, safeJson, parsePage, normalizeQuery, extractVideoId, videoPath,
     isoDuration, buildSeo, collectionJsonLd, xmlEscape,
 } from './config/seo.js';
-import { get } from 'http';
 
 const app = express();
 const ph = new PornHub();
@@ -452,8 +451,14 @@ app.use((req, res) => {
     });
 });
 
+export function startServer(port = PORT) {
+    return app.listen(port, '0.0.0.0', () => {
+        console.log(`Server berjalan di port ${port}`);
+    });
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === resolve(__filename)) {
-    app.listen(PORT, () => console.log(`Server berjalan di http://localhost:${PORT}`));
+    startServer();
 }
 
 export default app;

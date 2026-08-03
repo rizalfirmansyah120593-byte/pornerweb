@@ -1,6 +1,12 @@
 .DS_Store
 node_modules
+# The application imports the built ESM bundle at runtime. Keep it in the
+# repository because the parent application does not build this vendored
+# package during deployment.
 dist
+!dist/
+!dist/index.js
+!dist/index.mjs
 tmp_release
 
 # local env files
