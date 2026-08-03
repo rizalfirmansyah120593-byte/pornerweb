@@ -7,9 +7,13 @@
     "check": "node --check server.js && node --check config/seo.js"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.7",
+    "debug": "^4.4.0",
     "ejs": "^3.1.10",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "node-fetch": "^2.7.0",
+    "urlcat": "^3.1.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
