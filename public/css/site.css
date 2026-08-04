@@ -1215,16 +1215,6 @@ img {
     }
 }
 
-@media (min-width: 961px) {
-    .player:has(.desktop-video-fallback) #video-embed-frame {
-        display: none;
-    }
-
-    .player:has(.desktop-video-fallback) .desktop-video-fallback {
-        display: block;
-    }
-}
-
 .video-info {
     margin-top: 22px;
     padding: 20px;
