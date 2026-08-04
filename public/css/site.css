@@ -1209,16 +1209,6 @@ img {
     text-align: center;
 }
 
-@media (min-width: 961px) {
-    .player:has(.desktop-video-fallback) iframe {
-        display: none;
-    }
-
-    .player:has(.desktop-video-fallback) .desktop-video-fallback {
-        display: block;
-    }
-}
-
 @media (max-width: 960px) {
     .desktop-video-fallback {
         display: none !important;
