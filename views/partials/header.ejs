@@ -10,6 +10,10 @@
     </form>
 
     <div class="header-controls">
+        <button type="button" class="mobile-sidebar-toggle" id="mobile-sidebar-toggle" aria-controls="site-sidebar" aria-expanded="false">
+            <span aria-hidden="true">☰</span>
+            <span class="mobile-sidebar-toggle__label">Menu</span>
+        </button>
         <div class="theme-switcher" aria-label="Pilihan tema">
             <button data-theme-choice="light" aria-label="Light Mode">☀️</button>
             <button data-theme-choice="dark" aria-label="Dark Mode">🌙</button>
@@ -68,5 +72,23 @@
     document.getElementById('language-selector')?.addEventListener('change', (event) => {
         window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;
     });
+
+    const sidebarToggle = document.getElementById('mobile-sidebar-toggle');
+    const sidebar = document.getElementById('site-sidebar');
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            const isOpen = document.body.classList.toggle('mobile-sidebar-open');
+            sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+            sidebarToggle.querySelector('.mobile-sidebar-toggle__label').textContent = isOpen ? 'Tutup' : 'Menu';
+        });
+
+        sidebar.addEventListener('click', (event) => {
+            if (event.target.closest('a')) {
+                document.body.classList.remove('mobile-sidebar-open');
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+                sidebarToggle.querySelector('.mobile-sidebar-toggle__label').textContent = 'Menu';
+            }
+        });
+    }
 })();
 </script>
