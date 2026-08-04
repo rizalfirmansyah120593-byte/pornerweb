@@ -24,7 +24,13 @@
             </div>
 
             <div class='player'>
-                <iframe src='https://www.pornhub.com/embed/<%= video.id %>' title='<%= video.title %>' allow='fullscreen; picture-in-picture' allowfullscreen loading='eager'></iframe>
+                <iframe
+                    src='https://www.pornhub.com/embed/<%= encodeURIComponent(video.id) %>'
+                    title='<%= video.title %>'
+                    allow='autoplay; fullscreen; picture-in-picture; encrypted-media'
+                    allowfullscreen
+                    referrerpolicy='strict-origin-when-cross-origin'
+                    loading='eager'></iframe>
             </div>
 
             <%- include('partials/ad-banner-468') %>
@@ -96,10 +102,11 @@
                     </div>
                     <div class='video-grid'>
                         <% recommendationItems.forEach((item) => { %>
+                            <% const thumbnailUrl = item.thumbnail || item.thumb || item.image || item.preview || item.poster || item.thumbnail_url || item.thumbUrl || (item.images && item.images[0]) || (item.thumbnails && item.thumbnails[0]) || '/images/placeholder.svg'; %>
                             <article class='video-card'>
                                 <a href='/watch/<%= item.id %>'>
                                     <div class='thumbnail'>
-                                        <img src='<%= item.thumbnail || item.thumb || "/images/placeholder.svg" %>' alt='<%= item.title %>' loading='lazy'>
+                                        <img src='<%= Array.isArray(thumbnailUrl) ? thumbnailUrl[0] : (typeof thumbnailUrl === "object" ? (thumbnailUrl.url || thumbnailUrl.src || "/images/placeholder.svg") : thumbnailUrl) %>' alt='<%= item.title %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
                                     </div>
                                     <div class='card-body'><h2><%= item.title %></h2></div>
                                 </a>
