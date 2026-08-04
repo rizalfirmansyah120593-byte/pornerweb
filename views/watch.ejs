@@ -29,31 +29,6 @@
 
             <%- include('partials/ad-banner-468') %>
 
-            <% const recommendationItems = typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations : []); %>
-            <% if (recommendationItems && recommendationItems.length) { %>
-                <section class='recommendations-section' aria-labelledby='recommended-title'>
-                    <div class='section-heading'>
-                        <div>
-                            <h2 id='recommended-title'>Recommended for you</h2>
-                            <p>More videos you may enjoy.</p>
-                        </div>
-                    </div>
-                    <div class='video-grid'>
-                        <% recommendationItems.forEach((item) => { %>
-                            <article class='video-card'>
-                                <a href='/watch/<%= item.id %>'>
-                                    <div class='thumbnail'>
-                                        <img src='<%= item.thumbnail || item.thumb || "/images/placeholder.svg" %>' alt='<%= item.title %>' loading='lazy'>
-                                    </div>
-                                    <div class='card-body'>
-                                        <h2><%= item.title %></h2>
-                                    </div>
-                                </a>
-                            </article>
-                        <% }); %>
-                    </div>
-                </section>
-            <% } %>
 
             <section class='video-info' aria-label='Informasi video'>
                 <div class='video-stats'>
@@ -110,6 +85,29 @@
                     <% } %>
                 </div>
             </section>
+            <% const recommendationItems = typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations : []); %>
+            <% if (recommendationItems && recommendationItems.length) { %>
+                <section class='recommendations-section' aria-labelledby='recommended-title'>
+                    <div class='section-heading'>
+                        <div>
+                            <h2 id='recommended-title'>Recommended for you</h2>
+                            <p>More videos you may enjoy.</p>
+                        </div>
+                    </div>
+                    <div class='video-grid'>
+                        <% recommendationItems.forEach((item) => { %>
+                            <article class='video-card'>
+                                <a href='/watch/<%= item.id %>'>
+                                    <div class='thumbnail'>
+                                        <img src='<%= item.thumbnail || item.thumb || "/images/placeholder.svg" %>' alt='<%= item.title %>' loading='lazy'>
+                                    </div>
+                                    <div class='card-body'><h2><%= item.title %></h2></div>
+                                </a>
+                            </article>
+                        <% }); %>
+                    </div>
+                </section>
+            <% } %>
         </main>
     </div>
 
