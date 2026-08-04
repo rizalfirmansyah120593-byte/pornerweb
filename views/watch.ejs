@@ -25,12 +25,20 @@
 
             <div class='player'>
                 <iframe
+                    id='video-embed-frame'
                     src='https://www.pornhub.com/embed/<%= video.id %>'
                     title='<%= video.title %>'
                     allow='autoplay; fullscreen; picture-in-picture; encrypted-media'
                     allowfullscreen
                     referrerpolicy='no-referrer-when-downgrade'
                     loading='eager'></iframe>
+                <% if (Array.isArray(video.mediaDefinitions) && video.mediaDefinitions.length) { %>
+                    <video id='desktop-video-fallback' class='desktop-video-fallback' controls preload='metadata' poster='<%= video.preview || video.thumb || "" %>' aria-label='<%= video.title %>'>
+                        <% video.mediaDefinitions.slice().sort((a, b) => Number(b.quality || 0) - Number(a.quality || 0)).forEach((media) => { %>
+                            <source src='<%= media.videoUrl %>' type='video/mp4'>
+                        <% }) %>
+                    </video>
+                <% } %>
             </div>
 
             <%- include('partials/ad-banner-468') %>
@@ -117,6 +125,24 @@
             <% } %>
         </main>
     </div>
+
+    <script>
+        (() => {
+            const frame = document.getElementById('video-embed-frame');
+            const fallback = document.getElementById('desktop-video-fallback');
+            if (!frame || !fallback) return;
+            const showFallback = () => {
+                frame.hidden = true;
+                fallback.classList.add('is-visible');
+            };
+            frame.addEventListener('error', showFallback);
+            window.setTimeout(() => {
+                try {
+                    if (frame.contentDocument && frame.contentDocument.body && !frame.contentDocument.body.innerHTML.trim()) showFallback();
+                } catch { /* cross-origin embeds are expected; keep the iframe */ }
+            }, 3500);
+        })();
+    </script>
 
     <%- include('partials/footer') %>
     <%- include('partials/ad-global') %>

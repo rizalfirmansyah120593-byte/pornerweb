@@ -1189,6 +1189,34 @@ img {
     background: #000;
 }
 
+.desktop-video-fallback {
+    display: none;
+    width: 100%;
+    min-height: 420px;
+    max-height: 75vh;
+    background: #000;
+}
+
+.desktop-video-fallback.is-visible {
+    display: block;
+}
+
+@media (min-width: 961px) {
+    .player:has(.desktop-video-fallback) iframe {
+        display: none;
+    }
+
+    .player:has(.desktop-video-fallback) .desktop-video-fallback {
+        display: block;
+    }
+}
+
+@media (max-width: 960px) {
+    .desktop-video-fallback {
+        display: none !important;
+    }
+}
+
 .video-info {
     margin-top: 22px;
     padding: 20px;
