@@ -73,7 +73,7 @@
             <section class="recommendations-section" aria-label="Rekomendasi video">
                 <div class="section-heading">
                     <h2><%= t.recommendations %></h2>
-                    <p><%= lang === 'en' ? 'Twelve random picks to keep watching.' : 'Dua belas pilihan acak untuk melanjutkan menonton.' %></p>
+                    <p><%= ({ id: 'Dua belas pilihan acak untuk melanjutkan menonton.', en: 'Twelve random picks to keep watching.', ms: 'Dua belas pilihan rawak untuk terus menonton.', es: 'Doce selecciones para seguir viendo.', ja: 'Twelve random picks to keep watching.' }[lang] || 'Twelve random picks to keep watching.') %></p>
                 </div>
 
                 <div class="video-grid">
@@ -99,7 +99,7 @@
                             </article>
                         <% }) %>
                     <% } else { %>
-                        <p class="empty-state"><%= lang === 'en' ? 'No recommendations are available right now.' : 'Tidak ada rekomendasi yang tersedia saat ini.' %></p>
+                        <p class="empty-state"><%= ({ id: 'Tidak ada rekomendasi yang tersedia saat ini.', en: 'No recommendations are available right now.', ms: 'Tiada cadangan tersedia sekarang.', es: 'No hay recomendaciones disponibles ahora.', ja: 'No recommendations are available right now.' }[lang] || 'No recommendations are available right now.') %></p>
                     <% } %>
                 </div>
             </section>

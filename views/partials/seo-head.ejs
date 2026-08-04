@@ -27,7 +27,7 @@
 <% } %>
 <meta property='og:type' content='<%= seo.type %>'>
 <meta property='og:site_name' content='<%= site.name %>'>
-<meta property='og:locale' content='<%= lang === 'en' ? 'en_US' : 'id_ID' %>'>
+<meta property='og:locale' content='<%= ({ id: 'id_ID', en: 'en_US', ms: 'ms_MY', es: 'es_ES', ja: 'ja_JP' }[lang] || 'en_US') %>'>
 <meta property='og:title' content='<%= seo.title %>'>
 <meta property='og:description' content='<%= seo.description %>'>
 <meta property='og:url' content='<%= seo.canonical %>'>

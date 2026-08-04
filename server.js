@@ -18,6 +18,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const isProduction = process.env.NODE_ENV === 'production';
+const SUPPORTED_LANGUAGES = ['id', 'en', 'ms', 'es', 'ja'];
+const localized = (lang, values) => values[lang] || values.en;
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -46,8 +48,8 @@ app.use((req, res, next) => {
 app.use(express.static(join(__dirname, 'public'), { maxAge: isProduction ? '7d' : 0 }));
 
 app.use((req, res, next) => {
-    const savedLanguage = ['id', 'en'].includes(req.cookies.lang) ? req.cookies.lang : null;
-    const detectedLanguage = req.acceptsLanguages('id', 'en') || 'id';
+    const savedLanguage = SUPPORTED_LANGUAGES.includes(req.cookies.lang) ? req.cookies.lang : null;
+    const detectedLanguage = req.acceptsLanguages(...SUPPORTED_LANGUAGES) || 'id';
     const lang = savedLanguage || detectedLanguage;
     res.locals.lang = lang;
     res.locals.langPreference = savedLanguage || 'auto';
@@ -73,7 +75,7 @@ app.use((req, res, next) => {
     res.locals.isActive = (pathname) => req.path === pathname;
     res.locals.safeJson = safeJson;
     res.locals.videoPath = videoPath;
-    res.locals.t = {
+    const translationCatalog = {
         id: {
             placeholder: 'Temukan video favorit Anda...', searchLabel: 'Cari video', searchBtn: 'Cari',
             all: 'Semua', featured: 'Video Pilihan', videos: 'Video', fourK: '4K', best: 'Terbaik',
@@ -108,7 +110,48 @@ app.use((req, res, next) => {
             footerTagline: 'Explore your favorite content comfortably.', terms: 'Terms of Service',
             privacy: 'Privacy Policy', contact: 'Contact', copyright: 'All rights reserved. Adults 18+ only.',
         },
-    }[lang];
+    };
+
+    translationCatalog.ms = {
+        ...translationCatalog.id,
+        placeholder: 'Cari video kegemaran anda...', searchLabel: 'Cari video', searchBtn: 'Cari',
+        all: 'Semua', featured: 'Video Pilihan', recommendations: 'Cadangan', countries: 'Negara',
+        account: 'Akaun', hello: 'Helo', login: 'Log masuk', register: 'Daftar', logout: 'Log keluar',
+        language: 'Bahasa', automatic: 'Automatik', theme: 'Tema', light: 'Cerah', dark: 'Gelap',
+        skip: 'Langkau ke kandungan', explore: 'Terokai', popular: 'Popular', discover: 'Cari kegemaran anda',
+        exploreMenu: 'Terokai Menu', menuHint: 'Ketik untuk buka/tutup', popularModels: 'Model Popular',
+        collection: 'Koleksi pilihan 18+', available: 'video tersedia', watchNow: 'Tonton sekarang',
+        noVideos: 'Tiada video lagi', tryAnother: 'Cuba kategori lain atau gunakan kotak carian di atas.',
+        previous: 'Sebelumnya', next: 'Seterusnya', back: 'Kembali ke koleksi', watching: 'Sedang ditonton',
+        aboutVideo: 'Tentang video ini', relatedTags: 'Tag berkaitan', footerTagline: 'Terokai kandungan kegemaran anda dengan selesa.',
+    };
+    translationCatalog.es = {
+        ...translationCatalog.en,
+        placeholder: 'Encuentra tu vídeo favorito...', searchLabel: 'Buscar vídeos', searchBtn: 'Buscar',
+        all: 'Todo', featured: 'Vídeos destacados', recommendations: 'Recomendados', countries: 'Países',
+        account: 'Cuenta', login: 'Iniciar sesión', register: 'Registrarse', logout: 'Cerrar sesión',
+        language: 'Idioma', automatic: 'Automático', theme: 'Tema', light: 'Claro', dark: 'Oscuro',
+        skip: 'Ir al contenido', explore: 'Explorar', popular: 'Popular', discover: 'Encuentra tus favoritos',
+        exploreMenu: 'Explorar menú', menuHint: 'Toca para abrir/cerrar', popularModels: 'Modelos populares',
+        collection: 'Colección seleccionada para adultos', available: 'vídeos disponibles', watchNow: 'Ver ahora',
+        noVideos: 'Aún no hay vídeos', tryAnother: 'Prueba otra categoría o usa el buscador.',
+        previous: 'Anterior', next: 'Siguiente', back: 'Volver a la colección', watching: 'Viendo ahora',
+        aboutVideo: 'Sobre este vídeo', relatedTags: 'Etiquetas relacionadas', footerTagline: 'Explora tu contenido favorito cómodamente.',
+    };
+    translationCatalog.ja = {
+        ...translationCatalog.en,
+        placeholder: 'お気に入りの動画を検索...', searchLabel: '動画を検索', searchBtn: '検索',
+        all: 'すべて', featured: '注目の動画', recommendations: 'おすすめ', countries: '国',
+        account: 'アカウント', login: 'ログイン', register: '登録', logout: 'ログアウト',
+        language: '言語', automatic: '自動', theme: 'テーマ', light: 'ライト', dark: 'ダーク',
+        skip: 'コンテンツへ移動', explore: '見る', popular: '人気', discover: 'お気に入りを探す',
+        exploreMenu: 'メニュー', menuHint: 'タップして開閉', popularModels: '人気モデル',
+        collection: '厳選アダルトコレクション', available: '本の動画', watchNow: '今すぐ見る',
+        noVideos: '動画がありません', tryAnother: '別のカテゴリーまたは検索をお試しください。',
+        previous: '前へ', next: '次へ', back: 'コレクションに戻る', watching: '再生中',
+        aboutVideo: 'この動画について', relatedTags: '関連タグ', footerTagline: 'お気に入りのコンテンツを快適に楽しめます。',
+    };
+    res.locals.t = translationCatalog[lang] || translationCatalog.en;
 
     res.locals.seo = buildSeo(req, {});
     if (req.path === '/set-lang') {
@@ -161,7 +204,6 @@ async function renderVideoListing(req, res, { query, heading, description, canon
 
 app.get('/', async (req, res) => {
     const requestedQuery = normalizeQuery(req.query.q);
-    const english = res.locals.lang === 'en';
     if (requestedQuery) {
         const category = categoriesByQuery.get(requestedQuery.toLowerCase());
         if (category) {
@@ -170,15 +212,15 @@ app.get('/', async (req, res) => {
         }
         return renderVideoListing(req, res, {
             query: requestedQuery,
-            heading: english ? `Search results: ${requestedQuery}` : `Hasil pencarian: ${requestedQuery}`,
-            description: english ? `Video search results for ${requestedQuery}.` : `Hasil pencarian video untuk ${requestedQuery}.`,
+            heading: `${localized(res.locals.lang, { id: 'Hasil pencarian', en: 'Search results', ms: 'Hasil carian', es: 'Resultados de búsqueda', ja: '検索結果' })}: ${requestedQuery}`,
+            description: `${localized(res.locals.lang, { id: 'Hasil pencarian video untuk', en: 'Video search results for', ms: 'Hasil carian video untuk', es: 'Resultados de vídeo para', ja: '動画の検索結果' })} ${requestedQuery}.`,
             canonicalBase: `/?q=${encodeURIComponent(requestedQuery)}`,
             indexFirstPage: false,
         });
     }
     return renderVideoListing(req, res, {
-        query: 'popular', heading: english ? 'Popular Adult Videos' : 'Video Dewasa Populer',
-        description: english ? 'Discover popular adult videos with simple category navigation. Adults 18+ only.' : SITE_DESCRIPTION,
+        query: 'popular', heading: localized(res.locals.lang, { id: 'Video Dewasa Populer', en: 'Popular Adult Videos', ms: 'Video Dewasa Popular', es: 'Vídeos para Adultos Populares', ja: '人気のアダルト動画' }),
+        description: localized(res.locals.lang, { id: SITE_DESCRIPTION, en: 'Discover popular adult videos with simple category navigation. Adults 18+ only.', ms: 'Terokai video dewasa popular dengan navigasi kategori yang mudah. Untuk dewasa 18+ sahaja.', es: 'Descubre vídeos para adultos populares con una navegación sencilla. Solo mayores de 18 años.', ja: 'シンプルなカテゴリーで人気のアダルト動画を楽しめます。18歳以上限定。' }),
         canonicalBase: '/', indexFirstPage: true,
     });
 });
@@ -188,10 +230,8 @@ app.get('/category/:slug', async (req, res, next) => {
     if (!category) return next();
     return renderVideoListing(req, res, {
         query: category.query,
-        heading: res.locals.lang === 'en' ? `${category.label} Videos` : `Video ${category.label}`,
-        description: res.locals.lang === 'en'
-            ? `Explore regularly updated ${category.label} adult videos. Adults 18+ only.`
-            : `Jelajahi koleksi video dewasa kategori ${category.label} yang diperbarui secara berkala. Khusus pengguna berusia 18 tahun ke atas.`,
+        heading: res.locals.lang === 'en' ? `${category.label} Videos` : `${localized(res.locals.lang, { id: 'Video', ms: 'Video', es: 'Vídeos de', ja: '' })} ${category.label}`,
+        description: localized(res.locals.lang, { id: `Jelajahi koleksi video dewasa kategori ${category.label} yang diperbarui secara berkala. Khusus pengguna berusia 18 tahun ke atas.`, en: `Explore regularly updated ${category.label} adult videos. Adults 18+ only.`, ms: `Terokai video dewasa kategori ${category.label} yang dikemas kini secara berkala. Untuk dewasa 18+ sahaja.`, es: `Explora vídeos para adultos de ${category.label} actualizados regularmente. Solo mayores de 18 años.`, ja: `${category.label}のアダルト動画をお楽しみください。18歳以上限定。` }),
         canonicalBase: `/category/${category.slug}`,
         indexFirstPage: true,
     });
@@ -202,10 +242,8 @@ app.get('/country/:slug', async (req, res, next) => {
     if (!country) return next();
     return renderVideoListing(req, res, {
         query: country.query,
-        heading: res.locals.lang === 'en' ? `Videos from ${country.label}` : `Video dari ${country.label}`,
-        description: res.locals.lang === 'en'
-            ? `Explore popular adult videos from ${country.label}. Adults 18+ only.`
-            : `Jelajahi video dewasa populer dari ${country.label}. Khusus pengguna berusia 18 tahun ke atas.`,
+        heading: localized(res.locals.lang, { id: `Video dari ${country.label}`, en: `Videos from ${country.label}`, ms: `Video dari ${country.label}`, es: `Vídeos de ${country.label}`, ja: `${country.label}の動画` }),
+        description: localized(res.locals.lang, { id: `Jelajahi video dewasa populer dari ${country.label}. Khusus pengguna berusia 18 tahun ke atas.`, en: `Explore popular adult videos from ${country.label}. Adults 18+ only.`, ms: `Terokai video dewasa popular dari ${country.label}. Untuk dewasa 18+ sahaja.`, es: `Explora vídeos para adultos populares de ${country.label}. Solo mayores de 18 años.`, ja: `${country.label}の人気アダルト動画です。18歳以上限定。` }),
         canonicalBase: `/country/${country.slug}`,
         indexFirstPage: true,
     });
@@ -213,27 +251,22 @@ app.get('/country/:slug', async (req, res, next) => {
 
 app.get('/recommended', (req, res) => renderVideoListing(req, res, {
     query: 'recommended',
-    heading: res.locals.lang === 'en' ? 'Recommended Videos' : 'Video Rekomendasi',
-    description: res.locals.lang === 'en'
-        ? 'Recommended adult video picks, updated regularly.'
-        : 'Pilihan video dewasa yang direkomendasikan dan diperbarui secara berkala.',
+    heading: localized(res.locals.lang, { id: 'Video Rekomendasi', en: 'Recommended Videos', ms: 'Video Cadangan', es: 'Vídeos recomendados', ja: 'おすすめ動画' }),
+    description: localized(res.locals.lang, { id: 'Pilihan video dewasa yang direkomendasikan dan diperbarui secara berkala.', en: 'Recommended adult video picks, updated regularly.', ms: 'Pilihan video dewasa yang disyorkan dan dikemas kini secara berkala.', es: 'Selección de vídeos para adultos recomendados y actualizados regularmente.', ja: '定期的に更新されるおすすめアダルト動画。' }),
     canonicalBase: '/recommended',
     indexFirstPage: true,
 }));
 
 app.get('/models', (req, res) => renderVideoListing(req, res, {
     query: 'model',
-    heading: res.locals.lang === 'en' ? 'Pornstars & Models' : 'Pornstar & Model',
-    description: res.locals.lang === 'en'
-        ? 'Explore popular adult model and pornstar videos.'
-        : 'Jelajahi koleksi video pornstar dan model dewasa populer.',
+    heading: localized(res.locals.lang, { id: 'Pornstar & Model', en: 'Pornstars & Models', ms: 'Pornstar & Model', es: 'Pornstars y modelos', ja: 'ポルノスターとモデル' }),
+    description: localized(res.locals.lang, { id: 'Jelajahi koleksi video pornstar dan model dewasa populer.', en: 'Explore popular adult model and pornstar videos.', ms: 'Terokai koleksi video pornstar dan model dewasa popular.', es: 'Explora vídeos populares de modelos y pornstars.', ja: '人気のポルノスターとモデルの動画を探しましょう。' }),
     canonicalBase: '/models',
     indexFirstPage: true,
 }));
 
 app.get('/pornstars', async (req, res) => {
     const page = parsePage(req.query.page);
-    const english = res.locals.lang === 'en';
     try {
         const result = await ph.pornstarList({ page });
         const pornstars = Array.isArray(result?.data) ? result.data : [];
@@ -245,8 +278,8 @@ app.get('/pornstars', async (req, res) => {
             totalPages,
             paginationPath,
             seo: buildSeo(req, {
-                title: english ? 'Popular Pornstars' : 'Pornstar Populer',
-                description: english ? 'Browse popular pornstar profiles and their videos.' : 'Jelajahi profil pornstar populer dan video mereka.',
+                title: localized(res.locals.lang, { id: 'Pornstar Populer', en: 'Popular Pornstars', ms: 'Pornstar Popular', es: 'Pornstars populares', ja: '人気のポルノスター' }),
+                description: localized(res.locals.lang, { id: 'Jelajahi profil pornstar populer dan video mereka.', en: 'Browse popular pornstar profiles and their videos.', ms: 'Terokai profil pornstar popular dan video mereka.', es: 'Explora perfiles de pornstars populares y sus vídeos.', ja: '人気のポルノスターのプロフィールと動画をご覧ください。' }),
                 pathname: paginationPath(page),
                 explicit: true,
                 robots: page > 1 ? 'noindex, follow' : undefined,
@@ -256,7 +289,7 @@ app.get('/pornstars', async (req, res) => {
         console.error('[Pornstars] Gagal memuat daftar:', error.message);
         return res.status(502).render('error', {
             statusCode: 502,
-            message: english ? 'Pornstar list is temporarily unavailable.' : 'Daftar pornstar sedang tidak tersedia.',
+            message: localized(res.locals.lang, { id: 'Daftar pornstar sedang tidak tersedia.', en: 'Pornstar list is temporarily unavailable.', ms: 'Senarai pornstar tidak tersedia buat sementara waktu.', es: 'La lista de pornstars no está disponible temporalmente.', ja: 'ポルノスター一覧は一時的に利用できません。' }),
             seo: buildSeo(req, { title: 'Pornstar Tidak Tersedia', description: 'Daftar pornstar tidak dapat dimuat.', pathname: '/pornstars', robots: 'noindex, nofollow' }),
         });
     }
@@ -313,7 +346,7 @@ app.get('/watch/:id', async (req, res, next) => {
 
         const thumbnail = videoData.preview || videoData.thumb || undefined;
         const tags = Array.isArray(videoData.tags) ? videoData.tags.filter(Boolean).slice(0, 8) : [];
-        const description = `Tonton ${videoData.title}.${tags.length ? ` Tag: ${tags.join(', ')}.` : ''} Konten khusus dewasa 18+.`;
+        const description = `${localized(res.locals.lang, { id: 'Tonton', en: 'Watch', ms: 'Tonton', es: 'Mira', ja: '視聴' })} ${videoData.title}.${tags.length ? ` ${localized(res.locals.lang, { id: 'Tag', en: 'Tags', ms: 'Tag', es: 'Etiquetas', ja: 'タグ' })}: ${tags.join(', ')}.` : ''} ${localized(res.locals.lang, { id: 'Konten khusus dewasa 18+.', en: 'Adults 18+ only.', ms: 'Kandungan untuk dewasa 18+ sahaja.', es: 'Solo para mayores de 18 años.', ja: '18歳以上限定。' })}`;
         const pathname = `/watch/${encodeURIComponent(id)}`;
         const embedUrl = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
         
@@ -380,7 +413,7 @@ app.get('/set-lang', (req, res) => {
             httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production',
         });
     } else {
-        const lang = requestedLanguage === 'en' ? 'en' : 'id';
+        const lang = SUPPORTED_LANGUAGES.includes(requestedLanguage) ? requestedLanguage : 'id';
         res.cookie('lang', lang, {
             maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',
