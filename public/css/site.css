@@ -1201,6 +1201,14 @@ img {
     display: block;
 }
 
+.desktop-video-error {
+    margin: 0;
+    padding: 12px 16px;
+    color: #ffb07d;
+    background: #090d16;
+    text-align: center;
+}
+
 @media (min-width: 961px) {
     .player:has(.desktop-video-fallback) iframe {
         display: none;

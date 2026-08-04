@@ -33,11 +33,15 @@
                     referrerpolicy='no-referrer-when-downgrade'
                     loading='eager'></iframe>
                 <% if (Array.isArray(video.mediaDefinitions) && video.mediaDefinitions.length) { %>
-                    <video id='desktop-video-fallback' class='desktop-video-fallback' controls preload='metadata' poster='<%= video.preview || video.thumb || "" %>' aria-label='<%= video.title %>'>
+                    <video id='desktop-video-fallback' class='desktop-video-fallback' controls playsinline preload='metadata' poster='<%= video.preview || video.thumb || "" %>' aria-label='<%= video.title %>'>
                         <% video.mediaDefinitions.slice().sort((a, b) => Number(b.quality || 0) - Number(a.quality || 0)).forEach((media) => { %>
-                            <source src='<%= media.videoUrl %>' type='video/mp4'>
+                            <% const mediaFormat = String(media.format || '').toLowerCase(); %>
+                            <% if (mediaFormat === 'mp4' || mediaFormat === 'webm' || mediaFormat === 'ogg') { %>
+                                <source src='<%= media.videoUrl %>' type='video/<%= mediaFormat %>'>
+                            <% } %>
                         <% }) %>
                     </video>
+                    <p id='desktop-video-error' class='desktop-video-error' hidden>Video tidak dapat diputar oleh browser ini. Silakan coba refresh atau gunakan browser lain.</p>
                 <% } %>
             </div>
 
@@ -135,6 +139,10 @@
                 frame.hidden = true;
                 fallback.classList.add('is-visible');
             };
+            fallback.addEventListener('error', () => {
+                const errorMessage = document.getElementById('desktop-video-error');
+                if (errorMessage) errorMessage.hidden = false;
+            });
             frame.addEventListener('error', showFallback);
             window.setTimeout(() => {
                 try {
