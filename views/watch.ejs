@@ -25,11 +25,11 @@
 
             <div class='player'>
                 <iframe
-                    src='https://www.pornhub.com/embed/<%= encodeURIComponent(video.id) %>'
+                    src='https://www.pornhub.com/embed/<%= video.id %>'
                     title='<%= video.title %>'
                     allow='autoplay; fullscreen; picture-in-picture; encrypted-media'
                     allowfullscreen
-                    referrerpolicy='strict-origin-when-cross-origin'
+                    referrerpolicy='no-referrer-when-downgrade'
                     loading='eager'></iframe>
             </div>
 
@@ -91,7 +91,7 @@
                     <% } %>
                 </div>
             </section>
-            <% const recommendationItems = typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations : []); %>
+            <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations : [])); %>
             <% if (recommendationItems && recommendationItems.length) { %>
                 <section class='recommendations-section' aria-labelledby='recommended-title'>
                     <div class='section-heading'>
