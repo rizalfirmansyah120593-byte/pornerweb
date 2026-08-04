@@ -231,6 +231,37 @@ app.get('/models', (req, res) => renderVideoListing(req, res, {
     indexFirstPage: true,
 }));
 
+app.get('/pornstars', async (req, res) => {
+    const page = parsePage(req.query.page);
+    const english = res.locals.lang === 'en';
+    try {
+        const result = await ph.pornstarList({ page });
+        const pornstars = Array.isArray(result?.data) ? result.data : [];
+        const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
+        const paginationPath = (target) => target > 1 ? `/pornstars?page=${target}` : '/pornstars';
+        return res.render('pornstars', {
+            pornstars,
+            currentPage: page,
+            totalPages,
+            paginationPath,
+            seo: buildSeo(req, {
+                title: english ? 'Popular Pornstars' : 'Pornstar Populer',
+                description: english ? 'Browse popular pornstar profiles and their videos.' : 'Jelajahi profil pornstar populer dan video mereka.',
+                pathname: paginationPath(page),
+                explicit: true,
+                robots: page > 1 ? 'noindex, follow' : undefined,
+            }),
+        });
+    } catch (error) {
+        console.error('[Pornstars] Gagal memuat daftar:', error.message);
+        return res.status(502).render('error', {
+            statusCode: 502,
+            message: english ? 'Pornstar list is temporarily unavailable.' : 'Daftar pornstar sedang tidak tersedia.',
+            seo: buildSeo(req, { title: 'Pornstar Tidak Tersedia', description: 'Daftar pornstar tidak dapat dimuat.', pathname: '/pornstars', robots: 'noindex, nofollow' }),
+        });
+    }
+});
+
 app.get('/watch', (req, res) => {
     const id = extractVideoId(req.query.url || req.query.id);
     return id ? res.redirect(301, `/watch/${encodeURIComponent(id)}`) : res.redirect(301, '/');
@@ -365,7 +396,7 @@ app.get('/set-lang', (req, res) => {
     return res.redirect(303, returnPath);
 });
 
-app.get('/pornstar', (req, res) => res.redirect(301, '/category/pornstar'));
+app.get('/pornstar', (req, res) => res.redirect(301, '/pornstars'));
 
 const contentPages = {
     '/terms': ['terms', 'Ketentuan Layanan', `Ketentuan penggunaan layanan ${SITE_NAME}.`],
@@ -411,6 +442,7 @@ app.get('/sitemap.xml', (req, res) => {
         ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
         { path: '/recommended' },
         { path: '/models' },
+        { path: '/pornstars' },
         { path: '/terms' },
         { path: '/privacy' },
         { path: '/contact' },

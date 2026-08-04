@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang='<%= lang %>'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <%- include('partials/seo-head') %>
+    <link rel='stylesheet' href='/css/site.css'>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class='layout'>
+        <aside class='sidebar' id='site-sidebar'>
+            <div class='sidebar-scroll-area'><%- include('partials/sidebar') %></div>
+        </aside>
+        <main id='main-content' class='content'>
+            <section class='page-hero'>
+                <div>
+                    <span class='eyebrow'>Pornstars</span>
+                    <h1><%= lang === 'en' ? 'Popular Pornstars' : 'Pornstar Populer' %></h1>
+                    <p class='intro'><%= lang === 'en' ? 'Explore profiles, rankings, and videos from popular pornstars.' : 'Jelajahi profil, ranking, dan video dari pornstar populer.' %></p>
+                </div>
+            </section>
+
+            <% if (pornstars.length) { %>
+                <section class='pornstar-grid' aria-label='Pornstar list'>
+                    <% pornstars.forEach((star) => { %>
+                        <article class='pornstar-card'>
+                            <a class='pornstar-card__photo' href='/?q=<%= encodeURIComponent(star.name) %>' aria-label='Lihat video <%= star.name %>'>
+                                <img src='<%= star.photo || "/images/placeholder.svg" %>' alt='<%= star.name %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+                            </a>
+                            <div class='pornstar-card__body'>
+                                <h2><a href='/?q=<%= encodeURIComponent(star.name) %>'><%= star.name %></a></h2>
+                                <div class='pornstar-stats'>
+                                    <span><strong>#<%= star.rank || '-' %></strong><small>Ranked</small></span>
+                                    <span><strong><%= star.videoNum || 0 %></strong><small>Videos</small></span>
+                                    <span><strong>N/A</strong><small>Likes</small></span>
+                                </div>
+                            </div>
+                        </article>
+                    <% }) %>
+                </section>
+            <% } else { %>
+                <div class='empty'><strong><%= lang === 'en' ? 'No pornstars found.' : 'Pornstar tidak ditemukan.' %></strong></div>
+            <% } %>
+
+            <% if (totalPages > 1) { %>
+                <nav class='pagination' aria-label='Pornstar pagination'>
+                    <% if (currentPage > 1) { %><a rel='prev' href='<%= paginationPath(currentPage - 1) %>'>← Sebelumnya</a><% } %>
+                    <% for (let page = 1; page <= totalPages; page += 1) { %>
+                        <% if (page <= 10) { %><a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a><% } %>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %><a rel='next' href='<%= paginationPath(currentPage + 1) %>'>Berikutnya →</a><% } %>
+                </nav>
+            <% } %>
+        </main>
+    </div>
+    <%- include('partials/footer') %>
+    <%- include('partials/ad-global') %>
+</body>
+</html>
