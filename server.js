@@ -472,15 +472,11 @@ async function getSitemapPaths() {
     // Hanya URL kanonis halaman yang boleh diindeks. Jangan masukkan URL
     // pencarian, pagination, redirect, /set-lang, atau halaman noindex.
     const paths = [
-        { path: '/', changefreq: 'daily', priority: '1.0' },
-        ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}`, changefreq: 'daily', priority: '0.8' })),
-        ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}`, changefreq: 'daily', priority: '0.7' })),
-        { path: '/recommended', changefreq: 'daily', priority: '0.8' },
-        { path: '/models', changefreq: 'daily', priority: '0.7' },
-        { path: '/pornstars', changefreq: 'daily', priority: '0.7' },
-        { path: '/terms', changefreq: 'yearly', priority: '0.3' },
-        { path: '/privacy', changefreq: 'yearly', priority: '0.3' },
-        { path: '/contact', changefreq: 'yearly', priority: '0.3' },
+        { path: '/' },
+        ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}` })),
+        ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
+        { path: '/recommended' }, { path: '/models' }, { path: '/pornstars' },
+        { path: '/terms' }, { path: '/privacy' }, { path: '/contact' },
     ];
 
     // Tambahkan URL video nyata dari feed yang memang tersedia di situs.
@@ -512,7 +508,7 @@ async function getSitemapPaths() {
             .map((video) => videoPath(video))
             .filter((path) => path !== '/' && !seen.has(path) && seen.add(path))
             .slice(0, 45000)
-            .map((path) => ({ path, changefreq: 'weekly', priority: '0.6' }));
+            .map((path) => ({ path }));
         sitemapVideoCache.expiresAt = Date.now() + 6 * 60 * 60 * 1000;
     }
 
@@ -522,17 +518,21 @@ async function getSitemapPaths() {
 app.get('/sitemap.xml', async (req, res) => {
     const configuredLastmod = String(process.env.SITEMAP_LASTMOD || '').trim();
     const lastmod = /^\d{4}-\d{2}-\d{2}$/.test(configuredLastmod) ? configuredLastmod : '';
-    const paths = await getSitemapPaths();
-    const urls = paths.map(({ path, changefreq, priority }) => [
+    let paths;
+    try {
+        paths = await getSitemapPaths();
+    } catch (error) {
+        console.error('Sitemap data refresh failed:', error);
+        paths = [{ path: '/' }];
+    }
+    const urls = paths.map(({ path }) => [
         '  <url>',
         `    <loc>${xmlEscape(absoluteUrl(req, path))}</loc>`,
         lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
-        `    <changefreq>${changefreq}</changefreq>`,
-        `    <priority>${priority}</priority>`,
         '  </url>',
     ].filter(Boolean).join('\n')).join('\n');
     res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-    res.type('application/xml').send([
+    res.status(200).type('application/xml').send([
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         urls, '</urlset>', '',
