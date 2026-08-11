@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /set-lang
+
+Sitemap: https://pornerweb.pro/sitemap.xml
