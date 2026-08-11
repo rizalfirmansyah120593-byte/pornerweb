@@ -492,9 +492,17 @@ async function getSitemapPaths() {
             ...COUNTRY_FILTERS.map(({ query }) => query),
         ];
         const uniqueQueries = [...new Set(queries)];
-        const results = await Promise.allSettled(uniqueQueries.map((query) =>
-            ph.searchVideo(query, { page: 1 })
-        ));
+        // Ambil beberapa halaman per feed agar sitemap berisi ratusan URL
+        // nyata, bukan hanya hasil halaman pertama yang sering berulang.
+        const requests = uniqueQueries.flatMap((query) =>
+            [1, 2, 3].map((page) => ({ query, page }))
+        );
+        const results = await Promise.allSettled([
+            ...requests.map(({ query, page }) => ph.searchVideo(query, { page })),
+            // Feed umum memberi variasi video yang lebih besar daripada
+            // pencarian kategori yang sering mengembalikan item berulang.
+            ...Array.from({ length: 10 }, (_, index) => ph.videoList({ page: index + 1 })),
+        ]);
         const videos = results.flatMap((result) =>
             result.status === 'fulfilled' && Array.isArray(result.value?.data)
                 ? result.value.data : []
