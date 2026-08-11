@@ -466,24 +466,61 @@ app.get('/robots.txt', (req, res) => {
     ].join('\n'));
 });
 
-app.get('/sitemap.xml', (req, res) => {
+let sitemapVideoCache = { expiresAt: 0, paths: [] };
+
+async function getSitemapPaths() {
+    // Hanya URL kanonis halaman yang boleh diindeks. Jangan masukkan URL
+    // pencarian, pagination, redirect, /set-lang, atau halaman noindex.
+    const paths = [
+        { path: '/', changefreq: 'daily', priority: '1.0' },
+        ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}`, changefreq: 'daily', priority: '0.8' })),
+        ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}`, changefreq: 'daily', priority: '0.7' })),
+        { path: '/recommended', changefreq: 'daily', priority: '0.8' },
+        { path: '/models', changefreq: 'daily', priority: '0.7' },
+        { path: '/pornstars', changefreq: 'daily', priority: '0.7' },
+        { path: '/terms', changefreq: 'yearly', priority: '0.3' },
+        { path: '/privacy', changefreq: 'yearly', priority: '0.3' },
+        { path: '/contact', changefreq: 'yearly', priority: '0.3' },
+    ];
+
+    // Tambahkan URL video nyata dari feed yang memang tersedia di situs.
+    // Cache mencegah sitemap melakukan puluhan request API pada setiap crawl.
+    if (sitemapVideoCache.expiresAt <= Date.now()) {
+        const queries = [
+            'popular', 'recommended', 'model',
+            ...INDEXABLE_CATEGORIES.map(({ query }) => query),
+            ...COUNTRY_FILTERS.map(({ query }) => query),
+        ];
+        const uniqueQueries = [...new Set(queries)];
+        const results = await Promise.allSettled(uniqueQueries.map((query) =>
+            ph.searchVideo(query, { page: 1 })
+        ));
+        const videos = results.flatMap((result) =>
+            result.status === 'fulfilled' && Array.isArray(result.value?.data)
+                ? result.value.data : []
+        );
+        const seen = new Set();
+        sitemapVideoCache.paths = videos
+            .map((video) => videoPath(video))
+            .filter((path) => path !== '/' && !seen.has(path) && seen.add(path))
+            .slice(0, 45000)
+            .map((path) => ({ path, changefreq: 'weekly', priority: '0.6' }));
+        sitemapVideoCache.expiresAt = Date.now() + 6 * 60 * 60 * 1000;
+    }
+
+    return [...paths, ...sitemapVideoCache.paths];
+}
+
+app.get('/sitemap.xml', async (req, res) => {
     const configuredLastmod = String(process.env.SITEMAP_LASTMOD || '').trim();
     const lastmod = /^\d{4}-\d{2}-\d{2}$/.test(configuredLastmod) ? configuredLastmod : '';
-    const paths = [
-        { path: '/' },
-        ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}` })),
-        ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
-        { path: '/recommended' },
-        { path: '/models' },
-        { path: '/pornstars' },
-        { path: '/terms' },
-        { path: '/privacy' },
-        { path: '/contact' },
-    ];
-    const urls = paths.map(({ path }) => [
+    const paths = await getSitemapPaths();
+    const urls = paths.map(({ path, changefreq, priority }) => [
         '  <url>',
         `    <loc>${xmlEscape(absoluteUrl(req, path))}</loc>`,
         lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
+        `    <changefreq>${changefreq}</changefreq>`,
+        `    <priority>${priority}</priority>`,
         '  </url>',
     ].filter(Boolean).join('\n')).join('\n');
     res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400');
