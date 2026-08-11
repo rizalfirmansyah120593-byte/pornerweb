@@ -45,6 +45,12 @@ Fokus utama proyek ini adalah pengalaman browsing yang sederhana, performa serve
 
 > **Catatan penggunaan:** proyek ini hanya mengagregasi metadata dari sumber eksternal. Pastikan penggunaan aplikasi, konten, dan deployment mematuhi hukum, kebijakan hosting, hak cipta, serta ketentuan layanan yang berlaku di wilayah Anda.
 
+### Akses Website dan Demo
+
+Link website atau demo mungkin tidak dapat dibuka dari sebagian negara atau jaringan karena pembatasan lokal, kebijakan ISP, firewall, atau pemblokiran dari sumber video eksternal. Jika akses VPN diizinkan secara hukum di wilayah Anda, gunakan VPN dengan lokasi server yang dapat mengakses website atau demo tersebut, lalu buka kembali link menggunakan HTTPS.
+
+VPN tidak menjamin video dari semua sumber dapat diputar dan tidak menghapus kewajiban untuk mematuhi hukum, batas usia, kebijakan jaringan, serta ketentuan layanan yang berlaku. Aplikasi ini ditujukan hanya untuk pengguna berusia 18 tahun ke atas.
+
 ## Fitur Utama
 
 | Fitur | Deskripsi |
