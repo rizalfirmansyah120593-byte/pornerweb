@@ -2,6 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
 import cookieParser from 'cookie-parser';
+import { epornerSearch } from './eporner.js';
 
 import { PornHub } from './Pornhub.js-master/dist/index.mjs';
 import {
@@ -46,6 +47,27 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express.static(join(__dirname, 'public'), { maxAge: isProduction ? '7d' : 0 }));
+
+// Proxy terkontrol ke Eporner API v2. Parameter dibatasi agar endpoint tidak
+// dapat dipakai untuk meneruskan URL arbitrer atau membebani upstream.
+app.get('/api/eporner/search', async (req, res) => {
+    try {
+        const data = await epornerSearch({
+            query: req.query.query,
+            id: req.query.id,
+            page: req.query.page,
+            perPage: req.query.per_page,
+            thumbsize: req.query.thumbsize,
+            order: req.query.order,
+        });
+        res.set('Cache-Control', 'public, max-age=60');
+        res.json(data);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Gagal mengakses Eporner API.';
+        const status = message.includes('membutuhkan parameter') ? 400 : 502;
+        res.status(status).json({ error: message });
+    }
+});
 
 app.use((req, res, next) => {
     const savedLanguage = SUPPORTED_LANGUAGES.includes(req.cookies.lang) ? req.cookies.lang : null;
