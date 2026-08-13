@@ -289,13 +289,21 @@ app.get('/models', (req, res) => renderVideoListing(req, res, {
 
 app.get('/pornstars', async (req, res) => {
     const page = parsePage(req.query.page);
+    const gender = ['female', 'male'].includes(String(req.query.gender)) ? String(req.query.gender) : '';
     try {
-        const result = await ph.pornstarList({ page });
+        const result = await ph.pornstarList({ page, ...(gender ? { gender } : {}) });
         const pornstars = Array.isArray(result?.data) ? result.data : [];
         const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
-        const paginationPath = (target) => target > 1 ? `/pornstars?page=${target}` : '/pornstars';
+        const paginationPath = (target) => {
+            const params = new URLSearchParams();
+            if (gender) params.set('gender', gender);
+            if (target > 1) params.set('page', target);
+            const query = params.toString();
+            return `/pornstars${query ? `?${query}` : ''}`;
+        };
         return res.render('pornstars', {
             pornstars,
+            gender,
             currentPage: page,
             totalPages,
             paginationPath,

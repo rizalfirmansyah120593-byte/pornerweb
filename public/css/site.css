@@ -904,12 +904,16 @@ img {
     font-size: clamp(1.3rem, 2vw, 1.8rem);
 }
 
-.intro,
-.description-block p {
+  .intro,
+  .description-block p {
     margin: 0;
     color: var(--muted);
     line-height: 1.6;
-}
+  }
+
+  .category-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .category-tabs a { padding: 9px 15px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-weight: 700; background: rgba(255,255,255,.05); }
+  .category-tabs a:hover, .category-tabs a.is-active { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); }
 
 .hero-stat {
     min-width: 128px;
