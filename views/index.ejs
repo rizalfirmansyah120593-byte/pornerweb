@@ -47,10 +47,11 @@
 
                 <section class='video-grid' aria-label='<%= title %>'>
                     <% data.forEach((item, index) => { %>
-                        <article class='video-card'>
+                        <article class='video-card' data-preview-id='<%= item.id || item.viewKey || item.video_id || "" %>'>
                             <a href='<%= videoPath(item) %>'>
                                 <div class='thumbnail'>
                                     <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index < 4 ? 'eager' : 'lazy' %>' decoding='async'>
+                                    <video class='hover-preview' muted playsinline preload='none' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
                                     <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
                                 </div>
@@ -95,5 +96,39 @@
 
     <%- include('partials/footer') %>
     <%- include('partials/ad-global') %>
+    <script>
+        (() => {
+            if (!window.matchMedia('(hover: hover)').matches) return;
+            const cards = document.querySelectorAll('[data-preview-id]');
+            cards.forEach((card) => {
+                const video = card.querySelector('.hover-preview');
+                const id = card.dataset.previewId;
+                if (!video || !id) return;
+                let timer;
+                card.addEventListener('mouseenter', () => {
+                    timer = setTimeout(async () => {
+                        try {
+                            if (!video.src) {
+                                const response = await fetch('/api/video-preview/' + encodeURIComponent(id));
+                                if (!response.ok) return;
+                                const source = await response.json();
+                                video.src = source.url;
+                                video.load();
+                            }
+                            video.currentTime = 0;
+                            await video.play();
+                            card.classList.add('is-previewing');
+                        } catch (_) { /* autoplay or remote media may be unavailable */ }
+                    }, 250);
+                });
+                card.addEventListener('mouseleave', () => {
+                    clearTimeout(timer);
+                    video.pause();
+                    video.currentTime = 0;
+                    card.classList.remove('is-previewing');
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

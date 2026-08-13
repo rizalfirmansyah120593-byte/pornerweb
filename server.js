@@ -279,6 +279,28 @@ app.get('/recommended', (req, res) => renderVideoListing(req, res, {
     indexFirstPage: true,
 }));
 
+// Media preview is loaded on demand so listing pages do not download every
+// video's source before the visitor actually hovers a card.
+app.get('/api/video-preview/:id', async (req, res) => {
+    const id = extractVideoId(req.params.id);
+    if (!id) return res.status(400).json({ error: 'Invalid video id' });
+
+    try {
+        const detail = await ph.video(id);
+        const media = Array.isArray(detail?.mediaDefinitions)
+            ? detail.mediaDefinitions
+                .filter((item) => ['mp4', 'webm', 'ogg'].includes(String(item.format || '').toLowerCase()) && item.videoUrl)
+                .sort((a, b) => Number(b.quality || 0) - Number(a.quality || 0))[0]
+            : null;
+        if (!media) return res.status(404).json({ error: 'Preview unavailable' });
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.json({ url: media.videoUrl, type: `video/${String(media.format).toLowerCase()}` });
+    } catch (error) {
+        console.error(`[Preview] Gagal memuat ${id}:`, error.message);
+        return res.status(502).json({ error: 'Preview unavailable' });
+    }
+});
+
 app.get('/models', (req, res) => renderVideoListing(req, res, {
     query: 'model',
     heading: localized(res.locals.lang, { id: 'Pornstar & Model', en: 'Pornstars & Models', ms: 'Pornstar & Model', es: 'Pornstars y modelos', ja: 'ポルノスターとモデル' }),
