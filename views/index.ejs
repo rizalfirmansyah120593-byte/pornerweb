@@ -51,7 +51,7 @@
                             <a href='<%= videoPath(item) %>'>
                                 <div class='thumbnail'>
                                     <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index < 4 ? 'eager' : 'lazy' %>' decoding='async'>
-                                    <video class='hover-preview' muted playsinline preload='none' aria-hidden='true'></video>
+                                    <video class='hover-preview' muted playsinline preload='metadata' poster='<%= item.preview %>' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
                                     <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
                                 </div>
@@ -104,9 +104,8 @@
                 const video = card.querySelector('.hover-preview');
                 const id = card.dataset.previewId;
                 if (!video || !id) return;
-                let timer;
-                card.addEventListener('mouseenter', () => {
-                    timer = setTimeout(async () => {
+                card.addEventListener('pointerenter', async () => {
+                        card.classList.add('is-previewing');
                         try {
                             if (!video.src) {
                                 const response = await fetch('/api/video-preview/' + encodeURIComponent(id));
@@ -116,13 +115,10 @@
                                 video.load();
                             }
                             video.currentTime = 0;
-                            await video.play();
-                            card.classList.add('is-previewing');
+                            video.play().catch(() => {});
                         } catch (_) { /* autoplay or remote media may be unavailable */ }
-                    }, 250);
                 });
-                card.addEventListener('mouseleave', () => {
-                    clearTimeout(timer);
+                card.addEventListener('pointerleave', () => {
                     video.pause();
                     video.currentTime = 0;
                     card.classList.remove('is-previewing');

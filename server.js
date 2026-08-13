@@ -290,7 +290,8 @@ app.get('/api/video-preview/:id', async (req, res) => {
         const media = Array.isArray(detail?.mediaDefinitions)
             ? detail.mediaDefinitions
                 .filter((item) => ['mp4', 'webm', 'ogg'].includes(String(item.format || '').toLowerCase()) && item.videoUrl)
-                .sort((a, b) => Number(b.quality || 0) - Number(a.quality || 0))[0]
+                // The smallest source starts showing frames much sooner on hover.
+                .sort((a, b) => Number(a.quality || 0) - Number(b.quality || 0))[0]
             : null;
         if (!media) return res.status(404).json({ error: 'Preview unavailable' });
         res.set('Cache-Control', 'public, max-age=3600');
