@@ -36,6 +36,7 @@
 <meta name='twitter:card' content='<%= seo.image ? 'summary_large_image' : 'summary' %>'>
 <meta name='twitter:title' content='<%= seo.title %>'>
 <meta name='twitter:description' content='<%= seo.description %>'>
+<script src='/Script.js' defer></script>
 <% if (seo.image) { %><meta name='twitter:image' content='<%= seo.image %>'><% } %>
 <% if (seo.jsonLd) { %>
 <script type='application/ld+json'><%- safeJson(seo.jsonLd) %></script>
