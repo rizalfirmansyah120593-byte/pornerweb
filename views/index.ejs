@@ -126,10 +126,12 @@
                             video.currentTime = 0;
                             await video.play();
                             card.classList.add('is-previewing');
+                            if (isTouchDevice) card.dataset.touchPreviewReady = 'true';
                         } catch (_) { /* preview unavailable or autoplay is blocked */ }
                     }, 180);
                 });
                 card.addEventListener('pointerleave', () => {
+                    if (isTouchDevice) return;
                     window.clearTimeout(hoverTimer);
                     hoverToken += 1;
                     video.pause();
@@ -138,7 +140,7 @@
                 });
                 if (isTouchDevice) {
                     card.addEventListener('click', (event) => {
-                        if (!card.classList.contains('is-previewing')) {
+                        if (card.dataset.touchPreviewReady !== 'true') {
                             event.preventDefault();
                             card.dispatchEvent(new PointerEvent('pointerenter', { bubbles: false, pointerType: 'touch' }));
                         }
