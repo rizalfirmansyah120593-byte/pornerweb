@@ -88,6 +88,7 @@ app.use((req, res, next) => {
     const lang = savedLanguage || detectedLanguage;
     res.locals.lang = lang;
     res.locals.langPreference = savedLanguage || 'auto';
+    res.locals.localized = localized;
     res.locals.site = {
         name: SITE_NAME, url: getSiteUrl(req),
         googleSiteVerification: process.env.GOOGLE_SITE_VERIFICATION || '',
