@@ -23,7 +23,6 @@
                     <h1><%= title %></h1>
                     <p class='intro'><%= intro %></p>
                     <div class='hero-actions'>
-                        <a class='hero-primary-cta' href='/?q=popular'>Watch now</a>
                         <a class='hero-secondary-cta' href='/?q=trending'>Trending</a>
                     </div>
                 </div>
@@ -56,7 +55,6 @@
                     </div>
                     <div class='about-pornerweb__actions'>
                         <button class='btn about-pornerweb__toggle' type='button' id='about-pornerweb-toggle' aria-expanded='false' data-more='<%= aboutToggle.more %>' data-less='<%= aboutToggle.less %>'><%= aboutToggle.more %></button>
-                        <a class='featured-cta' href='/?q=popular'><%= t.watchNow %></a>
                     </div>
                 </section>
 
@@ -78,7 +76,6 @@
                                     <h2><%= item.title %></h2>
                                     <div class='card-meta'>
                                         <% if (item.views) { %><span><%= item.views %> views</span><% } %>
-                                        <span class='watch-label'><%= t.watchNow %></span>
                                     </div>
                                     <button class='watch-later-button' type='button' data-watch-later='<%= item.id %>'>♡ Simpan</button>
                                 </div>

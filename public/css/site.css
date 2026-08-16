@@ -1545,7 +1545,7 @@ img {
         z-index: 1100;
     }
 
-    body > .layout { margin-top: 100px; }
+    body > .layout { margin-top: 112px; }
     .main-header .brand-pill { grid-area: brand; min-width: 0; }
     .main-header .pornhub-logo { font-size: .76rem !important; }
     .main-header .pornhub-logo__badge { padding: 4px 4px 3px !important; }
@@ -1642,12 +1642,50 @@ img {
 @media (max-width: 640px) {
     .content,
     .watch-content {
-        padding: 16px 16px 28px;
+        padding: 10px 10px 24px;
     }
 
     .page-hero,
     .video-info {
-        padding: 18px;
+        padding: 13px;
+        margin-top: 4px;
+        margin-bottom: 10px;
+        border-radius: 14px;
+    }
+
+    .page-hero h1 {
+        font-size: 1.18rem;
+        line-height: 1.18;
+        margin: 5px 0 6px;
+    }
+
+    .page-hero .intro {
+        font-size: .76rem;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    .page-hero .hero-stat {
+        margin-top: 10px;
+        padding: 8px 12px;
+        min-width: 76px;
+    }
+
+    .page-hero .hero-stat strong {
+        font-size: 1rem;
+    }
+
+    .page-hero .hero-stat span {
+        font-size: .65rem;
+    }
+
+    .hero-actions {
+        margin-top: 8px;
+    }
+
+    .hero-secondary-cta {
+        padding: 6px 10px;
+        font-size: .7rem;
     }
 
     .video-grid {
