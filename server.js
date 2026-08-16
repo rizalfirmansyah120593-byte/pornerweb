@@ -1176,7 +1176,7 @@ async function getSitemapPaths() {
         { path: '/' },
         ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}` })),
         ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
-        { path: '/recommended' }, { path: '/models' }, { path: '/pornstars' },
+        { path: '/recommended' }, { path: '/live-sex' }, { path: '/models' }, { path: '/pornstars' },
         { path: '/terms' }, { path: '/privacy' }, { path: '/contact' },
         { path: '/blog' },
         ...BLOG_POSTS.map(({ slug }) => ({ path: `/blog/${slug}` })),
@@ -1215,7 +1215,8 @@ async function getSitemapPaths() {
         sitemapVideoCache.expiresAt = Date.now() + 6 * 60 * 60 * 1000;
     }
 
-    return [...paths, ...sitemapVideoCache.paths];
+    // Pastikan tidak ada URL ganda bila feed atau konfigurasi kategori berubah.
+    return [...new Map([...paths, ...sitemapVideoCache.paths].map((item) => [item.path, item])).values()];
 }
 
 app.get('/sitemap.xml', async (req, res) => {
@@ -1231,6 +1232,8 @@ app.get('/sitemap.xml', async (req, res) => {
     const urls = paths.map(({ path }) => [
         '  <url>',
         `    <loc>${xmlEscape(absoluteUrl(req, path))}</loc>`,
+        // lastmod hanya dikirim bila tanggal deploy dikonfigurasi, supaya
+        // sitemap tidak memberi sinyal pembaruan palsu ke Google.
         lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
         '  </url>',
     ].filter(Boolean).join('\n')).join('\n');
