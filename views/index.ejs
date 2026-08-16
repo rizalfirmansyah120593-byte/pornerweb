@@ -101,6 +101,25 @@
                     <% if (currentPage < totalPages) { %><a class='page-nav' rel='next' href='<%= paginationPath(currentPage + 1) %>'><%= t.next %> →</a><% } %>
                 </nav>
             <% } %>
+
+            <% if (typeof trendingPornstars !== 'undefined' && trendingPornstars.length) { %>
+                <section class='trending-pornstars' aria-label='Trending Pornstars'>
+                    <div class='section-heading'>
+                        <div><h2>Trending Pornstars</h2><p>Four popular models picked for you.</p></div>
+                        <a href='/pornstars'>View all</a>
+                    </div>
+                    <div class='pornstar-grid'>
+                        <% trendingPornstars.forEach((star) => { %>
+                            <article class='pornstar-card'>
+                                <a class='pornstar-card__photo' href='/?q=<%= encodeURIComponent(star.name) %>' aria-label='Lihat video <%= star.name %>'>
+                                    <img src='<%= star.photo || "/images/placeholder.svg" %>' alt='<%= star.name %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+                                </a>
+                                <div class='pornstar-card__body'><h2><a href='/?q=<%= encodeURIComponent(star.name) %>'><%= star.name %></a></h2></div>
+                            </article>
+                        <% }) %>
+                    </div>
+                </section>
+            <% } %>
         </main>
     </div>
 

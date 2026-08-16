@@ -521,6 +521,14 @@ img {
 .pornstar-card:hover .pornstar-card__photo img { transform: scale(1.04); }
 
 .pornstar-card__body { padding: 13px; }
+.trending-pornstars { margin-top: 24px; padding: 20px; border: 1px solid var(--border); border-radius: 20px; background: rgba(255,255,255,.03); }
+.trending-pornstars .section-heading { margin-bottom: 14px; }
+.trending-pornstars .section-heading h2 { margin: 0 0 4px; }
+.trending-pornstars .section-heading p { margin: 0; color: var(--muted); font-size: .85rem; }
+.trending-pornstars .section-heading > a { color: #ffa31a; font-weight: 700; font-size: .85rem; }
+.trending-pornstars .pornstar-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.trending-pornstars .pornstar-card__photo { aspect-ratio: 4 / 3; }
+@media (max-width: 640px) { .trending-pornstars { padding: 14px; } .trending-pornstars .pornstar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pornstar-card__body h2 { margin: 0 0 12px; font-size: 1rem; }
 .pornstar-card__body h2 a:hover { color: var(--accent-strong); }
 

@@ -232,11 +232,20 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             prev: page > 1 ? paginationPath(page - 1) : undefined,
             next: page < totalPages ? paginationPath(page + 1) : undefined,
         });
+        let trendingPornstars = [];
+        try {
+            const starPage = Math.floor(Math.random() * 3) + 1;
+            const starResult = await ph.pornstarList({ page: starPage });
+            trendingPornstars = (Array.isArray(starResult?.data) ? starResult.data : [])
+                .sort(() => Math.random() - 0.5).slice(0, 4);
+        } catch (error) {
+            console.error('[Trending Pornstars] Gagal memuat:', error.message);
+        }
 
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
         return res.render('index', {
             data: videos, title: heading, intro: description, query, currentPage: page,
-            totalPages, paginationPath, seo,
+            totalPages, paginationPath, seo, trendingPornstars,
         });
     } catch (error) {
         console.error(`[Listing] Gagal memuat ${query}:`, error.message);

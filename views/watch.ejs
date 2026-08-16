@@ -99,15 +99,13 @@
                         <% recommendations.slice(0, 8).forEach(rec => { %>
                             <article class="video-card">
                                 <a class="video-card-link" href="/watch/<%= rec.id %>">
-                                    <img src="<%= rec.preview || '/images/placeholder.svg' %>"
-                                         alt="<%= rec.title %>"
-                                         width="320"
-                                         height="180"
-                                         loading="lazy">
-                                    <div class="video-card-body">
-                                        <h3><%= rec.title %></h3>
+                                    <div class="thumbnail">
+                                        <img src="<%= rec.preview || '/images/placeholder.svg' %>" alt="<%= rec.title %>" width="320" height="180" loading="lazy">
+                                    </div>
+                                    <div class="card-body">
+                                        <h2><%= rec.title %></h2>
                                         <% if (rec.views || rec.duration) { %>
-                                            <div class="video-card-meta">
+                                            <div class="card-meta">
                                                 <% if (rec.views) { %><span><%= rec.views %></span><% } %>
                                                 <% if (rec.duration) { %><span><%= rec.duration %></span><% } %>
                                             </div>
