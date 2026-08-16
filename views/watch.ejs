@@ -76,12 +76,12 @@
             <section class="recommendations-section" aria-label="Rekomendasi video">
                 <div class="section-heading">
                     <h2><%= t.recommendations %></h2>
-                    <p><%= ({ id: 'Dua belas pilihan acak untuk melanjutkan menonton.', en: 'Twelve random picks to keep watching.', ms: 'Dua belas pilihan rawak untuk terus menonton.', es: 'Doce selecciones para seguir viendo.', ja: 'Twelve random picks to keep watching.' }[lang] || 'Twelve random picks to keep watching.') %></p>
+                    <p><%= ({ id: 'Delapan pilihan acak untuk melanjutkan menonton.', en: 'Eight random picks to keep watching.', ms: 'Lapan pilihan rawak untuk terus menonton.', es: 'Ocho selecciones para seguir viendo.', ja: 'Eight random picks to keep watching.' }[lang] || 'Eight random picks to keep watching.') %></p>
                 </div>
 
                 <div class="video-grid">
                     <% if (typeof recommendations !== 'undefined' && recommendations.length > 0) { %>
-                        <% recommendations.slice(0, 6).forEach(rec => { %>
+                        <% recommendations.slice(0, 8).forEach(rec => { %>
                             <article class="video-card">
                                 <a class="video-card-link" href="/watch/<%= rec.id %>">
                                     <img src="<%= rec.preview || '/images/placeholder.svg' %>"
@@ -106,7 +106,7 @@
                     <% } %>
                 </div>
             </section>
-            <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations.slice(6) : [])); %>
+            <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations.slice(8) : [])); %>
             <% if (recommendationItems && recommendationItems.length) { %>
                 <section class='recommendations-section' aria-labelledby='recommended-title'>
                     <div class='section-heading'>

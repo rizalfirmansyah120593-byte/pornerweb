@@ -32,7 +32,7 @@ async function getEpornerRecommendations(excludeId) {
     const result = await epornerSearch({ query: 'all', page: 1, perPage: 24, thumbsize: 'big', order: 'most-popular' });
     return (Array.isArray(result?.videos) ? result.videos : [])
         .map(normalizeEpornerVideo).filter((item) => item && item.id !== excludeId)
-        .sort(() => Math.random() - 0.5).slice(0, 12);
+        .sort(() => Math.random() - 0.5).slice(0, 16);
 }
 
 app.disable('x-powered-by');
@@ -432,15 +432,15 @@ app.get('/watch/:id', async (req, res, next) => {
                         duration: item.duration,
                     });
 
-                    if (pool.length >= 12) break;
+                    if (pool.length >= 16) break;
                 }
 
-                if (pool.length >= 12) break;
+                if (pool.length >= 16) break;
             }
 
-            recommendations = [...pool].sort(() => Math.random() - 0.5).slice(0, 12);
-            if (recommendations.length < 12) {
-                try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 12 - recommendations.length)); } catch (error) { console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
+            recommendations = [...pool].sort(() => Math.random() - 0.5).slice(0, 16);
+            if (recommendations.length < 16) {
+                try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 16 - recommendations.length)); } catch (error) { console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
             }
         } catch (error) {
             console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
@@ -449,7 +449,7 @@ app.get('/watch/:id', async (req, res, next) => {
         recommendations = [...new Map(recommendations
             .filter((item) => item?.id)
             .map((item) => [`${item.source || 'pornhub'}:${item.id}`, item])).values()]
-            .slice(0, 12);
+            .slice(0, 16);
 
         const thumbnail = videoData.preview || videoData.thumb || undefined;
         const tags = Array.isArray(videoData.tags) ? videoData.tags.filter(Boolean).slice(0, 8) : [];
