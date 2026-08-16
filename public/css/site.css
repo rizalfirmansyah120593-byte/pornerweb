@@ -1369,11 +1369,23 @@ img {
 }
 
 .player {
+    position: relative;
     border-radius: 24px;
     overflow: hidden;
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
 }
+
+.donation-play-gate { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; width: 100%; border: 0; background: rgba(3,7,17,.72); color: #fff; cursor: pointer; font: inherit; font-weight: 800; }
+.donation-play-gate:hover { background: rgba(255,163,26,.18); }
+.donation-modal { position: fixed; inset: 0; z-index: 100001; display: grid; place-items: center; padding: 20px; background: rgba(2,5,13,.78); backdrop-filter: blur(7px); }
+.donation-modal[hidden] { display: none; }
+.donation-modal__box { position: relative; width: min(100%, 470px); padding: 28px; border: 1px solid rgba(255,163,26,.45); border-radius: 18px; background: var(--surface); box-shadow: 0 25px 80px rgba(0,0,0,.6); text-align: center; }
+.donation-modal__box h2 { margin: 10px 0 8px; color: var(--text); }
+.donation-modal__box p { margin: 0 auto 20px; max-width: 360px; color: var(--muted); line-height: 1.5; }
+.donation-modal__close { position: absolute; top: 8px; right: 12px; border: 0; background: transparent; color: var(--muted); font-size: 1.5rem; cursor: pointer; }
+.donation-modal__actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.donation-modal__continue { cursor: pointer; }
 
 .player iframe {
     width: 100%;

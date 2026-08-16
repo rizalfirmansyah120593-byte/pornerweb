@@ -24,8 +24,10 @@
                 <h1><%= video.title %></h1>
                 <button class='watch-later-button' type='button' data-watch-later='<%= video.id %>'>♡ Simpan untuk nanti</button>
             </div>
+            <div id='watch-metadata' data-video-id='<%= video.id %>' data-video-title='<%= video.title.replace(/'/g, "&#39;") %>' hidden></div>
 
             <div class='player'>
+                <button class='donation-play-gate' id='donation-play-gate' type='button'>▶ Klik untuk mulai menonton</button>
                 <iframe
                     id='video-embed-frame'
                     src='<%= video.embed || `https://www.pornhub.com/embed/${video.id}` %>'
@@ -45,6 +47,19 @@
                     </video>
                     <p id='desktop-video-error' class='desktop-video-error' hidden>Video tidak dapat diputar oleh browser ini. Silakan coba refresh atau gunakan browser lain.</p>
                 <% } %>
+            </div>
+
+            <div class='donation-modal' id='donation-modal' hidden role='dialog' aria-modal='true' aria-labelledby='donation-modal-title'>
+                <div class='donation-modal__box'>
+                    <button class='donation-modal__close' id='donation-modal-close' type='button' aria-label='Tutup'>×</button>
+                    <span class='eyebrow'>Dukung PORNERWEB</span>
+                    <h2 id='donation-modal-title'>Bantu website ini tetap berjalan</h2>
+                    <p>Dukungan Anda membantu membayar server dan mengembangkan fitur baru untuk PORNERWEB.</p>
+                    <div class='donation-modal__actions'>
+                        <a class='donation-button' href='https://saweria.co/RizalFirmansyah' target='_blank' rel='noopener noreferrer'>♥ Dukung melalui Saweria</a>
+                        <button class='btn donation-modal__continue' id='donation-modal-continue' type='button'>Lanjutkan menonton</button>
+                    </div>
+                </div>
             </div>
 
             <%- include('partials/ad-banner-468') %>
@@ -135,10 +150,29 @@
 
     <script>
         (() => {
+            const metadata = document.getElementById('watch-metadata');
+            const currentVideoId = metadata?.dataset.videoId || '';
+            const currentVideoTitle = metadata?.dataset.videoTitle || '';
+            const gate = document.getElementById('donation-play-gate');
+            const modal = document.getElementById('donation-modal');
+            const close = document.getElementById('donation-modal-close');
+            const continueButton = document.getElementById('donation-modal-continue');
+            let seen = false;
+            try { seen = sessionStorage.getItem('pornerwebDonationPrompt') === 'true'; } catch (_) {}
+            if (seen) gate?.remove();
+            const dismiss = () => {
+                try { sessionStorage.setItem('pornerwebDonationPrompt', 'true'); } catch (_) {}
+                if (modal) modal.hidden = true;
+                gate?.remove();
+            };
+            gate?.addEventListener('click', () => { if (modal) modal.hidden = false; });
+            close?.addEventListener('click', dismiss);
+            continueButton?.addEventListener('click', dismiss);
+            modal?.addEventListener('click', (event) => { if (event.target === modal) dismiss(); });
             try {
                 const key = 'pornerwebContinueWatching';
-                const items = JSON.parse(localStorage.getItem(key) || '[]').filter((item) => item.id !== '<%= video.id %>');
-                items.unshift({ id: '<%= video.id %>', title: <%- JSON.stringify(video.title) %>, url: '/watch/<%= video.id %>', updatedAt: Date.now() });
+                const items = JSON.parse(localStorage.getItem(key) || '[]').filter((item) => item.id !== currentVideoId);
+                items.unshift({ id: currentVideoId, title: currentVideoTitle, url: `/watch/${encodeURIComponent(currentVideoId)}`, updatedAt: Date.now() });
                 localStorage.setItem(key, JSON.stringify(items.slice(0, 20)));
             } catch (_) {}
             const frame = document.getElementById('video-embed-frame');
