@@ -412,6 +412,8 @@ img {
     overflow: hidden;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
 }
 
 .video-card:hover {
@@ -1091,6 +1093,9 @@ img {
 
 .video-card a {
     display: block;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .thumbnail {
@@ -1177,6 +1182,9 @@ img {
 
 .card-body {
     padding: 12px 12px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-body h2 {
@@ -1198,6 +1206,7 @@ img {
     gap: 10px;
     color: var(--muted);
     font-size: 0.85rem;
+    margin-top: auto;
 }
 
 .watch-label {
