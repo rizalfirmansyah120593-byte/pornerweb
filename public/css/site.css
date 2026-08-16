@@ -528,6 +528,15 @@ img {
 .trending-pornstars .section-heading > a { color: #ffa31a; font-weight: 700; font-size: .85rem; }
 .trending-pornstars .pornstar-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .trending-pornstars .pornstar-card__photo { aspect-ratio: 4 / 3; }
+.porner-blog { margin-top: 24px; padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--panel-bg); }
+.porner-blog__heading h2 { margin: 8px 0 4px; color: var(--text); }
+.porner-blog__heading p, .porner-blog__intro, .porner-blog article p { color: var(--muted); line-height: 1.6; }
+.porner-blog__intro { max-width: 980px; margin: 14px 0 20px; }
+.porner-blog__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; }
+.porner-blog article { padding: 14px; border-left: 2px solid #ffa31a; background: rgba(255,255,255,.03); }
+.porner-blog article h3 { margin: 0 0 5px; color: var(--text); font-size: 1rem; }
+.porner-blog article p { margin: 0; font-size: .88rem; }
+@media (max-width: 640px) { .porner-blog { padding: 16px; } .porner-blog__grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .trending-pornstars { padding: 14px; } .trending-pornstars .pornstar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pornstar-card__body h2 { margin: 0 0 12px; font-size: 1rem; }
 .pornstar-card__body h2 a:hover { color: var(--accent-strong); }
