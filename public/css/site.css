@@ -26,7 +26,7 @@
 .age-gate {
     position: fixed;
     inset: 0;
-    z-index: 3000;
+    z-index: 99999;
     overflow-y: auto;
     display: grid;
     place-items: center;
@@ -39,6 +39,8 @@
     border: 1px solid #333;
     transition: opacity .2s ease, visibility .2s ease;
 }
+
+.age-gate:not(.is-hidden) { display: grid; }
 
 .age-gate.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .age-gate__language { position: absolute; top: 7px; left: 12px; padding: 4px 8px; background: #111827; color: #eee; border: 1px solid rgba(255,255,255,.12); border-radius: 5px; font-size: 11px; cursor: pointer; }

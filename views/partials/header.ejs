@@ -67,11 +67,8 @@
     document.getElementById('age-gate-language')?.addEventListener('change', (event) => {
         window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;
     });
-    try { if (localStorage.getItem('ageVerified') === 'true') ageGate?.classList.add('is-hidden'); } catch {}
     document.body.classList.add('age-gate-active');
-    if (ageGate?.classList.contains('is-hidden')) document.body.classList.remove('age-gate-active');
     ageEnter?.addEventListener('click', () => {
-        try { localStorage.setItem('ageVerified', 'true'); } catch {}
         ageGate?.classList.add('is-hidden');
         document.body.classList.remove('age-gate-active');
     });
