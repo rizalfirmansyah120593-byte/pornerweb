@@ -318,11 +318,12 @@ img {
 
 @media (min-width: 961px) {
     html, body { height: 100%; }
-    body { overflow: hidden; }
+    body { min-height: 100%; overflow-x: hidden; overflow-y: auto; }
     body > .main-header { position: fixed !important; top: 0 !important; right: 0 !important; bottom: auto !important; left: 0 !important; display: flex !important; height: 72px !important; min-height: 72px !important; z-index: 100000 !important; transform: translateZ(0); }
-    body > .layout { position: relative; height: calc(100dvh - 72px); margin-top: 72px; overflow: hidden; }
-    .sidebar { position: relative; top: auto; height: 100%; max-height: none; }
-    .content, .watch-content { height: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+    body > .layout { position: relative; min-height: calc(100dvh - 72px); margin-top: 72px; overflow: visible; }
+    .sidebar { position: sticky; top: 72px; height: calc(100dvh - 72px); max-height: calc(100dvh - 72px); }
+    .content, .watch-content { min-height: calc(100dvh - 72px); overflow: visible; }
+    .site-footer { position: relative; z-index: 1; }
 }
 
 .sidebar {
