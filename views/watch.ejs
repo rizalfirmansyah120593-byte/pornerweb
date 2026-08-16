@@ -81,7 +81,7 @@
 
                 <div class="video-grid">
                     <% if (typeof recommendations !== 'undefined' && recommendations.length > 0) { %>
-                        <% recommendations.forEach(rec => { %>
+                        <% recommendations.slice(0, 6).forEach(rec => { %>
                             <article class="video-card">
                                 <a class="video-card-link" href="/watch/<%= rec.id %>">
                                     <img src="<%= rec.preview || '/images/placeholder.svg' %>"
@@ -106,13 +106,13 @@
                     <% } %>
                 </div>
             </section>
-            <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations : [])); %>
+            <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations.slice(6) : [])); %>
             <% if (recommendationItems && recommendationItems.length) { %>
                 <section class='recommendations-section' aria-labelledby='recommended-title'>
                     <div class='section-heading'>
                         <div>
-                            <h2 id='recommended-title'>Recommended for you</h2>
-                            <p>More videos you may enjoy.</p>
+                            <h2 id='recommended-title'>More videos to explore</h2>
+                            <p>Other videos from the combined sources.</p>
                         </div>
                     </div>
                     <div class='video-grid'>
