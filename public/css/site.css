@@ -184,6 +184,8 @@ img {
 :root[data-theme='light'] .pornhub-logo__name { color: #101828 !important; }
 .main-header .pornhub-logo { font-size: 1rem; }
 .footer-brand .pornhub-logo { font-size: 1.05rem; }
+.footer-brand .pornhub-logo__name { color: var(--logo-text) !important; }
+.footer-brand .pornhub-logo__badge { color: #111827 !important; background: #ffa31a !important; }
 
 .search-box {
     display: flex;
@@ -1300,6 +1302,9 @@ img {
 .footer-brand span {
     color: var(--accent);
 }
+
+.footer-brand .pornhub-logo span { color: inherit; }
+.footer-brand .pornhub-logo .pornhub-logo__badge { color: #111827 !important; }
 
 .footer-brand p,
 .copyright {
