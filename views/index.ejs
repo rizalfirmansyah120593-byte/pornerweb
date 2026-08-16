@@ -35,12 +35,19 @@
 
             <% if (data.length) { %>
                 <section class='featured-banner' aria-label='Featured categories'>
+                    <% const aboutPornerweb = {
+                        id: { badge: 'Tentang PORNERWEB', title: 'Temukan koleksi video dewasa pilihan', text: 'PORNERWEB adalah platform pencarian dan penemuan video dewasa 18+ yang membantu Anda menemukan koleksi populer dari berbagai sumber dalam satu pengalaman browsing yang rapi. Jelajahi video berdasarkan kategori, negara, popularitas, dan kata kunci dengan thumbnail, durasi, serta informasi yang mudah dipahami. Koleksi diperbarui secara berkala agar Anda dapat menemukan konten baru dengan lebih cepat dan nyaman.' },
+                        en: { badge: 'About PORNERWEB', title: 'Discover a curated adult video collection', text: 'PORNERWEB is an 18+ adult video discovery platform built to help you explore popular collections from multiple sources in one clean browsing experience. Find videos by category, country, popularity, and keywords with clear thumbnails, durations, and useful details. Our collection is refreshed regularly so you can discover new content quickly and enjoy a smoother, more organized viewing experience.' },
+                        ms: { badge: 'Tentang PORNERWEB', title: 'Temui koleksi video dewasa pilihan', text: 'PORNERWEB ialah platform penemuan video dewasa 18+ yang membantu anda meneroka koleksi popular daripada pelbagai sumber dalam pengalaman carian yang kemas. Cari video mengikut kategori, negara, populariti dan kata kunci dengan thumbnail, tempoh serta maklumat yang jelas. Koleksi dikemas kini secara berkala supaya anda dapat menemui kandungan baharu dengan lebih cepat dan selesa.' },
+                        es: { badge: 'Sobre PORNERWEB', title: 'Descubre una colección de vídeos para adultos', text: 'PORNERWEB es una plataforma para descubrir vídeos para adultos mayores de 18 años, creada para explorar colecciones populares de varias fuentes en una experiencia ordenada. Encuentra vídeos por categoría, país, popularidad y palabras clave con miniaturas, duración y detalles claros. La colección se actualiza regularmente para ayudarte a descubrir contenido nuevo de forma rápida y cómoda.' },
+                        ja: { badge: 'PORNERWEBについて', title: '厳選されたアダルト動画を見つける', text: 'PORNERWEBは、18歳以上のユーザー向けに、複数のソースから人気のアダルト動画を探せるプラットフォームです。カテゴリー、国、人気度、キーワードから動画を検索でき、サムネイルや再生時間などの情報もわかりやすく表示します。コレクションは定期的に更新され、新しいコンテンツを快適に見つけられます。' }
+                    }[lang] || aboutPornerweb.en; %>
                     <div class='featured-banner__content'>
-                        <span class='featured-pill'>Hot picks</span>
-                        <h2><%= title %></h2>
-                        <p>Browse the latest collection with cinematic previews and instant access.</p>
+                        <span class='featured-pill'><%= aboutPornerweb.badge %></span>
+                        <h2><%= aboutPornerweb.title %></h2>
+                        <p><%= aboutPornerweb.text %></p>
                     </div>
-                    <a class='featured-cta' href='/?q=popular'>Watch now</a>
+                    <a class='featured-cta' href='/?q=popular'><%= t.watchNow %></a>
                 </section>
 
                 <%- include('partials/ad-banner-728') %>

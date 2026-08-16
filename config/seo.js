@@ -1,6 +1,6 @@
 export const SITE_NAME = process.env.SITE_NAME || 'PORNERWEB';
 export const SITE_DESCRIPTION = process.env.SITE_DESCRIPTION
-    || 'Temukan koleksi video dewasa populer dengan navigasi kategori yang mudah digunakan. Khusus pengunjung berusia 18 tahun ke atas.';
+    || 'PORNERWEB adalah platform penemuan video dewasa 18+ dengan koleksi populer dari berbagai sumber. Jelajahi video berdasarkan kategori, negara, popularitas, dan kata kunci dalam pengalaman browsing yang rapi, cepat, dan nyaman.';
 
 const configuredSiteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
