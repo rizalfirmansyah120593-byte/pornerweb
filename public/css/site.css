@@ -254,8 +254,7 @@ img {
 .live-sex-icon { position: relative; display: grid; place-items: center; width: 19px; height: 17px; border: 2px solid #111827; border-radius: 4px; font-size: 0; }
 .live-sex-icon::after { content: ''; width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid #111827; margin-left: 2px; }
 .live-sex-button sup { align-self: flex-start; margin-top: -4px; color: #e11d48; font-size: .62rem; text-shadow: 0 0 7px rgba(225,29,72,.6); }
-.live-sex-button::before { content: ''; position: absolute; top: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: #e11d48; box-shadow: 0 0 0 0 rgba(225,29,72,.7); animation: live-pulse 1.6s infinite; }
-@keyframes live-pulse { 70% { box-shadow: 0 0 0 6px rgba(225,29,72,0); } 100% { box-shadow: 0 0 0 0 rgba(225,29,72,0); } }
+.live-sex-button::before { content: ''; position: absolute; top: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: #e11d48; box-shadow: 0 0 5px rgba(225,29,72,.65); }
 
 .donation-button:hover,
 .footer-donation-button:hover {
@@ -1471,7 +1470,7 @@ img {
     .donation-button {
         order: 4;
     }
-    .live-sex-button { order: 5; }
+    .live-sex-button { order: 5; min-height: 36px; padding: 6px 11px 6px 8px; font-size: .72rem; }
 
     .mobile-sidebar-toggle {
         display: inline-flex;
