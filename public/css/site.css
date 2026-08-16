@@ -1207,7 +1207,7 @@ img {
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    color: var(--muted);
+    color: #d5dbea;
     font-size: 0.85rem;
     margin-top: auto;
 }
@@ -1219,6 +1219,13 @@ img {
     text-transform: uppercase;
     font-size: 0.74rem;
 }
+
+/* Consistent high-contrast card typography on desktop, tablet, and mobile. */
+.video-card .card-body h2 { color: var(--text); }
+.video-card .card-meta span:first-child { color: #d5dbea; }
+.video-card .watch-label { color: #ffa31a !important; }
+
+:root[data-theme='light'] .video-card .card-meta span:first-child { color: #42516b; }
 
 .empty {
     padding: 32px;
