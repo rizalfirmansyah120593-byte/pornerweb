@@ -1109,6 +1109,19 @@ img {
     text-transform: uppercase;
 }
 
+.about-pornerweb__actions { display: flex; align-items: center; gap: 10px; justify-content: flex-end; }
+.about-pornerweb__toggle { border-radius: 999px; padding: 10px 14px; }
+.about-pornerweb.is-collapsed .about-pornerweb__text { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; -webkit-line-clamp: 3; }
+
+@media (max-width: 640px) {
+    .about-pornerweb__actions { justify-content: space-between; }
+    .about-pornerweb__toggle { padding: 8px 12px; font-size: .85rem; }
+    .about-pornerweb.is-collapsed .about-pornerweb__text { -webkit-line-clamp: 2; }
+    .featured-banner.about-pornerweb { padding: 14px 14px; }
+    .featured-banner.about-pornerweb h2 { font-size: 1.05rem; }
+    .featured-banner.about-pornerweb p { font-size: .88rem; line-height: 1.5; }
+}
+
 .featured-cta {
     display: inline-flex;
     align-items: center;

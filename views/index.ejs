@@ -34,7 +34,7 @@
             </section>
 
             <% if (data.length) { %>
-                <section class='featured-banner' aria-label='Featured categories'>
+                <section class='featured-banner about-pornerweb is-collapsed' id='about-pornerweb' aria-label='Tentang PORNERWEB'>
                     <% const aboutPornerweb = {
                         id: { badge: 'Tentang PORNERWEB', title: 'Temukan koleksi video dewasa pilihan', text: 'PORNERWEB adalah platform pencarian dan penemuan video dewasa 18+ yang membantu Anda menemukan koleksi populer dari berbagai sumber dalam satu pengalaman browsing yang rapi. Jelajahi video berdasarkan kategori, negara, popularitas, dan kata kunci dengan thumbnail, durasi, serta informasi yang mudah dipahami. Koleksi diperbarui secara berkala agar Anda dapat menemukan konten baru dengan lebih cepat dan nyaman.' },
                         en: { badge: 'About PORNERWEB', title: 'Discover a curated adult video collection', text: 'PORNERWEB is an 18+ adult video discovery platform built to help you explore popular collections from multiple sources in one clean browsing experience. Find videos by category, country, popularity, and keywords with clear thumbnails, durations, and useful details. Our collection is refreshed regularly so you can discover new content quickly and enjoy a smoother, more organized viewing experience.' },
@@ -42,12 +42,22 @@
                         es: { badge: 'Sobre PORNERWEB', title: 'Descubre una colección de vídeos para adultos', text: 'PORNERWEB es una plataforma para descubrir vídeos para adultos mayores de 18 años, creada para explorar colecciones populares de varias fuentes en una experiencia ordenada. Encuentra vídeos por categoría, país, popularidad y palabras clave con miniaturas, duración y detalles claros. La colección se actualiza regularmente para ayudarte a descubrir contenido nuevo de forma rápida y cómoda.' },
                         ja: { badge: 'PORNERWEBについて', title: '厳選されたアダルト動画を見つける', text: 'PORNERWEBは、18歳以上のユーザー向けに、複数のソースから人気のアダルト動画を探せるプラットフォームです。カテゴリー、国、人気度、キーワードから動画を検索でき、サムネイルや再生時間などの情報もわかりやすく表示します。コレクションは定期的に更新され、新しいコンテンツを快適に見つけられます。' }
                     }[lang] || aboutPornerweb.en; %>
+                    <% const aboutToggle = ({
+                        id: { more: 'Tampilkan semua', less: 'Sembunyikan' },
+                        en: { more: 'Show more', less: 'Show less' },
+                        ms: { more: 'Papar lagi', less: 'Sembunyikan' },
+                        es: { more: 'Ver más', less: 'Ver menos' },
+                        ja: { more: 'もっと見る', less: '閉じる' },
+                    }[lang] || { more: 'Show more', less: 'Show less' }); %>
                     <div class='featured-banner__content'>
                         <span class='featured-pill'><%= aboutPornerweb.badge %></span>
                         <h2><%= aboutPornerweb.title %></h2>
-                        <p><%= aboutPornerweb.text %></p>
+                        <p class='about-pornerweb__text'><%= aboutPornerweb.text %></p>
                     </div>
-                    <a class='featured-cta' href='/?q=popular'><%= t.watchNow %></a>
+                    <div class='about-pornerweb__actions'>
+                        <button class='btn about-pornerweb__toggle' type='button' id='about-pornerweb-toggle' aria-expanded='false' data-more='<%= aboutToggle.more %>' data-less='<%= aboutToggle.less %>'><%= aboutToggle.more %></button>
+                        <a class='featured-cta' href='/?q=popular'><%= t.watchNow %></a>
+                    </div>
                 </section>
 
                 <%- include('partials/ad-banner-728') %>
@@ -201,6 +211,24 @@
                 write('pornerwebWatchLater', next); button.classList.toggle('is-saved', next.includes(id));
             });
         });
+    })();
+    </script>
+    <script>
+    (() => {
+        const root = document.getElementById('about-pornerweb');
+        const toggle = document.getElementById('about-pornerweb-toggle');
+        if (!root || !toggle) return;
+        const key = 'pornerwebAboutExpanded';
+        const setExpanded = (expanded) => {
+            root.classList.toggle('is-collapsed', !expanded);
+            toggle.setAttribute('aria-expanded', String(expanded));
+            toggle.textContent = expanded ? (toggle.dataset.less || 'Show less') : (toggle.dataset.more || 'Show more');
+            try { localStorage.setItem(key, expanded ? 'true' : 'false'); } catch (_) {}
+        };
+        let expanded = false;
+        try { expanded = localStorage.getItem(key) === 'true'; } catch (_) {}
+        setExpanded(expanded);
+        toggle.addEventListener('click', () => setExpanded(!(toggle.getAttribute('aria-expanded') === 'true')));
     })();
     </script>
 </body>
