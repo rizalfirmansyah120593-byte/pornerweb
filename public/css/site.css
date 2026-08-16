@@ -177,7 +177,7 @@ img {
 }
 
 .pornhub-logo { display: inline-flex; align-items: center; color: var(--logo-text); font-weight: 900; letter-spacing: .08em; line-height: 1; }
-.pornhub-logo span { margin-left: 3px; padding: 5px 4px 4px; color: #fff; background: #ffa31a; border-radius: 4px; letter-spacing: .02em; }
+.pornhub-logo__badge { margin-left: 3px; padding: 5px 4px 4px; color: #111827; background: #ffa31a; border-radius: 4px; letter-spacing: .02em; }
 .main-header .pornhub-logo { font-size: 1rem; }
 .footer-brand .pornhub-logo { font-size: 1.05rem; }
 

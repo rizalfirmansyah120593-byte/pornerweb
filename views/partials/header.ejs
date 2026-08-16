@@ -1,6 +1,6 @@
 <header class="main-header">
     <a href="/" class="brand-pill" aria-label="Kembali ke beranda">
-        <span class="pornhub-logo">PORNER<span>WEB</span></span>
+        <span class="pornhub-logo"><span class="pornhub-logo__name">PORNER</span><span class="pornhub-logo__badge">WEB</span></span>
     </a>
 
     <form action="/" method="GET" class="search-box">
@@ -45,7 +45,7 @@
         <% Object.entries(ageGateText).forEach(([code, copy]) => { %><option value="<%= code %>" <%= lang === code ? 'selected' : '' %>><%= copy.language %></option><% }) %>
     </select>
     <div class="age-gate__content">
-        <div class="age-gate__logo pornhub-logo">PORNER<span>WEB</span></div>
+        <div class="age-gate__logo pornhub-logo"><span class="pornhub-logo__name">PORNER</span><span class="pornhub-logo__badge">WEB</span></div>
         <h1 id="age-gate-title"><%= ageCopy.title %></h1>
         <div class="age-gate__notice"><%= ageCopy.notice %></div>
         <p><%= ageCopy.body %></p>
@@ -60,6 +60,11 @@
 </section>
 
 <style>
+    .pornhub-logo { display: inline-flex !important; align-items: center !important; color: var(--logo-text, #f8f8fb) !important; font-weight: 900 !important; letter-spacing: .08em !important; line-height: 1 !important; }
+    .pornhub-logo__name { margin: 0 !important; padding: 0 !important; color: inherit !important; background: transparent !important; }
+    .pornhub-logo__badge { margin-left: 3px !important; padding: 5px 4px 4px !important; color: #111827 !important; background: #ffa31a !important; border-radius: 4px !important; letter-spacing: .02em !important; }
+    .main-header .pornhub-logo { font-size: 1rem !important; }
+    .age-gate .pornhub-logo { color: #f8f8fb !important; font-size: 24px !important; }
     #age-gate { position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; display: grid !important; place-items: center !important; padding: 24px 16px !important; overflow-y: auto !important; background: rgba(2, 5, 13, .78) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; color: #f5f5f5 !important; }
     #age-gate.is-hidden { display: none !important; }
     #age-gate .age-gate__language { position: absolute !important; top: 10px !important; left: 12px !important; z-index: 2 !important; }
