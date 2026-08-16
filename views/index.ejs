@@ -141,12 +141,12 @@
             <section class='porner-blog' aria-labelledby='porner-blog-title'>
                 <div class='porner-blog__heading'><span class='eyebrow'>PORNERWEB INSIGHTS</span><h2 id='porner-blog-title'><%= pornerBlog.title %></h2><p><%= pornerBlog.subtitle %></p></div>
                 <p class='porner-blog__intro'><%= pornerBlog.intro %></p>
-                <% const blogLinks = ['cara-menemukan-video-yang-sesuai', 'menjelajahi-koleksi-dari-berbagai-sumber', 'tips-menikmati-browsing-yang-nyaman', 'konten-khusus-pengunjung-dewasa']; %>
                 <div class='porner-blog__grid'>
-                    <% pornerBlog.cards.forEach(([title, text], idx) => { %>
+                    <% const homepageBlogPosts = (typeof blogPosts !== 'undefined' && blogPosts.length) ? blogPosts : pornerBlog.cards.map(([title, summary], idx) => ({ slug: ['cara-menemukan-video-yang-sesuai', 'menjelajahi-koleksi-dari-berbagai-sumber', 'tips-menikmati-browsing-yang-nyaman', 'konten-khusus-pengunjung-dewasa'][idx], title, summary })); %>
+                    <% homepageBlogPosts.forEach((post) => { %>
                         <article>
-                            <h3><a href='/blog/<%= blogLinks[idx] %>'><%= title %></a></h3>
-                            <p><%= text %></p>
+                            <h3><a href='/blog/<%= post.slug %>'><%= post.title %></a></h3>
+                            <p><%= post.summary %></p>
                         </article>
                     <% }) %>
                 </div>

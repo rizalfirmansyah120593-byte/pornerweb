@@ -255,6 +255,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         return res.render('index', {
             data: videos, title: heading, intro: description, query, currentPage: page,
             totalPages, paginationPath, seo, trendingPornstars,
+            blogPosts: typeof BLOG_POSTS !== 'undefined' ? BLOG_POSTS.map((post) => ({ slug: post.slug, title: localized(res.locals.lang, post.title), summary: localized(res.locals.lang, post.summary) })) : [],
         });
     } catch (error) {
         console.error(`[Listing] Gagal memuat ${query}:`, error.message);
