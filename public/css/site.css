@@ -317,8 +317,8 @@ img {
 @media (min-width: 961px) {
     html, body { height: 100%; }
     body { overflow: hidden; }
-    .main-header { position: fixed; inset: 0 0 auto 0; height: 72px; flex: none; }
-    .layout { height: calc(100dvh - 72px); margin-top: 72px; overflow: hidden; }
+    body > .main-header { position: fixed !important; top: 0 !important; right: 0 !important; bottom: auto !important; left: 0 !important; display: flex !important; height: 72px !important; min-height: 72px !important; z-index: 100000 !important; transform: translateZ(0); }
+    body > .layout { position: relative; height: calc(100dvh - 72px); margin-top: 72px; overflow: hidden; }
     .sidebar { position: relative; top: auto; height: 100%; max-height: none; }
     .content, .watch-content { height: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 }
