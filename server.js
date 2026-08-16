@@ -299,6 +299,14 @@ app.get('/recommended', (req, res) => renderVideoListing(req, res, {
     indexFirstPage: true,
 }));
 
+app.get('/live-sex', (req, res) => renderVideoListing(req, res, {
+    query: 'live sex',
+    heading: localized(res.locals.lang, { id: 'Live Sex', en: 'Live Sex', ms: 'Live Sex', es: 'Live Sex', ja: 'Live Sex' }),
+    description: localized(res.locals.lang, { id: 'Temukan video live sex terbaru dari Pornhub dan Eporner.', en: 'Discover live sex videos from Pornhub and Eporner.', ms: 'Temui video live sex terbaru dari Pornhub dan Eporner.', es: 'Descubre vídeos live sex de Pornhub y Eporner.', ja: 'PornhubとEpornerのライブ動画。' }),
+    canonicalBase: '/live-sex',
+    indexFirstPage: true,
+}));
+
 // Media preview is loaded on demand so listing pages do not download every
 // video's source before the visitor actually hovers a card.
 app.get('/api/video-preview/:id', async (req, res) => {
