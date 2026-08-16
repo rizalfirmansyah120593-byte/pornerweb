@@ -249,10 +249,13 @@ img {
     padding: 11px 17px;
 }
 
-.live-sex-button { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 5px 9px; border: 1px solid #ffa31a; border-radius: 4px; background: #111827; color: #fff; font-size: .7rem; font-weight: 900; letter-spacing: .03em; white-space: nowrap; box-shadow: 0 4px 14px rgba(255,163,26,.18); transition: transform .2s ease, background .2s ease; }
-.live-sex-button:hover { transform: translateY(-2px); background: #ffa31a; color: #111827; }
-.live-sex-icon { display: grid; place-items: center; width: 17px; height: 17px; border: 2px solid currentColor; border-radius: 50%; color: #fff; font-size: .55rem; line-height: 1; }
-.live-sex-button sup { align-self: flex-start; margin-top: -2px; color: #ff3d71; font-size: .58rem; }
+.live-sex-button { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 11px 6px 8px; border: 1px solid #ffa31a; border-radius: 7px; background: linear-gradient(135deg, #ffa31a, #ff7a18); color: #111827; font-size: .72rem; font-weight: 900; letter-spacing: .04em; white-space: nowrap; box-shadow: 0 5px 18px rgba(255,163,26,.35); transition: transform .2s ease, filter .2s ease; }
+.live-sex-button:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.12); color: #111827; }
+.live-sex-icon { position: relative; display: grid; place-items: center; width: 19px; height: 17px; border: 2px solid #111827; border-radius: 4px; font-size: 0; }
+.live-sex-icon::after { content: ''; width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid #111827; margin-left: 2px; }
+.live-sex-button sup { align-self: flex-start; margin-top: -4px; color: #e11d48; font-size: .62rem; text-shadow: 0 0 7px rgba(225,29,72,.6); }
+.live-sex-button::before { content: ''; position: absolute; top: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: #e11d48; box-shadow: 0 0 0 0 rgba(225,29,72,.7); animation: live-pulse 1.6s infinite; }
+@keyframes live-pulse { 70% { box-shadow: 0 0 0 6px rgba(225,29,72,0); } 100% { box-shadow: 0 0 0 0 rgba(225,29,72,0); } }
 
 .donation-button:hover,
 .footer-donation-button:hover {
