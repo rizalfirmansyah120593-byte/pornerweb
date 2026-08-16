@@ -1482,29 +1482,42 @@ img {
         position: fixed !important;
         inset: 0 0 auto 0 !important;
         z-index: 100000 !important;
-        flex-wrap: wrap;
-        min-height: 112px;
-        padding: 8px 12px 9px;
-        gap: 8px 10px;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto auto auto;
+        grid-template-areas: 'brand menu theme lang' 'search search search search' 'live live donate donate';
+        min-height: 100px;
+        padding: 7px 10px 8px;
+        gap: 6px 8px;
         z-index: 1100;
     }
 
-    body > .layout { margin-top: 112px; }
-    .main-header .pornhub-logo { font-size: .82rem !important; }
+    body > .layout { margin-top: 100px; }
+    .main-header .brand-pill { grid-area: brand; min-width: 0; }
+    .main-header .pornhub-logo { font-size: .76rem !important; }
     .main-header .pornhub-logo__badge { padding: 4px 4px 3px !important; }
-    .main-header .header-controls { gap: 7px; }
+    .main-header .header-controls { display: contents; }
+    .main-header .mobile-sidebar-toggle { grid-area: menu; order: initial; min-height: 25px; padding: 4px 7px; font-size: .68rem; }
+    .main-header .theme-switcher { grid-area: theme; order: initial; gap: 3px; }
+    .main-header .theme-switcher button { width: 26px; height: 25px; padding: 2px; font-size: .72rem; }
+    .main-header #language-selector { grid-area: lang; order: initial; min-width: 45px; height: 26px; padding: 3px 5px; font-size: .7rem; }
 
     .search-box {
-        order: 3;
+        grid-area: search;
+        order: initial;
         width: 100%;
         max-width: none;
-        min-height: 34px;
+        min-height: 30px;
     }
 
     .donation-button {
-        order: 4;
+        grid-area: donate;
+        order: initial;
+        justify-self: end;
+        min-height: 29px;
+        padding: 6px 10px;
+        font-size: .72rem;
     }
-    .live-sex-button { order: 5; min-height: 36px; padding: 6px 11px 6px 8px; font-size: .72rem; }
+    .live-sex-button { grid-area: live; order: initial; justify-self: start; min-height: 29px; padding: 5px 9px 5px 7px; font-size: .68rem; }
 
     .mobile-sidebar-toggle {
         display: inline-flex;
@@ -1535,7 +1548,7 @@ img {
         width: min(86vw, 340px);
         height: 100dvh;
         max-height: none;
-        padding-top: 112px;
+        padding-top: 100px;
         border-right: 1px solid var(--border);
         transform: translateX(-105%);
         transition: transform 0.25s ease;
