@@ -559,6 +559,143 @@ const contentPages = {
     '/privacy': ['privacy', 'Kebijakan Privasi', `Pelajari cara ${SITE_NAME} mengelola dan melindungi data pengguna.`],
     '/contact': ['contact', 'Hubungi Kami', `Hubungi tim dukungan ${SITE_NAME}.`],
 };
+
+const BLOG_POSTS = Object.freeze([
+    {
+        slug: 'cara-menemukan-video-yang-sesuai',
+        title: {
+            id: 'Cara menemukan video yang sesuai',
+            en: 'How to find videos that match your taste',
+            ms: 'Cara mencari video yang sesuai',
+            es: 'Cómo encontrar vídeos que se adapten a tus gustos',
+            ja: '好みに合う動画の見つけ方',
+        },
+        summary: {
+            id: 'Gunakan kata kunci, kategori, negara, dan filter sumber untuk mempersempit hasil. Temukan video lebih cepat dengan pengalaman browsing yang rapi.',
+            en: 'Use keywords, categories, countries, and source filters to narrow results and discover videos faster in a clean browsing experience.',
+            ms: 'Gunakan kata kunci, kategori, negara dan penapis sumber untuk memperincikan hasil carian dengan lebih cepat.',
+            es: 'Usa palabras clave, categorías, países y filtros de fuente para afinar resultados y descubrir vídeos más rápido.',
+            ja: 'キーワード、カテゴリー、国、ソースフィルターを使って絞り込み、効率よく動画を見つけましょう。',
+        },
+        body: {
+            id: [
+                { h: 'Ringkasnya: cari dengan niat, filter dengan cerdas', p: 'Di PORNERWEB, pencarian yang bagus dimulai dari kata kunci yang tepat, lalu dipersempit dengan kategori, negara, dan sumber video. Dengan pendekatan ini, Anda tidak “tersesat” di lautan hasil pencarian—Anda langsung menuju konten yang sesuai preferensi.' },
+                { h: 'Gunakan kata kunci yang spesifik', p: 'Alih-alih mencari kata yang terlalu umum, gunakan kombinasi kata kunci yang menggambarkan minat Anda. Misalnya: “asian amateur”, “japanese milf”, atau “cosplay compilation”. Kata kunci spesifik cenderung menghasilkan daftar yang lebih relevan dan mengurangi hasil yang tidak sesuai.' },
+                { h: 'Manfaatkan kategori dan negara', p: 'Kategori dan negara membantu mengelompokkan konten yang serupa. Jika Anda menyukai gaya tertentu, mulai dari kategori, lalu kembangkan pencarian dengan kata kunci tambahan. Untuk konten regional, filter negara mengurangi noise dan membuat hasil lebih konsisten.' },
+                { h: 'Pilih sumber video: Pornhub, Eporner, atau gabungan', p: 'PORNERWEB menggabungkan beberapa sumber. Jika Anda ingin hasil lebih “stabil” atau ingin membandingkan variasi konten, gunakan filter sumber. Ini juga membantu saat salah satu sumber sedang lambat atau hasilnya kurang beragam.' },
+                { h: 'Gunakan fitur: Watch Later, Continue Watching, dan Random Video', p: 'Untuk pengalaman yang lebih cepat: simpan video menarik ke Watch Later, lanjutkan video terakhir melalui Continue Watching, atau gunakan Random Video saat ingin eksplorasi tanpa memasukkan kata kunci. Kombinasi fitur ini membuat Anda bisa berpindah konten tanpa harus mengulang pencarian dari awal.' },
+                { h: 'Catatan SEO & tanggung jawab', p: 'PORNERWEB ditujukan untuk pengguna berusia 18+. Gunakan website secara bertanggung jawab dan patuhi hukum di wilayah Anda. Jika Anda ingin pengalaman yang lebih aman, gunakan kontrol orang tua dan pembatasan akses pada perangkat.' },
+            ],
+            en: [
+                { h: 'In short: search with intent, filter smartly', p: 'On PORNERWEB, great discovery starts with the right keywords and becomes powerful when you narrow results by category, country, and source. This approach keeps browsing focused and helps you reach content that matches your preferences faster.' },
+                { h: 'Use specific keywords', p: 'Avoid overly broad searches. Combine keywords that describe what you want, such as “asian amateur”, “japanese milf”, or “cosplay compilation”. Specific queries generally produce more relevant results and reduce clutter.' },
+                { h: 'Use categories and countries', p: 'Categories and countries help you group similar content. Start from a category when your taste is clear, then refine with additional keywords. If you prefer regional content, filtering by country removes noise and makes results more consistent.' },
+                { h: 'Choose your source: Pornhub, Eporner, or both', p: 'PORNERWEB aggregates multiple sources. If you want more predictable results—or simply want variety—use the source filter. It also helps when one source is slow or temporarily returns fewer results.' },
+                { h: 'Use Watch Later, Continue Watching, and Random Video', p: 'Save interesting picks to Watch Later, resume the last video through Continue Watching, or use Random Video when you want quick discovery without typing. Together, these features keep your session smooth and organized.' },
+                { h: 'Responsibility note', p: 'PORNERWEB is intended for visitors aged 18+. Browse responsibly and follow the laws in your region. For added safety, consider device-level parental controls and access restrictions.' },
+            ],
+        },
+    },
+    {
+        slug: 'menjelajahi-koleksi-dari-berbagai-sumber',
+        title: {
+            id: 'Menjelajahi koleksi dari berbagai sumber',
+            en: 'Exploring collections from multiple sources',
+            ms: 'Meneroka koleksi daripada pelbagai sumber',
+            es: 'Explorar colecciones de varias fuentes',
+            ja: '複数ソースのコレクションを探索',
+        },
+        summary: {
+            id: 'PORNERWEB menggabungkan Pornhub dan Eporner dalam satu tampilan agar Anda bisa menemukan variasi konten dengan lebih cepat.',
+            en: 'PORNERWEB brings Pornhub and Eporner together in one interface so you can discover variety faster.',
+            ms: 'PORNERWEB menghimpunkan Pornhub dan Eporner dalam satu paparan untuk memudahkan penemuan kandungan.',
+            es: 'PORNERWEB reúne Pornhub y Eporner en una sola interfaz para descubrir variedad más rápido.',
+            ja: 'PORNERWEBはPornhubとEpornerを1つの画面にまとめ、探しやすさを高めます。',
+        },
+        body: {
+            id: [
+                { h: 'Kenapa multi-sumber itu berguna', p: 'Setiap sumber memiliki katalog dan pola konten yang berbeda. Dengan multi-sumber, Anda mendapatkan variasi lebih besar, dan peluang menemukan video yang “pas” meningkat—terutama untuk kata kunci tertentu yang hasilnya bisa sangat berbeda antar platform.' },
+                { h: 'Konsistensi: metadata yang diseragamkan', p: 'PORNERWEB menampilkan judul, thumbnail, jumlah views, dan durasi dalam format yang konsisten. Ini membantu Anda membandingkan video dari sumber yang berbeda dengan cepat tanpa berpindah website.' },
+                { h: 'Filter sumber untuk kontrol penuh', p: 'Gunakan filter sumber jika Anda ingin fokus pada satu platform, atau pilih gabungan untuk variasi. Saat eksplorasi, gabungan lebih cocok. Saat Anda sudah tahu preferensi gaya konten, sumber tertentu mungkin lebih konsisten.' },
+                { h: 'Rekomendasi yang selalu ada', p: 'Di halaman watch, rekomendasi diambil dari dua sumber dan dideduplikasi agar tidak ada video yang muncul dua kali. Ini membuat rekomendasi lebih stabil, lebih banyak pilihan, dan tidak terasa kosong.' },
+                { h: 'Kinerja dan kenyamanan', p: 'Karena data diambil dari layanan pihak ketiga, terkadang salah satu sumber bisa lambat. PORNERWEB menggunakan fallback agar hasil tetap muncul. Ini menjaga pengalaman browsing tetap nyaman.' },
+            ],
+            en: [
+                { h: 'Why multiple sources help', p: 'Each source has its own catalog and content patterns. With multi-source discovery, you get more variety and a higher chance of finding the “right” video—especially for queries that behave differently across platforms.' },
+                { h: 'Consistency through normalized metadata', p: 'PORNERWEB presents titles, thumbnails, view counts, and durations in a consistent format. That makes comparing content across sources fast and frictionless.' },
+                { h: 'Source filters give you control', p: 'Filter by source when you want to focus on one platform, or use both for variety. “Both” is best for exploration; a single source can be better when you want a familiar style.' },
+                { h: 'Reliable recommendations on watch pages', p: 'Watch-page recommendations pull from both sources and are deduplicated to avoid repeats. This keeps the section populated and useful.' },
+                { h: 'Performance and comfort', p: 'Because data comes from third-party services, one source can occasionally slow down. PORNERWEB uses fallbacks so results still load and your session stays smooth.' },
+            ],
+        },
+    },
+    {
+        slug: 'tips-menikmati-browsing-yang-nyaman',
+        title: {
+            id: 'Tips menikmati pengalaman browsing yang nyaman',
+            en: 'Tips for a smoother browsing experience',
+            ms: 'Tip untuk pengalaman browsing yang selesa',
+            es: 'Consejos para una navegación más cómoda',
+            ja: '快適にブラウジングするコツ',
+        },
+        summary: {
+            id: 'Gunakan Continue Watching, Watch Later, Random Video, dan rekomendasi agar Anda bisa menemukan konten tanpa repetisi.',
+            en: 'Use Continue Watching, Watch Later, Random Video, and recommendations to keep exploring without repetition.',
+            ms: 'Gunakan Continue Watching, Watch Later dan Random Video untuk terus meneroka tanpa mengulang carian.',
+            es: 'Usa Continue Watching, Watch Later y Random Video para seguir explorando sin repetir búsquedas.',
+            ja: 'Continue Watching / Watch Later / Random Videoで、検索の繰り返しを減らします。',
+        },
+        body: {
+            id: [
+                { h: 'Simpan dulu, tonton nanti', p: 'Saat browsing, Anda akan menemukan banyak video menarik. Gunakan Watch Later agar Anda bisa mengumpulkan pilihan tanpa kehilangan jejak. Ini membantu sesi menonton terasa terstruktur.' },
+                { h: 'Lanjutkan dari terakhir ditonton', p: 'Continue Watching menyimpan video yang terakhir Anda buka. Jika Anda berpindah halaman atau kembali lagi nanti, Anda bisa melanjutkan tanpa mencari ulang.' },
+                { h: 'Random Video untuk eksplorasi cepat', p: 'Ketika tidak punya kata kunci tertentu, Random Video adalah cara tercepat untuk menemukan hal baru. Ini cocok untuk “mood browsing” dan memperluas variasi konten yang Anda temukan.' },
+                { h: 'Gunakan rekomendasi sebagai jalur penjelajahan', p: 'Rekomendasi di halaman watch dibuat agar selalu terisi dan tidak duplikat. Anda bisa memakai rekomendasi sebagai “jalur” untuk berpindah video, mirip seperti autoplay discovery namun tetap di tangan Anda.' },
+                { h: 'Atur tema & bahasa untuk kenyamanan mata', p: 'Gunakan tema terang/gelap sesuai preferensi dan kondisi pencahayaan. Bahasa UI juga dapat diubah agar navigasi lebih nyaman.' },
+            ],
+            en: [
+                { h: 'Save now, watch later', p: 'During browsing, you’ll find plenty of interesting videos. Watch Later lets you bookmark picks without losing track, keeping sessions organized.' },
+                { h: 'Resume where you left off', p: 'Continue Watching remembers the last video you opened. Return later and continue without repeating the same search.' },
+                { h: 'Use Random Video for quick discovery', p: 'When you don’t have a specific query, Random Video is the fastest way to explore. It’s great for broadening variety and finding something new.' },
+                { h: 'Follow recommendations as a discovery path', p: 'Watch-page recommendations are designed to be populated and deduplicated. Use them as a guided path to keep watching while staying in control.' },
+                { h: 'Adjust theme and language for comfort', p: 'Switch between light/dark themes based on lighting and preference. Change the UI language to browse more comfortably.' },
+            ],
+        },
+    },
+    {
+        slug: 'konten-khusus-pengunjung-dewasa',
+        title: {
+            id: 'Konten khusus pengunjung dewasa',
+            en: 'Adults-only content and responsible browsing',
+            ms: 'Kandungan untuk pengunjung dewasa',
+            es: 'Contenido solo para adultos y navegación responsable',
+            ja: '成人向けコンテンツと責任ある利用',
+        },
+        summary: {
+            id: 'PORNERWEB ditujukan untuk pengguna 18+. Pelajari cara menggunakan website secara bertanggung jawab dan aman.',
+            en: 'PORNERWEB is intended for 18+ visitors. Learn how to browse responsibly and safely.',
+            ms: 'PORNERWEB untuk pengunjung 18+. Gunakan secara bertanggungjawab dan selamat.',
+            es: 'PORNERWEB es para mayores de 18. Navega de forma responsable y segura.',
+            ja: 'PORNERWEBは18歳以上向け。責任を持って利用しましょう。',
+        },
+        body: {
+            id: [
+                { h: 'Untuk usia 18+ saja', p: 'PORNERWEB menampilkan konten dewasa yang dibatasi usia. Dengan mengakses website ini, Anda menyatakan telah berusia 18 tahun atau mencapai usia dewasa sesuai wilayah hukum Anda.' },
+                { h: 'Gunakan kontrol orang tua bila diperlukan', p: 'Jika perangkat digunakan bersama keluarga, aktifkan parental control dan pembatasan situs di browser/perangkat. Ini adalah cara paling efektif untuk mencegah akses tidak sengaja.' },
+                { h: 'Privasi dan kebiasaan browsing', p: 'Pertimbangkan mode private browsing, pengaturan cookie, dan keamanan perangkat. Jaga privasi Anda sesuai kebutuhan.' },
+                { h: 'Kepatuhan hukum', p: 'Selalu patuhi peraturan dan hukum yang berlaku. Jika suatu konten tidak sesuai dengan wilayah Anda, hindari akses terhadap konten tersebut.' },
+                { h: 'Tujuan PORNERWEB', p: 'PORNERWEB bertujuan menyediakan pengalaman penemuan konten yang lebih rapi, bukan mendorong perilaku berisiko. Gunakan secara bertanggung jawab.' },
+            ],
+            en: [
+                { h: 'Adults (18+) only', p: 'PORNERWEB contains age-restricted adult content. By accessing this website, you confirm that you are at least 18 years old or have reached the age of majority in your jurisdiction.' },
+                { h: 'Use parental controls when needed', p: 'If devices are shared, enable browser or device-level parental controls and site restrictions to prevent accidental access.' },
+                { h: 'Privacy and browsing habits', p: 'Consider private browsing, cookie settings, and device security. Protect your privacy as needed.' },
+                { h: 'Legal compliance', p: 'Always follow applicable laws and regulations. If certain content is restricted in your region, avoid accessing it.' },
+                { h: 'PORNERWEB’s goal', p: 'PORNERWEB is built to provide a cleaner discovery experience—not to encourage risky behavior. Browse responsibly.' },
+            ],
+        },
+    },
+]);
 async function loadFeaturedVideos(req) {
     try {
         const result = await req.app.locals.ph.searchVideo('popular', { page: 1 });
@@ -582,6 +719,52 @@ for (const [pathname, [view, title, description]] of Object.entries(contentPages
     });
 }
 
+app.get('/blog', (req, res) => {
+    const posts = BLOG_POSTS.map((post) => ({
+        slug: post.slug,
+        title: localized(res.locals.lang, post.title),
+        summary: localized(res.locals.lang, post.summary),
+    }));
+    res.render('blog', {
+        posts,
+        seo: buildSeo(req, {
+            title: localized(res.locals.lang, { id: 'Blog PORNERWEB', en: 'PORNERWEB Blog', ms: 'Blog PORNERWEB', es: 'Blog de PORNERWEB', ja: 'PORNERWEB ブログ' }),
+            description: localized(res.locals.lang, { id: 'Panduan dan informasi untuk menemukan video dewasa 18+ dengan lebih cepat dan nyaman.', en: 'Guides and insights to discover adult videos (18+) faster and more comfortably.', ms: 'Panduan untuk menemui video dewasa 18+ dengan lebih cepat.', es: 'Guías para descubrir vídeos para adultos (18+) más rápido.', ja: '18歳以上向けの動画を探すためのガイド。' }),
+            pathname: '/blog',
+            explicit: true,
+        }),
+    });
+});
+
+app.get('/blog/:slug', (req, res, next) => {
+    const post = BLOG_POSTS.find((item) => item.slug === String(req.params.slug || '').trim());
+    if (!post) return next();
+    const title = localized(res.locals.lang, post.title);
+    const summary = localized(res.locals.lang, post.summary);
+    const blocks = (post.body && (post.body[res.locals.lang] || post.body.en)) || [];
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: title,
+        description: summary,
+        author: { '@type': 'Organization', name: SITE_NAME },
+        publisher: { '@type': 'Organization', name: SITE_NAME },
+        mainEntityOfPage: absoluteUrl(req, `/blog/${post.slug}`),
+        inLanguage: res.locals.lang,
+        isAccessibleForFree: true,
+    };
+    return res.render('blog-post', {
+        post: { slug: post.slug, title, summary, blocks },
+        seo: buildSeo(req, {
+            title,
+            description: summary,
+            pathname: `/blog/${post.slug}`,
+            explicit: true,
+            jsonLd,
+        }),
+    });
+});
+
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send([
         'User-agent: *', 'Allow: /', 'Disallow: /set-lang', '',
@@ -600,6 +783,8 @@ async function getSitemapPaths() {
         ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
         { path: '/recommended' }, { path: '/models' }, { path: '/pornstars' },
         { path: '/terms' }, { path: '/privacy' }, { path: '/contact' },
+        { path: '/blog' },
+        ...BLOG_POSTS.map(({ slug }) => ({ path: `/blog/${slug}` })),
     ];
 
     // Tambahkan URL video nyata dari feed yang memang tersedia di situs.

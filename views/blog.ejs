@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang='<%= lang %>'>
+<head>
+    <%- include('partials/google-tag') %>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <%- include('partials/seo-head') %>
+    <link rel='stylesheet' href='/css/site.css'>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class='layout'>
+        <aside class='sidebar' id='site-sidebar'>
+            <div class='sidebar-scroll-area'><%- include('partials/sidebar') %></div>
+        </aside>
+        <main id='main-content' class='content'>
+            <section class='page-hero'>
+                <div>
+                    <span class='eyebrow'>BLOG</span>
+                    <h1><%= localized(lang, { id: 'Blog PORNERWEB', en: 'PORNERWEB Blog', ms: 'Blog PORNERWEB', es: 'Blog de PORNERWEB', ja: 'PORNERWEB ブログ' }) %></h1>
+                    <p class='intro'><%= localized(lang, { id: 'Panduan panjang dan praktis untuk menemukan konten dewasa 18+ dengan lebih cepat, rapi, dan nyaman.', en: 'Long, practical guides to discover adult content (18+) faster, cleaner, and more comfortably.', ms: 'Panduan panjang dan praktikal untuk menemui kandungan dewasa 18+ dengan lebih cepat dan selesa.', es: 'Guías largas y prácticas para descubrir contenido para adultos (18+) más rápido y cómodo.', ja: '18歳以上向けコンテンツを探すための実用的なガイド。' }) %></p>
+                </div>
+            </section>
+
+            <section class='blog-grid' aria-label='Blog posts'>
+                <% posts.forEach((item) => { %>
+                    <article class='blog-card'>
+                        <a href='/blog/<%= item.slug %>' class='blog-card__link'>
+                            <h2><%= item.title %></h2>
+                            <p><%= item.summary %></p>
+                            <span class='blog-card__cta'><%= localized(lang, { id: 'Baca selengkapnya', en: 'Read more', ms: 'Baca lagi', es: 'Leer más', ja: '続きを読む' }) %> →</span>
+                        </a>
+                    </article>
+                <% }) %>
+            </section>
+        </main>
+    </div>
+    <%- include('partials/footer') %>
+    <%- include('partials/ad-global') %>
+</body>
+</html>
+

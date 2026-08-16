@@ -131,8 +131,14 @@
             <section class='porner-blog' aria-labelledby='porner-blog-title'>
                 <div class='porner-blog__heading'><span class='eyebrow'>PORNERWEB INSIGHTS</span><h2 id='porner-blog-title'><%= pornerBlog.title %></h2><p><%= pornerBlog.subtitle %></p></div>
                 <p class='porner-blog__intro'><%= pornerBlog.intro %></p>
+                <% const blogLinks = ['cara-menemukan-video-yang-sesuai', 'menjelajahi-koleksi-dari-berbagai-sumber', 'tips-menikmati-browsing-yang-nyaman', 'konten-khusus-pengunjung-dewasa']; %>
                 <div class='porner-blog__grid'>
-                    <% pornerBlog.cards.forEach(([title, text]) => { %><article><h3><%= title %></h3><p><%= text %></p></article><% }) %>
+                    <% pornerBlog.cards.forEach(([title, text], idx) => { %>
+                        <article>
+                            <h3><a href='/blog/<%= blogLinks[idx] %>'><%= title %></a></h3>
+                            <p><%= text %></p>
+                        </article>
+                    <% }) %>
                 </div>
             </section>
         </main>

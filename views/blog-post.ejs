@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang='<%= lang %>'>
+<head>
+    <%- include('partials/google-tag') %>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <%- include('partials/seo-head') %>
+    <link rel='stylesheet' href='/css/site.css'>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class='layout'>
+        <aside class='sidebar' id='site-sidebar'>
+            <div class='sidebar-scroll-area'><%- include('partials/sidebar') %></div>
+        </aside>
+        <main id='main-content' class='content'>
+            <a class='back-link' href='/blog'>← <%= localized(lang, { id: 'Kembali ke Blog', en: 'Back to Blog', ms: 'Kembali ke Blog', es: 'Volver al blog', ja: 'ブログに戻る' }) %></a>
+            <section class='page-hero'>
+                <div>
+                    <span class='eyebrow'>BLOG</span>
+                    <h1><%= post.title %></h1>
+                    <p class='intro'><%= post.summary %></p>
+                </div>
+            </section>
+
+            <article class='blog-post'>
+                <% post.blocks.forEach((block) => { %>
+                    <section class='blog-post__section'>
+                        <h2><%= block.h %></h2>
+                        <p><%= block.p %></p>
+                    </section>
+                <% }) %>
+            </article>
+        </main>
+    </div>
+    <%- include('partials/footer') %>
+    <%- include('partials/ad-global') %>
+</body>
+</html>
+
