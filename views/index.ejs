@@ -46,7 +46,8 @@
                 <%- include('partials/ad-banner-728') %>
                 <%- include('partials/ad-banner-320') %>
 
-                <section class='video-grid' aria-label='<%= title %>'>
+                <div class='listing-tools'><a href='?source=all'>Semua</a><a href='?source=pornhub'>Pornhub</a><a href='?source=eporner'>Eporner</a><a href='/random'>Random Video</a></div>
+                <section class='video-grid' id='video-grid' aria-label='<%= title %>'>
                     <% data.forEach((item, index) => { %>
                         <article class='video-card' data-preview-id='<%= item.id || item.viewKey || item.video_id || "" %>'>
                             <a href='<%= videoPath(item) %>'>
@@ -62,6 +63,7 @@
                                         <% if (item.views) { %><span><%= item.views %> views</span><% } %>
                                         <span class='watch-label'><%= t.watchNow %></span>
                                     </div>
+                                    <button class='watch-later-button' type='button' data-watch-later='<%= item.id %>'>♡ Simpan</button>
                                 </div>
                             </a>
                         </article>
@@ -136,6 +138,41 @@
                 });
             });
         })();
+    </script>
+    <script>
+    (() => {
+        const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } };
+        const write = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+        document.querySelectorAll('[data-watch-later]').forEach((button) => {
+            const id = button.dataset.watchLater;
+            const saved = read('pornerwebWatchLater');
+            if (saved.includes(id)) button.classList.add('is-saved');
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); event.stopPropagation();
+                const list = read('pornerwebWatchLater');
+                const next = list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
+                write('pornerwebWatchLater', next); button.classList.toggle('is-saved', next.includes(id));
+            });
+        });
+        const grid = document.getElementById('video-grid');
+        if (!grid) return;
+        const nextLink = document.querySelector('.pagination a[rel="next"]');
+        if (!nextLink || !('IntersectionObserver' in window)) return;
+        const sentinel = document.createElement('div'); sentinel.className = 'infinite-scroll-sentinel'; grid.after(sentinel);
+        let loading = false;
+        const observer = new IntersectionObserver(async ([entry]) => {
+            if (!entry.isIntersecting || loading) return;
+            loading = true;
+            try {
+                const html = await (await fetch(nextLink.href)).text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                doc.querySelectorAll('#video-grid > .video-card').forEach((card) => grid.append(card));
+                const newer = doc.querySelector('.pagination a[rel="next"]');
+                if (newer) nextLink.href = newer.href; else { observer.disconnect(); sentinel.remove(); }
+            } catch {} finally { loading = false; }
+        }, { rootMargin: '500px' });
+        observer.observe(sentinel);
+    })();
     </script>
 </body>
 </html>

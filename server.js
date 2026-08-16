@@ -203,14 +203,15 @@ async function renderVideoListing(req, res, { query, heading, description, canon
 
     try {
         const result = await ph.searchVideo(query, { page });
-        const videos = result?.data || [];
+        let videos = (result?.data || []).map((item) => ({ ...item, source: 'pornhub' }));
         try {
             const epornerResult = await epornerSearch({ query: query || 'all', page, perPage: 12, thumbsize: 'big', order: 'latest' });
-            videos.push(...(Array.isArray(epornerResult?.videos) ? epornerResult.videos.map(normalizeEpornerVideo).filter(Boolean) : []));
+            if (req.query.source !== 'pornhub') videos.push(...(Array.isArray(epornerResult?.videos) ? epornerResult.videos.map(normalizeEpornerVideo).filter(Boolean) : []));
             videos.sort(() => Math.random() - 0.5);
         } catch (error) {
             console.error('[Eporner] Gagal memuat video tambahan:', error.message);
         }
+        if (req.query.source === 'eporner') videos = videos.filter((item) => item.source === 'eporner');
         const shouldIndex = indexFirstPage && page === 1;
         const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
         const seo = buildSeo(req, {
@@ -306,6 +307,15 @@ app.get('/live-sex', (req, res) => renderVideoListing(req, res, {
     canonicalBase: '/live-sex',
     indexFirstPage: true,
 }));
+
+app.get('/random', async (req, res, next) => {
+    try {
+        const result = await ph.searchVideo('popular', { page: 1 });
+        const items = Array.isArray(result?.data) ? result.data : [];
+        const item = items[Math.floor(Math.random() * items.length)];
+        return item?.id ? res.redirect(`/watch/${encodeURIComponent(item.id)}`) : next();
+    } catch { return next(); }
+});
 
 // Media preview is loaded on demand so listing pages do not download every
 // video's source before the visitor actually hovers a card.
