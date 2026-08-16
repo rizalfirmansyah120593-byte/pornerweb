@@ -123,7 +123,7 @@
             </section>
             <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations.slice(8) : [])); %>
             <% if (recommendationItems && recommendationItems.length) { %>
-                <section class='recommendations-section' aria-labelledby='recommended-title'>
+                <section class='recommendations-section more-videos-section' aria-labelledby='recommended-title'>
                     <div class='section-heading'>
                         <div>
                             <h2 id='recommended-title'>More videos to explore</h2>
@@ -153,6 +153,24 @@
             const metadata = document.getElementById('watch-metadata');
             const currentVideoId = metadata?.dataset.videoId || '';
             const currentVideoTitle = metadata?.dataset.videoTitle || '';
+            document.querySelectorAll('.recommendations-section:not(.more-videos-section) .video-grid').forEach((strip) => {
+                const controls = document.createElement('div');
+                controls.className = 'recommendation-carousel-controls';
+                controls.innerHTML = '<button type="button" aria-label="Geser ke kiri">←</button><button type="button" aria-label="Geser ke kanan">→</button>';
+                strip.parentElement.insertBefore(controls, strip);
+                const [left, right] = controls.querySelectorAll('button');
+                const move = (distance) => strip.scrollBy({ left: distance, behavior: 'smooth' });
+                left.addEventListener('click', () => move(-210));
+                right.addEventListener('click', () => move(210));
+                let timer;
+                const start = () => { timer = window.setInterval(() => { if (strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4) strip.scrollTo({ left: 0, behavior: 'smooth' }); else strip.scrollBy({ left: 1, behavior: 'auto' }); }, 35); };
+                const stop = () => window.clearInterval(timer);
+                strip.addEventListener('mouseenter', stop);
+                strip.addEventListener('mouseleave', start);
+                strip.addEventListener('touchstart', stop, { passive: true });
+                strip.addEventListener('touchend', () => window.setTimeout(start, 1200), { passive: true });
+                start();
+            });
             const gate = document.getElementById('donation-play-gate');
             const modal = document.getElementById('donation-modal');
             const close = document.getElementById('donation-modal-close');
