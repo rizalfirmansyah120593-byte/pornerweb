@@ -2,10 +2,10 @@
   let ready = false;
   let opened = false;
 
-  // Aktif setelah 60 detik
+  // Aktif setelah 10 detik
   setTimeout(function () {
     ready = true;
-  }, 60000);
+  }, 10000);
 
   function openLinkOnce() {
     if (!ready || opened) return;
