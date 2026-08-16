@@ -249,6 +249,11 @@ img {
     padding: 11px 17px;
 }
 
+.live-sex-button { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 5px 9px; border: 1px solid #ffa31a; border-radius: 4px; background: #111827; color: #fff; font-size: .7rem; font-weight: 900; letter-spacing: .03em; white-space: nowrap; box-shadow: 0 4px 14px rgba(255,163,26,.18); transition: transform .2s ease, background .2s ease; }
+.live-sex-button:hover { transform: translateY(-2px); background: #ffa31a; color: #111827; }
+.live-sex-icon { display: grid; place-items: center; width: 17px; height: 17px; border: 2px solid currentColor; border-radius: 50%; color: #fff; font-size: .55rem; line-height: 1; }
+.live-sex-button sup { align-self: flex-start; margin-top: -2px; color: #ff3d71; font-size: .58rem; }
+
 .donation-button:hover,
 .footer-donation-button:hover {
     color: #fff;
@@ -1463,6 +1468,7 @@ img {
     .donation-button {
         order: 4;
     }
+    .live-sex-button { order: 5; }
 
     .mobile-sidebar-toggle {
         display: inline-flex;
