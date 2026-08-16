@@ -1479,15 +1479,26 @@ img {
 
 @media (max-width: 960px) {
     .main-header {
+        position: fixed !important;
+        inset: 0 0 auto 0 !important;
+        z-index: 100000 !important;
         flex-wrap: wrap;
-        padding: 14px 16px;
+        min-height: 112px;
+        padding: 8px 12px 9px;
+        gap: 8px 10px;
         z-index: 1100;
     }
+
+    body > .layout { margin-top: 112px; }
+    .main-header .pornhub-logo { font-size: .82rem !important; }
+    .main-header .pornhub-logo__badge { padding: 4px 4px 3px !important; }
+    .main-header .header-controls { gap: 7px; }
 
     .search-box {
         order: 3;
         width: 100%;
         max-width: none;
+        min-height: 34px;
     }
 
     .donation-button {
@@ -1524,7 +1535,7 @@ img {
         width: min(86vw, 340px);
         height: 100dvh;
         max-height: none;
-        padding-top: 76px;
+        padding-top: 112px;
         border-right: 1px solid var(--border);
         transform: translateX(-105%);
         transition: transform 0.25s ease;
