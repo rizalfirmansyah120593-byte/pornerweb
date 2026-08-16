@@ -1,9 +1,9 @@
     <div class="sidebar-intro">
-        <strong>Premium library</strong>
-        Curated categories, instant browsing, and a cleaner way to jump straight into what you want.
+        <strong><%= sidebarText.introTitle %></strong>
+        <%= sidebarText.introBody %>
     </div>
     <div class="sidebar-toolbar">
-        <button type="button" class="sidebar-toggle" id="toggle-all-sidebar">Collapse all</button>
+        <button type="button" class="sidebar-toggle" id="toggle-all-sidebar"><%= sidebarText.collapse %></button>
     </div>
     <% if (adsEnabled) { %>
         <%- include('ad-banner-300') %>

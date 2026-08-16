@@ -187,6 +187,12 @@ app.use((req, res, next) => {
         aboutVideo: 'この動画について', relatedTags: '関連タグ', footerTagline: 'お気に入りのコンテンツを快適に楽しめます。',
     };
     res.locals.t = translationCatalog[lang] || translationCatalog.en;
+    res.locals.sidebarText = {
+        introTitle: localized(lang, { id: 'Perpustakaan premium', en: 'Premium library', ms: 'Perpustakaan premium', es: 'Biblioteca premium', ja: 'プレミアムライブラリ' }),
+        introBody: localized(lang, { id: 'Kategori pilihan, penjelajahan cepat, dan cara mudah menemukan konten yang Anda inginkan.', en: 'Curated categories, instant browsing, and a cleaner way to jump straight into what you want.', ms: 'Kategori pilihan, carian pantas, dan cara mudah mencari kandungan yang anda mahu.', es: 'Categorías seleccionadas, navegación rápida y una forma sencilla de encontrar lo que buscas.', ja: '厳選されたカテゴリーから、目的のコンテンツをすぐに見つけられます。' }),
+        collapse: localized(lang, { id: 'Tutup semua', en: 'Collapse all', ms: 'Tutup semua', es: 'Contraer todo', ja: 'すべて閉じる' }),
+        recommendations: localized(lang, { id: 'REKOMENDASI', en: 'RECOMMENDATIONS', ms: 'CADANGAN', es: 'RECOMENDACIONES', ja: 'おすすめ' }), popular: localized(lang, { id: 'POPULER', en: 'POPULAR', ms: 'POPULAR', es: 'POPULAR', ja: '人気' }), country: localized(lang, { id: 'NEGARA', en: 'COUNTRY', ms: 'NEGARA', es: 'PAÍS', ja: '国' }), category: localized(lang, { id: 'KATEGORI', en: 'CATEGORY', ms: 'KATEGORI', es: 'CATEGORÍA', ja: 'カテゴリー' }),
+    };
 
     res.locals.seo = buildSeo(req, {});
     if (req.path === '/set-lang') {

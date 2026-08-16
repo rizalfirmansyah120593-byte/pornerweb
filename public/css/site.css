@@ -1296,7 +1296,7 @@ img {
 .site-footer {
     width: 100%;
     flex-shrink: 0;
-    padding: 24px 28px 28px;
+    padding: 18px 24px 14px;
     border-top: 1px solid var(--border);
     background: var(--footer-bg);
 }
@@ -1305,12 +1305,12 @@ img {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    gap: 12px 28px;
     flex-wrap: wrap;
 }
 
 .footer-brand strong {
-    font-size: 1.05rem;
+    font-size: .96rem;
     color: var(--text);
 }
 
@@ -1323,23 +1323,27 @@ img {
 
 .footer-brand p,
 .copyright {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     color: var(--muted);
+    font-size: .82rem;
+    line-height: 1.35;
 }
 
 .footer-donation-copy {
-    max-width: 390px;
-    margin-top: 10px !important;
+    max-width: 360px;
+    margin-top: 7px !important;
 }
 
 .footer-donation-button {
-    margin-top: 14px;
-    padding: 10px 16px;
+    margin-top: 10px;
+    padding: 8px 13px;
+    font-size: .82rem;
 }
 
 .footer-links {
     display: flex;
-    gap: 14px;
+    gap: 12px 16px;
+    font-size: .82rem;
     flex-wrap: wrap;
 }
 
