@@ -21,6 +21,13 @@ const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const isProduction = process.env.NODE_ENV === 'production';
 const SUPPORTED_LANGUAGES = ['id', 'en', 'ms', 'es', 'ja'];
 const localized = (lang, values) => values[lang] || values.en;
+const epornerId = (id) => `ep_${String(id).replace(/^ep_/, '')}`;
+const isEpornerId = (id) => String(id || '').startsWith('ep_');
+const epornerRawId = (id) => String(id || '').replace(/^ep_/, '');
+function normalizeEpornerVideo(item) {
+    if (!item?.id) return null;
+    return { id: epornerId(item.id), source: 'eporner', title: item.title || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
+}
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -191,6 +198,13 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     try {
         const result = await ph.searchVideo(query, { page });
         const videos = result?.data || [];
+        try {
+            const epornerResult = await epornerSearch({ query: query || 'all', page, perPage: 12, thumbsize: 'big', order: 'latest' });
+            videos.push(...(Array.isArray(epornerResult?.videos) ? epornerResult.videos.map(normalizeEpornerVideo).filter(Boolean) : []));
+            videos.sort(() => Math.random() - 0.5);
+        } catch (error) {
+            console.error('[Eporner] Gagal memuat video tambahan:', error.message);
+        }
         const shouldIndex = indexFirstPage && page === 1;
         const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
         const seo = buildSeo(req, {
@@ -358,6 +372,13 @@ app.get('/watch/:id', async (req, res, next) => {
     if (!id) return next();
     
     try {
+        if (isEpornerId(id)) {
+            const result = await epornerSearch({ id: epornerRawId(id), perPage: 1, thumbsize: 'big' });
+            const videoData = normalizeEpornerVideo(result?.videos?.[0]);
+            if (!videoData) return next();
+            const description = `${localized(res.locals.lang, { id: 'Tonton', en: 'Watch', ms: 'Tonton', es: 'Mira', ja: 'Watch' })} ${videoData.title}. Adults 18+ only.`;
+            return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations: [], localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
+        }
         const videoData = await ph.video(id);
 
         let recommendations = [];

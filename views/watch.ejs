@@ -27,7 +27,7 @@
             <div class='player'>
                 <iframe
                     id='video-embed-frame'
-                    src='https://www.pornhub.com/embed/<%= video.id %>'
+                    src='<%= video.embed || `https://www.pornhub.com/embed/${video.id}` %>'
                     title='<%= video.title %>'
                     allow='autoplay; fullscreen; picture-in-picture; encrypted-media'
                     allowfullscreen

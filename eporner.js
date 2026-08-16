@@ -1,4 +1,5 @@
 const EPORNER_API = 'https://www.eporner.com/api/v2/video/search/';
+const EPORNER_ID_API = 'https://www.eporner.com/api/v2/video/id/';
 
 const allowedOrders = new Set([
     'latest', 'longest', 'shortest', 'top-rated',
@@ -21,12 +22,14 @@ export async function epornerSearch({ query, id, page = 1, perPage = 24, thumbsi
     params.set('thumbsize', ['small', 'medium', 'big'].includes(thumbsize) ? thumbsize : 'big');
     if (allowedOrders.has(order)) params.set('order', order);
 
-    const response = await fetch(`${EPORNER_API}?${params}`, {
+    const endpoint = id ? EPORNER_ID_API : EPORNER_API;
+    const response = await fetch(`${endpoint}?${params}`, {
         headers: { accept: 'application/json', 'user-agent': 'PornerWeb/1.0' },
         signal: AbortSignal.timeout(15_000),
     });
     if (!response.ok) throw new Error(`Eporner API mengembalikan HTTP ${response.status}.`);
-    return response.json();
+    const data = await response.json();
+    return id ? { videos: data?.id ? [data] : [] } : data;
 }
 
 export { EPORNER_API };
