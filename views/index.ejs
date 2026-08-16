@@ -154,24 +154,6 @@
                 write('pornerwebWatchLater', next); button.classList.toggle('is-saved', next.includes(id));
             });
         });
-        const grid = document.getElementById('video-grid');
-        if (!grid) return;
-        const nextLink = document.querySelector('.pagination a[rel="next"]');
-        if (!nextLink || !('IntersectionObserver' in window)) return;
-        const sentinel = document.createElement('div'); sentinel.className = 'infinite-scroll-sentinel'; grid.after(sentinel);
-        let loading = false;
-        const observer = new IntersectionObserver(async ([entry]) => {
-            if (!entry.isIntersecting || loading) return;
-            loading = true;
-            try {
-                const html = await (await fetch(nextLink.href)).text();
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                doc.querySelectorAll('#video-grid > .video-card').forEach((card) => grid.append(card));
-                const newer = doc.querySelector('.pagination a[rel="next"]');
-                if (newer) nextLink.href = newer.href; else { observer.disconnect(); sentinel.remove(); }
-            } catch {} finally { loading = false; }
-        }, { rootMargin: '500px' });
-        observer.observe(sentinel);
     })();
     </script>
 </body>
