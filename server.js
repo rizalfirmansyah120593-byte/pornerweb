@@ -204,21 +204,30 @@ app.use((req, res, next) => {
 
 async function renderVideoListing(req, res, { query, heading, description, canonicalBase, indexFirstPage }) {
     const page = parsePage(req.query.page);
+    const pageSize = 24;
     const separator = canonicalBase.includes('?') ? '&' : '?';
     const canonicalPath = page > 1 ? `${canonicalBase}${separator}page=${page}` : canonicalBase;
     const paginationPath = (target) => target > 1 ? `${canonicalBase}${separator}page=${target}` : canonicalBase;
 
     try {
-        const result = await ph.searchVideo(query, { page });
-        let videos = (result?.data || []).map((item) => ({ ...item, source: 'pornhub' }));
-        try {
-            const epornerResult = await epornerSearch({ query: query || 'all', page, perPage: 12, thumbsize: 'big', order: 'latest' });
-            if (req.query.source !== 'pornhub') videos.push(...(Array.isArray(epornerResult?.videos) ? epornerResult.videos.map(normalizeEpornerVideo).filter(Boolean) : []));
-            videos.sort(() => Math.random() - 0.5);
-        } catch (error) {
-            console.error('[Eporner] Gagal memuat video tambahan:', error.message);
+        // Ambil semua halaman sebelumnya terlebih dahulu. Kedua sumber memiliki
+        // pagination yang berbeda, jadi mem-paginasi keduanya secara terpisah
+        // dapat membuat item yang sama muncul kembali di halaman berikutnya.
+        const sourcePages = Array.from({ length: page }, (_, index) => index + 1);
+        const results = await Promise.all(sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage })));
+        const result = results[results.length - 1];
+        let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
+        if (req.query.source !== 'pornhub') {
+            try {
+                const epornerResults = await Promise.all(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 12, thumbsize: 'big', order: 'latest' })));
+                allVideos.push(...epornerResults.flatMap((item) => (Array.isArray(item?.videos) ? item.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
+            } catch (error) {
+                console.error('[Eporner] Gagal memuat video tambahan:', error.message);
+            }
         }
-        if (req.query.source === 'eporner') videos = videos.filter((item) => item.source === 'eporner');
+        if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
+        const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
+        const videos = uniqueVideos.slice((page - 1) * pageSize, page * pageSize);
         const shouldIndex = indexFirstPage && page === 1;
         const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
         const seo = buildSeo(req, {
