@@ -1,7 +1,6 @@
 <header class="main-header">
     <a href="/" class="brand-pill" aria-label="Kembali ke beranda">
-        <span class="brand-mark">▶</span>
-        <span class="brand-text">PORNERWEB</span>
+        <span class="brand-text">PORNER<span>WEB</span></span>
     </a>
 
     <form action="/" method="GET" class="search-box">
@@ -34,8 +33,50 @@
     </div>
 </header>
 
+<% const ageGateText = {
+    id: { language: 'Bahasa', title: 'Ini adalah website dewasa', notice: 'Pemberitahuan untuk Pengguna', body: 'Website ini berisi materi yang dibatasi usia termasuk ketelanjangan dan penggambaran aktivitas seksual eksplisit. Dengan masuk, Anda menyatakan telah berusia minimal 18 tahun atau telah mencapai usia dewasa di wilayah hukum Anda dan menyetujui untuk melihat konten eksplisit.', law: 'Pemberitahuan untuk Penegak Hukum', enter: 'Saya berusia 18 tahun atau lebih - Masuk', exit: 'Saya berusia di bawah 18 tahun - Keluar', controls: 'Halaman kontrol orang tua kami menjelaskan cara memblokir akses ke situs ini.', terms: 'Ketentuan Layanan' },
+    en: { language: 'English', title: 'This is an adult website', notice: 'Notice to Users', body: 'This website contains age-restricted materials including nudity and explicit depictions of sexual activity. By entering, you affirm that you are at least 18 years of age or the age of majority in your jurisdiction and consent to viewing sexually explicit content.', law: 'Notice to Law Enforcement', enter: 'I am 18 or older - Enter', exit: 'I am under 18 - Exit', controls: 'Our parental controls page explains how you can easily block access to this site.', terms: 'Terms of Service' },
+    ms: { language: 'Bahasa Melayu', title: 'Ini ialah laman web dewasa', notice: 'Notis kepada Pengguna', body: 'Laman web ini mengandungi bahan terhad umur termasuk kebogelan dan gambaran aktiviti seksual eksplisit. Dengan masuk, anda mengesahkan bahawa anda berumur sekurang-kurangnya 18 tahun atau telah mencapai umur dewasa di bidang kuasa anda.', law: 'Notis kepada Penguat Kuasa', enter: 'Saya berumur 18 tahun atau lebih - Masuk', exit: 'Saya di bawah 18 tahun - Keluar', controls: 'Halaman kawalan ibu bapa kami menerangkan cara menyekat akses ke laman ini.', terms: 'Syarat Perkhidmatan' },
+    es: { language: 'Español', title: 'Este es un sitio web para adultos', notice: 'Aviso para los usuarios', body: 'Este sitio contiene material restringido por edad, incluida desnudez y representaciones explícitas de actividad sexual. Al entrar, confirma que tiene al menos 18 años o la mayoría de edad en su jurisdicción y acepta ver contenido sexual explícito.', law: 'Aviso a las autoridades', enter: 'Tengo 18 años o más - Entrar', exit: 'Tengo menos de 18 años - Salir', controls: 'Nuestra página de control parental explica cómo bloquear fácilmente el acceso a este sitio.', terms: 'Términos del servicio' },
+    ja: { language: '日本語', title: 'これはアダルトウェブサイトです', notice: 'ユーザーへのお知らせ', body: 'このウェブサイトには、ヌードや性的行為の露骨な描写など、年齢制限のあるコンテンツが含まれています。入場することで、18歳以上またはお住まいの地域の成人年齢に達していることを確認するものとします。', law: '法執行機関へのお知らせ', enter: '18歳以上です - 入場', exit: '18歳未満です - 退出', controls: 'ペアレンタルコントロールのページで、このサイトへのアクセスを簡単にブロックできます。', terms: '利用規約' }
+}; const ageCopy = ageGateText[lang] || ageGateText.en; %>
+<section class="age-gate" id="age-gate" role="dialog" aria-modal="true" aria-labelledby="age-gate-title">
+    <select class="age-gate__language" id="age-gate-language" aria-label="Pilih bahasa">
+        <% Object.entries(ageGateText).forEach(([code, copy]) => { %><option value="<%= code %>" <%= lang === code ? 'selected' : '' %>><%= copy.language %></option><% }) %>
+    </select>
+    <div class="age-gate__content">
+        <div class="age-gate__logo">PORNER<span>WEB</span></div>
+        <h1 id="age-gate-title"><%= ageCopy.title %></h1>
+        <div class="age-gate__notice"><%= ageCopy.notice %></div>
+        <p><%= ageCopy.body %></p>
+        <a href="/terms"><%= ageCopy.law %></a>
+        <div class="age-gate__actions">
+            <button type="button" id="age-enter"><%= ageCopy.enter %></button>
+            <button type="button" id="age-exit"><%= ageCopy.exit %></button>
+        </div>
+        <p class="age-gate__controls"><%= ageCopy.controls %><br><a href="/terms"><%= ageCopy.terms %></a></p>
+        <small>© 2026 PORNERWEB <b>RTA</b></small>
+    </div>
+</section>
+
 <script>
 (() => {
+    const ageGate = document.getElementById('age-gate');
+    const ageEnter = document.getElementById('age-enter');
+    const ageExit = document.getElementById('age-exit');
+    document.getElementById('age-gate-language')?.addEventListener('change', (event) => {
+        window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;
+    });
+    try { if (localStorage.getItem('ageVerified') === 'true') ageGate?.classList.add('is-hidden'); } catch {}
+    document.body.classList.add('age-gate-active');
+    if (ageGate?.classList.contains('is-hidden')) document.body.classList.remove('age-gate-active');
+    ageEnter?.addEventListener('click', () => {
+        try { localStorage.setItem('ageVerified', 'true'); } catch {}
+        ageGate?.classList.add('is-hidden');
+        document.body.classList.remove('age-gate-active');
+    });
+    ageExit?.addEventListener('click', () => { window.location.replace('about:blank'); });
+
     const root = document.documentElement;
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const themeButtons = document.querySelectorAll('[data-theme-choice]');

@@ -99,31 +99,51 @@
     <%- include('partials/ad-global') %>
     <script>
         (() => {
-            if (!window.matchMedia('(hover: hover)').matches) return;
+            const supportsHover = window.matchMedia('(hover: hover)').matches;
+            const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+            if (!supportsHover && !isTouchDevice) return;
             const cards = document.querySelectorAll('[data-preview-id]');
             cards.forEach((card) => {
                 const video = card.querySelector('.hover-preview');
                 const id = card.dataset.previewId;
                 if (!video || !id) return;
-                card.addEventListener('pointerenter', async () => {
-                        card.classList.add('is-previewing');
+                let hoverTimer;
+                let hoverToken = 0;
+                card.addEventListener('pointerenter', () => {
+                    hoverToken += 1;
+                    const token = hoverToken;
+                    hoverTimer = window.setTimeout(async () => {
                         try {
                             if (!video.src) {
                                 const response = await fetch('/api/video-preview/' + encodeURIComponent(id));
-                                if (!response.ok) return;
+                                if (!response.ok || token !== hoverToken) return;
                                 const source = await response.json();
                                 video.src = source.url;
+                                video.type = source.type || '';
                                 video.load();
                             }
+                            if (token !== hoverToken) return;
                             video.currentTime = 0;
-                            video.play().catch(() => {});
-                        } catch (_) { /* autoplay or remote media may be unavailable */ }
+                            await video.play();
+                            card.classList.add('is-previewing');
+                        } catch (_) { /* preview unavailable or autoplay is blocked */ }
+                    }, 180);
                 });
                 card.addEventListener('pointerleave', () => {
+                    window.clearTimeout(hoverTimer);
+                    hoverToken += 1;
                     video.pause();
                     video.currentTime = 0;
                     card.classList.remove('is-previewing');
                 });
+                if (isTouchDevice) {
+                    card.addEventListener('click', (event) => {
+                        if (!card.classList.contains('is-previewing')) {
+                            event.preventDefault();
+                            card.dispatchEvent(new PointerEvent('pointerenter', { bubbles: false, pointerType: 'touch' }));
+                        }
+                    });
+                }
             });
         })();
     </script>
