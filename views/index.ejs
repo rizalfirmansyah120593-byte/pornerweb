@@ -99,9 +99,7 @@
     <%- include('partials/ad-global') %>
     <script>
         (() => {
-            const supportsHover = window.matchMedia('(hover: hover)').matches;
-            const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-            if (!supportsHover && !isTouchDevice) return;
+            if (!window.matchMedia('(hover: hover)').matches) return;
             const cards = document.querySelectorAll('[data-preview-id]');
             cards.forEach((card) => {
                 const video = card.querySelector('.hover-preview');
@@ -126,26 +124,16 @@
                             video.currentTime = 0;
                             await video.play();
                             card.classList.add('is-previewing');
-                            if (isTouchDevice) card.dataset.touchPreviewReady = 'true';
                         } catch (_) { /* preview unavailable or autoplay is blocked */ }
                     }, 180);
                 });
                 card.addEventListener('pointerleave', () => {
-                    if (isTouchDevice) return;
                     window.clearTimeout(hoverTimer);
                     hoverToken += 1;
                     video.pause();
                     video.currentTime = 0;
                     card.classList.remove('is-previewing');
                 });
-                if (isTouchDevice) {
-                    card.addEventListener('click', (event) => {
-                        if (card.dataset.touchPreviewReady !== 'true') {
-                            event.preventDefault();
-                            card.dispatchEvent(new PointerEvent('pointerenter', { bubbles: false, pointerType: 'touch' }));
-                        }
-                    });
-                }
             });
         })();
     </script>
