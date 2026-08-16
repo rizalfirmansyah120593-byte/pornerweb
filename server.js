@@ -251,6 +251,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             console.error('[Trending Pornstars] Gagal memuat:', error.message);
         }
 
+        // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
         return res.render('index', {
             data: videos, title: heading, intro: description, query, currentPage: page,
@@ -377,6 +378,8 @@ app.get('/models', (req, res) => renderVideoListing(req, res, {
 app.get('/pornstars', async (req, res) => {
     const page = parsePage(req.query.page);
     const gender = ['female', 'male'].includes(String(req.query.gender)) ? String(req.query.gender) : '';
+    const shouldIndex = page === 1 && !gender;
+    if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
     try {
         const result = await ph.pornstarList({ page, ...(gender ? { gender } : {}) });
         const pornstars = Array.isArray(result?.data) ? result.data : [];
@@ -399,7 +402,7 @@ app.get('/pornstars', async (req, res) => {
                 description: localized(res.locals.lang, { id: 'Jelajahi profil pornstar populer dan video mereka.', en: 'Browse popular pornstar profiles and their videos.', ms: 'Terokai profil pornstar popular dan video mereka.', es: 'Explora perfiles de pornstars populares y sus vídeos.', ja: '人気のポルノスターのプロフィールと動画をご覧ください。' }),
                 pathname: paginationPath(page),
                 explicit: true,
-                robots: page > 1 ? 'noindex, follow' : undefined,
+                robots: shouldIndex ? undefined : 'noindex, follow',
             }),
         });
     } catch (error) {
