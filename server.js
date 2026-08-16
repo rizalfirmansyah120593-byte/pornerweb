@@ -935,6 +935,160 @@ const BLOG_POSTS = Object.freeze([
             ],
         },
     },
+    {
+        slug: 'cara-menggunakan-pencarian-video-online',
+        title: { id: 'Cara menggunakan pencarian video online dengan lebih efektif', en: 'How to use online video search more effectively' },
+        summary: { id: 'Panduan praktis memilih kata kunci, membaca hasil, dan menemukan video relevan tanpa membuang waktu.', en: 'A practical guide to choosing keywords, reading results, and finding relevant videos faster.' },
+        body: {
+            id: [
+                { h: 'Mulai dari tujuan pencarian', p: 'Tentukan terlebih dahulu jenis video yang ingin ditemukan. Tujuan yang jelas membantu Anda memilih kata kunci yang lebih relevan dan mengurangi hasil yang tidak sesuai.' },
+                { h: 'Pilih kata kunci yang spesifik', p: 'Gabungkan topik, gaya, kategori, atau negara dalam dua sampai tiga kata. Kata kunci yang terlalu umum biasanya menghasilkan daftar yang panjang dan sulit disaring.' },
+                { h: 'Bandingkan judul, thumbnail, dan durasi', p: 'Gunakan metadata yang tersedia sebagai panduan awal. Judul memberi konteks, thumbnail membantu mengenali tema, sedangkan durasi membantu memilih format yang sesuai.' },
+                { h: 'Persempit hasil secara bertahap', p: 'Tambahkan satu filter pada satu waktu. Cara ini membuat Anda lebih mudah mengetahui filter mana yang benar-benar meningkatkan relevansi hasil.' },
+            ],
+            en: [
+                { h: 'Start with a clear search goal', p: 'Define what you want to find before searching. A clear goal leads to better keywords and fewer irrelevant results.' },
+                { h: 'Use specific keywords', p: 'Combine a topic, style, category, or country in two or three words. Broad queries usually create noisy result pages.' },
+                { h: 'Compare title, thumbnail, and duration', p: 'Use available metadata as a quick guide before opening a video.' },
+                { h: 'Refine results gradually', p: 'Add one filter at a time so you can see which refinement improves relevance.' },
+            ],
+        },
+    },
+    {
+        slug: 'panduan-memilih-kata-kunci-video',
+        title: { id: 'Panduan memilih kata kunci video yang relevan', en: 'Guide to choosing relevant video keywords' },
+        summary: { id: 'Pelajari teknik membuat kata kunci pencarian yang singkat, jelas, dan mudah menghasilkan video sesuai minat.', en: 'Learn how to create short, clear search phrases that lead to more relevant videos.' },
+        body: {
+            id: [
+                { h: 'Gunakan frasa, bukan daftar kata acak', p: 'Frasa seperti “japanese amateur” atau “cosplay compilation” memberi konteks lebih baik dibandingkan banyak kata yang tidak berhubungan.' },
+                { h: 'Gabungkan kata utama dan penjelas', p: 'Kata utama menjelaskan topik, sementara kata penjelas memberi batasan gaya, negara, atau kategori.' },
+                { h: 'Hindari terlalu banyak batasan', p: 'Pencarian yang terlalu panjang dapat mempersempit hasil secara berlebihan. Mulai sederhana lalu perbaiki berdasarkan hasil pertama.' },
+                { h: 'Coba variasi sinonim', p: 'Jika hasil sedikit, ubah satu kata dengan istilah yang mirip. Setiap platform dapat mengindeks istilah dengan cara yang berbeda.' },
+            ],
+            en: [
+                { h: 'Use phrases instead of random words', p: 'A phrase provides more context than a long list of unrelated terms.' },
+                { h: 'Combine a main term with a qualifier', p: 'The main term describes the topic; the qualifier defines style, country, or category.' },
+                { h: 'Avoid too many restrictions', p: 'Start simple and refine after reviewing the first results.' },
+                { h: 'Try synonym variations', p: 'Replace one term when results are limited because platforms may index similar ideas differently.' },
+            ],
+        },
+    },
+    {
+        slug: 'strategi-browsing-video-tanpa-mengulang-hasil',
+        title: { id: 'Strategi browsing video tanpa mengulang hasil yang sama', en: 'How to browse videos without repeating the same results' },
+        summary: { id: 'Temukan cara memakai pagination, filter sumber, dan daftar simpanan agar eksplorasi video lebih beragam.', en: 'Use pagination, source filters, and saved lists to keep video discovery varied.' },
+        body: {
+            id: [
+                { h: 'Gunakan halaman berikutnya secara berurutan', p: 'Pagination membantu Anda berpindah ke kumpulan hasil berikutnya. Hindari membuka ulang halaman pertama ketika ingin melanjutkan eksplorasi.' },
+                { h: 'Pilih sumber yang berbeda', p: 'Filter Pornhub atau Eporner dapat membantu menemukan katalog yang berbeda ketika hasil gabungan terasa berulang.' },
+                { h: 'Simpan video yang sudah dipilih', p: 'Watch Later membuat Anda tidak perlu mencari video yang sama lagi dan membantu membedakan konten yang sudah Anda lihat.' },
+                { h: 'Ganti pendekatan pencarian', p: 'Jika hasil mulai berulang, tambahkan kategori, negara, atau sinonim yang masih relevan.' },
+            ],
+            en: [
+                { h: 'Move through pagination in order', p: 'Pagination takes you to the next result set. Avoid reopening the first page when continuing discovery.' },
+                { h: 'Try a different source', p: 'Source filters can reveal a different catalog when combined results feel repetitive.' },
+                { h: 'Save videos you already selected', p: 'Watch Later helps you avoid searching for the same picks again.' },
+                { h: 'Change your search angle', p: 'Add a relevant category, country, or synonym when results begin to repeat.' },
+            ],
+        },
+    },
+    {
+        slug: 'tips-menilai-kualitas-thumbnail-video',
+        title: { id: 'Tips menilai kualitas thumbnail dan metadata video', en: 'Tips for evaluating video thumbnails and metadata' },
+        summary: { id: 'Kenali informasi penting pada thumbnail, judul, durasi, dan jumlah views sebelum membuka video.', en: 'Understand the value of thumbnails, titles, duration, and views before opening a video.' },
+        body: {
+            id: [
+                { h: 'Thumbnail sebagai petunjuk visual', p: 'Thumbnail memberi gambaran awal tentang tema video, tetapi tetap gunakan bersama judul dan informasi lain agar tidak mengambil kesimpulan terlalu cepat.' },
+                { h: 'Judul membantu memahami konteks', p: 'Baca judul secara utuh untuk melihat kata kunci utama dan detail tambahan yang membedakan satu hasil dengan hasil lainnya.' },
+                { h: 'Durasi sesuai kebutuhan', p: 'Durasi dapat membantu Anda memilih video singkat atau panjang sesuai waktu yang tersedia.' },
+                { h: 'Views bukan satu-satunya ukuran', p: 'Jumlah views berguna sebagai sinyal popularitas, tetapi relevansi terhadap pencarian tetap menjadi pertimbangan utama.' },
+            ],
+            en: [
+                { h: 'Use thumbnails as visual clues', p: 'Thumbnails offer an initial idea, but review them together with titles and other details.' },
+                { h: 'Titles provide context', p: 'Read the full title to identify the main keyword and differentiating details.' },
+                { h: 'Choose a suitable duration', p: 'Duration helps you select content that fits the time available.' },
+                { h: 'Views are not the only signal', p: 'View counts indicate popularity, while relevance should remain the deciding factor.' },
+            ],
+        },
+    },
+    {
+        slug: 'cara-membuat-sesi-menonton-lebih-teratur',
+        title: { id: 'Cara membuat sesi menonton video lebih teratur', en: 'How to organize a better video-watching session' },
+        summary: { id: 'Atur alur pencarian, daftar Watch Later, dan Continue Watching untuk pengalaman yang lebih fokus.', en: 'Organize search, Watch Later, and Continue Watching for a more focused experience.' },
+        body: {
+            id: [
+                { h: 'Tentukan tema sesi', p: 'Mulai dengan satu tema atau kata kunci agar daftar hasil tetap fokus dan mudah dipilih.' },
+                { h: 'Buat shortlist terlebih dahulu', p: 'Simpan beberapa pilihan ke Watch Later sebelum membuka terlalu banyak tab atau halaman.' },
+                { h: 'Manfaatkan Continue Watching', p: 'Gunakan fitur ini untuk kembali ke video terakhir tanpa mengulangi proses pencarian.' },
+                { h: 'Tutup pilihan yang tidak relevan', p: 'Kurangi daftar yang tidak sesuai agar rekomendasi dan pilihan berikutnya tetap lebih terarah.' },
+            ],
+            en: [
+                { h: 'Choose a session theme', p: 'Start with one topic or keyword so the result list stays focused.' },
+                { h: 'Create a shortlist first', p: 'Save a few picks to Watch Later before opening too many tabs.' },
+                { h: 'Use Continue Watching', p: 'Return to your last video without repeating the entire search.' },
+                { h: 'Remove irrelevant choices', p: 'Keep your shortlist focused so the next decision is easier.' },
+            ],
+        },
+    },
+    {
+        slug: 'perbedaan-video-populer-dan-video-terbaru',
+        title: { id: 'Perbedaan video populer dan video terbaru', en: 'Popular videos vs. latest videos: what is the difference?' },
+        summary: { id: 'Pahami kapan memilih video populer untuk validasi minat dan kapan memilih video terbaru untuk menemukan konten segar.', en: 'Learn when popular videos are useful and when latest videos are better for fresh discovery.' },
+        body: {
+            id: [
+                { h: 'Kelebihan video populer', p: 'Video populer biasanya memiliki banyak interaksi dan dapat menjadi titik awal ketika Anda belum mengetahui topik yang ingin dicari.' },
+                { h: 'Kelebihan video terbaru', p: 'Video terbaru membantu Anda menemukan tambahan katalog dan tema yang baru diperbarui.' },
+                { h: 'Gunakan keduanya secara bergantian', p: 'Mulai dari populer untuk memahami pola minat, lalu beralih ke terbaru untuk memperluas pilihan.' },
+                { h: 'Tetap gunakan kata kunci', p: 'Urutan populer atau terbaru tetap akan lebih efektif jika dipadukan dengan pencarian yang spesifik.' },
+            ],
+            en: [
+                { h: 'Benefits of popular videos', p: 'Popular videos are a useful starting point when you are still exploring a topic.' },
+                { h: 'Benefits of latest videos', p: 'Latest videos help you discover newly updated catalog entries and fresh themes.' },
+                { h: 'Use both approaches', p: 'Start with popular results, then switch to latest results for broader discovery.' },
+                { h: 'Keep keywords involved', p: 'Sorting works best when combined with a specific search phrase.' },
+            ],
+        },
+    },
+    {
+        slug: 'panduan-menjelajah-video-di-perangkat-mobile',
+        title: { id: 'Panduan menjelajah video dengan nyaman di perangkat mobile', en: 'Guide to browsing videos comfortably on mobile devices' },
+        summary: { id: 'Optimalkan pengalaman pencarian video di ponsel dengan koneksi stabil, tampilan yang nyaman, dan navigasi sederhana.', en: 'Improve mobile video discovery with a stable connection, comfortable display, and simple navigation.' },
+        body: {
+            id: [
+                { h: 'Gunakan koneksi yang stabil', p: 'Koneksi yang baik membantu thumbnail, metadata, dan player dimuat lebih konsisten saat Anda berpindah halaman.' },
+                { h: 'Atur tema sesuai lingkungan', p: 'Tema gelap dapat terasa lebih nyaman di tempat minim cahaya, sementara tema terang dapat membantu pada siang hari.' },
+                { h: 'Gunakan pagination dengan sabar', p: 'Tunggu halaman selesai dimuat sebelum menekan navigasi berikutnya agar tidak terjadi klik ganda.' },
+                { h: 'Simpan pilihan penting', p: 'Watch Later membantu Anda melanjutkan eksplorasi ketika waktu atau koneksi sedang terbatas.' },
+            ],
+            en: [
+                { h: 'Use a stable connection', p: 'A reliable connection helps thumbnails, metadata, and players load consistently.' },
+                { h: 'Choose a comfortable theme', p: 'Dark mode can be easier in low light, while light mode may suit daytime browsing.' },
+                { h: 'Use pagination carefully', p: 'Let each page finish loading before tapping the next navigation control.' },
+                { h: 'Save important picks', p: 'Watch Later lets you continue discovery when time or connectivity is limited.' },
+            ],
+        },
+    },
+    {
+        slug: 'checklist-pencarian-video-yang-relevan',
+        title: { id: 'Checklist pencarian video yang relevan dan efisien', en: 'A checklist for relevant and efficient video searches' },
+        summary: { id: 'Checklist singkat untuk memeriksa kata kunci, filter, sumber, pagination, dan daftar video sebelum memulai sesi browsing.', en: 'A quick checklist covering keywords, filters, sources, pagination, and saved videos.' },
+        body: {
+            id: [
+                { h: 'Periksa kata kunci', p: 'Pastikan kata kunci menggambarkan topik utama dan tidak terlalu umum.' },
+                { h: 'Pilih filter yang diperlukan', p: 'Gunakan kategori, negara, atau sumber hanya jika memang membantu mempersempit hasil.' },
+                { h: 'Bandingkan beberapa halaman', p: 'Jelajahi pagination untuk mendapatkan variasi, bukan hanya memilih hasil pertama.' },
+                { h: 'Simpan dan evaluasi', p: 'Masukkan pilihan terbaik ke Watch Later, lalu evaluasi apakah kata kunci Anda sudah menghasilkan konten yang relevan.' },
+                { h: 'Gunakan secara bertanggung jawab', p: 'Layanan ini hanya untuk pengguna 18 tahun ke atas. Patuhi hukum dan peraturan yang berlaku di wilayah Anda.' },
+            ],
+            en: [
+                { h: 'Check your keywords', p: 'Make sure the phrase describes the main topic without being too broad.' },
+                { h: 'Choose only useful filters', p: 'Use category, country, or source filters when they genuinely improve relevance.' },
+                { h: 'Review multiple pages', p: 'Explore pagination for variety instead of choosing only the first results.' },
+                { h: 'Save and evaluate', p: 'Save the best picks, then assess whether your query is producing relevant content.' },
+                { h: 'Browse responsibly', p: 'This service is for adults 18 and over. Follow the laws and regulations in your region.' },
+            ],
+        },
+    },
 ]);
 async function loadFeaturedVideos(req) {
     try {
