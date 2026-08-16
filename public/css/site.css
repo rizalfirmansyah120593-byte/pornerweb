@@ -21,6 +21,7 @@
     --accent-readable: #ffd27a;
     --accent-readable-strong: #ffc04d;
     --control-bg: #111827;
+    --logo-text: #f8f8fb;
 }
 
 .age-gate {
@@ -45,8 +46,8 @@
 .age-gate.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .age-gate__language { position: absolute; top: 7px; left: 12px; padding: 4px 8px; background: #111827; color: #eee; border: 1px solid rgba(255,255,255,.12); border-radius: 5px; font-size: 11px; cursor: pointer; }
 .age-gate__content { width: min(100%, 640px); margin: 0 auto; padding: 42px 30px 30px; text-align: center; background: linear-gradient(145deg, #0e1524, #070b14); border: 1px solid rgba(255,255,255,.15); border-top: 3px solid #ffa31a; border-radius: 18px; box-shadow: 0 25px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(255,163,26,.08); }
-.age-gate__logo { display: inline-block; margin-bottom: 17px; color: #f8f8fb; font-size: 24px; font-weight: 800; letter-spacing: .02em; }
-.age-gate__logo span { margin-left: 2px; padding: 2px 5px; color: #fff; background: linear-gradient(135deg, #ff6b2c, #ff8a3d); border-radius: 5px; }
+.age-gate__logo { margin-bottom: 17px; font-size: 24px; }
+.age-gate .pornhub-logo { color: #f8f8fb; }
 .age-gate h1 { margin: 0 0 13px; font-size: 28px; line-height: 1.15; }
 .age-gate__notice { display: inline-block; padding: 6px 12px; border: 1px solid #ffa31a; border-radius: 999px; color: #ffd27a; font-size: 12px; font-weight: 700; }
 .age-gate p { margin: 11px 0 0; color: #c9c9c9; font-size: 13px; line-height: 1.25; }
@@ -83,6 +84,7 @@
     --accent-readable: #a83a12;
     --accent-readable-strong: #a83a12;
     --control-bg: #ffffff;
+    --logo-text: #101828;
 }
 
 * {
@@ -174,8 +176,10 @@ img {
     font-size: 1rem;
 }
 
-.brand-text span,
-.footer-brand strong span { margin-left: 2px; padding: 2px 5px; color: #111827; background: #ffa31a; border-radius: 4px; }
+.pornhub-logo { display: inline-flex; align-items: center; color: var(--logo-text); font-weight: 900; letter-spacing: .08em; line-height: 1; }
+.pornhub-logo span { margin-left: 3px; padding: 5px 4px 4px; color: #fff; background: #ffa31a; border-radius: 4px; letter-spacing: .02em; }
+.main-header .pornhub-logo { font-size: 1rem; }
+.footer-brand .pornhub-logo { font-size: 1.05rem; }
 
 .search-box {
     display: flex;
