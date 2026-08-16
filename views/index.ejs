@@ -22,13 +22,15 @@
                     <span class='eyebrow'><%= t.collection %></span>
                     <h1><%= title %></h1>
                     <p class='intro'><%= intro %></p>
-                    <div class='hero-actions'>
-                        <a class='hero-secondary-cta' href='/?q=trending'>Trending</a>
+                    <div class='hero-bottom-row'>
+                        <div class='hero-actions'>
+                            <a class='hero-secondary-cta' href='/?q=trending'>Trending</a>
+                        </div>
+                        <div class='hero-stat' aria-label='<%= data.length %> video pada halaman ini'>
+                            <strong><%= data.length %></strong>
+                            <span><%= t.available %></span>
+                        </div>
                     </div>
-                </div>
-                <div class='hero-stat' aria-label='<%= data.length %> video pada halaman ini'>
-                    <strong><%= data.length %></strong>
-                    <span><%= t.available %></span>
                 </div>
             </section>
 
