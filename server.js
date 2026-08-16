@@ -28,6 +28,12 @@ function normalizeEpornerVideo(item) {
     if (!item?.id) return null;
     return { id: epornerId(item.id), source: 'eporner', title: item.title || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
 }
+async function getEpornerRecommendations(excludeId) {
+    const result = await epornerSearch({ query: 'all', page: 1, perPage: 24, thumbsize: 'big', order: 'most-popular' });
+    return (Array.isArray(result?.videos) ? result.videos : [])
+        .map(normalizeEpornerVideo).filter((item) => item && item.id !== excludeId)
+        .sort(() => Math.random() - 0.5).slice(0, 12);
+}
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -377,7 +383,9 @@ app.get('/watch/:id', async (req, res, next) => {
             const videoData = normalizeEpornerVideo(result?.videos?.[0]);
             if (!videoData) return next();
             const description = `${localized(res.locals.lang, { id: 'Tonton', en: 'Watch', ms: 'Tonton', es: 'Mira', ja: 'Watch' })} ${videoData.title}. Adults 18+ only.`;
-            return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations: [], localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
+            let recommendations = [];
+            try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Eporner] Rekomendasi gagal:', error.message); }
+            return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
         }
         const videoData = await ph.video(id);
 
@@ -413,10 +421,17 @@ app.get('/watch/:id', async (req, res, next) => {
             }
 
             recommendations = [...pool].sort(() => Math.random() - 0.5).slice(0, 12);
+            if (recommendations.length < 12) {
+                try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 12 - recommendations.length)); } catch (error) { console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
+            }
         } catch (error) {
             console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
-            recommendations = [];
+            try { recommendations = await getEpornerRecommendations(id); } catch (fallbackError) { console.error('[Recommendations] Semua sumber gagal:', fallbackError.message); }
         }
+        recommendations = [...new Map(recommendations
+            .filter((item) => item?.id)
+            .map((item) => [`${item.source || 'pornhub'}:${item.id}`, item])).values()]
+            .slice(0, 12);
 
         const thumbnail = videoData.preview || videoData.thumb || undefined;
         const tags = Array.isArray(videoData.tags) ? videoData.tags.filter(Boolean).slice(0, 8) : [];
