@@ -3,6 +3,8 @@ import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
 import { createReadStream, existsSync } from 'fs';
 import { createInterface } from 'readline';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import cookieParser from 'cookie-parser';
 import { epornerSearch } from './eporner.js';
 
@@ -56,6 +58,9 @@ const PORNSTAR_CACHE_TTL = 15 * 60 * 1000;
 // Kolom CSV: embed|thumbnail|preview|title|tags|categories|models|...
 const PORNSTAR_THUMB_INDEX_FILE = join(__dirname, 'config', 'pornstar-thumbnails.json');
 const PORNSTAR_CSV_FILE = join(__dirname, 'pornhub.com-db.csv');
+const PORNSTAR_ZIP_FILE = join(__dirname, 'pornhub.com-db.zip');
+const PORNSTAR_ZIP_TEMP_DIR = join(__dirname, '.pornhub-csv-extract');
+const execFileAsync = promisify(execFile);
 let pornstarThumbIndex = {};
 let pornstarThumbIndexBuilding = false;
 try {
@@ -65,11 +70,34 @@ try {
 }
 const normalizePornstarName = (name) => String(name || '').trim().toLowerCase().replace(/[^a-z0-9]+/gi, ' ').trim();
 async function buildPornstarThumbnailIndex() {
-    if (pornstarThumbIndexBuilding || !existsSync(PORNSTAR_CSV_FILE)) return;
+    if (pornstarThumbIndexBuilding || (!existsSync(PORNSTAR_CSV_FILE) && !existsSync(PORNSTAR_ZIP_FILE))) return;
     pornstarThumbIndexBuilding = true;
+    let extractedTemporarily = false;
     try {
+        let csvFile = PORNSTAR_CSV_FILE;
+        if (!existsSync(csvFile)) {
+            const fsPromises = await import('fs/promises');
+            await fsPromises.rm(PORNSTAR_ZIP_TEMP_DIR, { recursive: true, force: true });
+            await fsPromises.mkdir(PORNSTAR_ZIP_TEMP_DIR, { recursive: true });
+            await execFileAsync('powershell.exe', [
+                '-NoProfile', '-NonInteractive', '-Command',
+                `Expand-Archive -LiteralPath '${PORNSTAR_ZIP_FILE.replace(/'/g, "''")}' -DestinationPath '${PORNSTAR_ZIP_TEMP_DIR.replace(/'/g, "''")}' -Force`,
+            ], { windowsHide: true, maxBuffer: 1024 * 1024 });
+            const csvEntries = [];
+            async function findCsv(directory) {
+                for (const entry of await fsPromises.readdir(directory, { withFileTypes: true })) {
+                    const fullPath = join(directory, entry.name);
+                    if (entry.isDirectory()) await findCsv(fullPath);
+                    else if (entry.name.toLowerCase().endsWith('.csv')) csvEntries.push(fullPath);
+                }
+            }
+            await findCsv(PORNSTAR_ZIP_TEMP_DIR);
+            if (!csvEntries.length) throw new Error('CSV tidak ditemukan di dalam ZIP.');
+            csvFile = csvEntries[0];
+            extractedTemporarily = true;
+        }
         const next = { ...pornstarThumbIndex };
-        const input = createInterface({ input: createReadStream(PORNSTAR_CSV_FILE, { encoding: 'utf8' }), crlfDelay: Infinity });
+        const input = createInterface({ input: createReadStream(csvFile, { encoding: 'utf8' }), crlfDelay: Infinity });
         let rows = 0;
         for await (const line of input) {
             const fields = line.split('|');
@@ -93,6 +121,9 @@ async function buildPornstarThumbnailIndex() {
     } catch (error) {
         console.error('[Pornstar thumbnails] Gagal membuat index:', error.message);
     } finally {
+        if (extractedTemporarily) {
+            try { await (await import('fs/promises')).rm(PORNSTAR_ZIP_TEMP_DIR, { recursive: true, force: true }); } catch (error) { console.error('[Pornstar thumbnails] Gagal membersihkan folder sementara:', error.message); }
+        }
         pornstarThumbIndexBuilding = false;
     }
 }
@@ -139,14 +170,18 @@ async function getEpornerRecommendations(excludeId) {
 }
 
 async function hydrateGenericVideoTitles(videos) {
-    const generic = videos.filter((item) => item?.id && /on popular demand|^popular video\b/i.test(String(item.title || ''))).slice(0, 24);
+    const isGenericTitle = (title) => {
+        const value = String(title || '').trim();
+        return /on popular demand|^popular video\b|^ep\s+[a-z0-9_-]{6,}$/i.test(value);
+    };
+    const generic = videos.filter((item) => item?.id && isGenericTitle(item.title)).slice(0, 24);
     const results = await Promise.allSettled(generic.map((item) => ph.video(item.id)));
     results.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value?.title) {
             generic[index].title = result.value.title;
             generic[index].preview = generic[index].preview || result.value.preview || result.value.thumb || '';
         }
-        if (/on popular demand|^popular video\b/i.test(String(generic[index].title || ''))) {
+        if (isGenericTitle(generic[index].title)) {
             const sourceUrl = String(generic[index].url || '');
             const slug = sourceUrl.split('/').filter(Boolean).pop() || '';
             const readable = decodeURIComponent(slug)
