@@ -4,8 +4,8 @@
 (() => {
     const root = document.documentElement;
     const media = window.matchMedia('(prefers-color-scheme: dark)');
-    let preference = 'auto';
-    try { preference = localStorage.getItem('theme') || 'auto'; } catch {}
+    let preference = 'dark';
+    try { preference = localStorage.getItem('theme') || 'dark'; } catch {}
     const resolved = preference === 'auto'
         ? (media.matches ? 'dark' : 'light')
         : preference;
