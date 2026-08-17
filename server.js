@@ -60,6 +60,21 @@ async function getEpornerRecommendations(excludeId) {
         .sort(() => Math.random() - 0.5).slice(0, 16);
 }
 
+async function hydrateGenericVideoTitles(videos) {
+    const generic = videos.filter((item) => item?.id && /on popular demand/i.test(String(item.title || ''))).slice(0, 24);
+    const results = await Promise.allSettled(generic.map((item) => ph.video(item.id)));
+    results.forEach((result, index) => {
+        if (result.status === 'fulfilled' && result.value?.title) {
+            generic[index].title = result.value.title;
+            generic[index].preview = generic[index].preview || result.value.preview || result.value.thumb || '';
+        }
+        if (/on popular demand/i.test(String(generic[index].title || ''))) {
+            generic[index].title = `Popular video ${generic[index].id}`;
+        }
+    });
+    return videos;
+}
+
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.set('view engine', 'ejs');
@@ -273,6 +288,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         }
         if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
+        await hydrateGenericVideoTitles(uniqueVideos.slice(0, pageSize));
         // The upstream requests above already target the requested page.
         // Slicing with (page - 1) here would empty page 2 and redirect it to
         // page 1, making every pagination link appear broken.
@@ -309,7 +325,9 @@ async function renderVideoListing(req, res, { query, heading, description, canon
                 .sort(() => Math.random() - 0.5).slice(0, 4);
         } catch (error) {
             console.error('[Trending Pornstars] Gagal memuat:', error.message);
+            trendingPornstars = fallbackPornstars('').slice(0, 4);
         }
+        if (!trendingPornstars.length) trendingPornstars = fallbackPornstars('').slice(0, 4);
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
