@@ -1242,6 +1242,59 @@ img {
     transform: scale(1.04);
 }
 
+/* Compact video cards: consistent title / views / save layout across listings
+   and watch-page recommendations. */
+.video-card {
+    min-height: 0;
+    background: #080d16;
+    border-color: rgba(148, 163, 184, 0.16);
+    border-radius: 0 0 16px 16px;
+}
+.video-card .thumbnail {
+    display: block;
+    aspect-ratio: 16 / 9;
+}
+.video-card > a,
+.video-card .video-card-link { min-height: 0; }
+.video-card .card-body {
+    min-height: 128px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 9px 10px 10px;
+}
+.video-card .card-body h2,
+.video-card .card-body h3 {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    color: #f4f7fb;
+    font-size: .92rem;
+    font-weight: 700;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+.video-card .card-meta {
+    margin-top: auto;
+    padding-top: 14px;
+    color: #d5dbea;
+    font-size: .78rem;
+}
+.video-card .watch-later-button {
+    margin-top: 7px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #aeb8c9;
+    font-size: .72rem;
+    cursor: pointer;
+}
+.video-card .watch-later-button:hover { color: #fff; }
+.recommendations-section .video-card .card-body { min-height: 128px; }
+
 @media (max-width: 1100px) {
     .page-shell {
         grid-template-columns: 1fr;
