@@ -421,10 +421,10 @@ app.get('/pornstars', async (req, res) => {
         // returns an empty list without throwing. Keep the page useful with a
         // safe local fallback instead of showing a blank “not found” state.
         if (!pornstars.length && page === 1) {
-            const fallbackNames = ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
-            pornstars = fallbackNames.map((name, index) => ({
-                name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg',
-            }));
+            const fallbackNames = gender === 'male'
+                ? ['Johnny Sins', 'James Deen', 'Manuel Ferrara', 'Rocco Siffredi', 'Keiran Lee', 'Jordi El Nino Polla']
+                : ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
+            pornstars = fallbackNames.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A' }));
         }
         pornstars = pornstars.map((star) => ({
             ...star,
@@ -432,6 +432,22 @@ app.get('/pornstars', async (req, res) => {
             videoNum: star.videoNum ?? star.videoCount ?? star.videos ?? 0,
             likes: star.likes ?? star.likeCount ?? star.likesCount ?? 'N/A',
         }));
+        // The list parser can lose image attributes when the provider changes
+        // markup. Resolve missing avatars through the library's profile page
+        // parser, which reads #getAvatar/topProfileHeader directly.
+        const missingAvatars = await Promise.allSettled(pornstars
+            .filter((star) => !star.photo || star.photo.endsWith('/placeholder.svg'))
+            .slice(0, 24)
+            .map(async (star) => ({ star, detail: await ph.pornstar(star.name) })));
+        for (const item of missingAvatars) {
+            if (item.status !== 'fulfilled') continue;
+            const { star, detail } = item.value;
+            if (detail?.avatar) star.photo = detail.avatar;
+            if (!star.videoNum && detail) {
+                star.videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
+            }
+            if ((star.likes === 'N/A' || star.likes == null) && detail?.profileViews != null) star.likes = detail.profileViews;
+        }
         const reportedPages = Number(result?.paging?.maxPage);
         const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
             ? Math.max(10, page, reportedPages) : Math.max(10, page + (pornstars.length ? 1 : 0));
