@@ -548,6 +548,10 @@ img {
 .blog-post__section + .blog-post__section { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
 .blog-post__section h2 { margin: 0 0 8px; font-size: 1.1rem; }
 .blog-post__section p { margin: 0; color: var(--muted); line-height: 1.75; }
+.seo-description { margin-top: 24px; padding: 26px; border: 1px solid var(--border); border-radius: 20px; background: rgba(255,255,255,.025); }
+.seo-description h2 { margin: 8px 0 14px; font-size: clamp(1.2rem, 2vw, 1.55rem); }
+.seo-description p { margin: 0 0 15px; color: var(--muted); line-height: 1.8; }
+.seo-description p:last-child { margin-bottom: 0; }
 @media (max-width: 960px) { .blog-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .trending-pornstars { padding: 14px; } .trending-pornstars .pornstar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pornstar-card__body h2 { margin: 0 0 12px; font-size: 1rem; }

@@ -245,7 +245,7 @@ app.get('/api/eporner/search', async (req, res) => {
 
 app.use((req, res, next) => {
     const savedLanguage = SUPPORTED_LANGUAGES.includes(req.cookies.lang) ? req.cookies.lang : null;
-    const detectedLanguage = req.acceptsLanguages(...SUPPORTED_LANGUAGES) || 'id';
+    const detectedLanguage = req.acceptsLanguages(...SUPPORTED_LANGUAGES) || 'en';
     const lang = savedLanguage || detectedLanguage;
     res.locals.lang = lang;
     res.locals.langPreference = savedLanguage || 'auto';
@@ -827,7 +827,7 @@ app.get('/set-lang', (req, res) => {
             httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production',
         });
     } else {
-        const lang = SUPPORTED_LANGUAGES.includes(requestedLanguage) ? requestedLanguage : 'id';
+        const lang = SUPPORTED_LANGUAGES.includes(requestedLanguage) ? requestedLanguage : 'en';
         res.cookie('lang', lang, {
             maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',
