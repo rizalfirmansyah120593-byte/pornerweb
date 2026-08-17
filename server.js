@@ -55,6 +55,33 @@ async function hydratePornstarPhotos(stars, limit = 4) {
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const isExpectedUpstreamStatus = (error) => /\b(?:403|404)\b/.test(String(error?.message || error || ''));
+async function getPornhubOembed(viewkey) {
+    const id = String(viewkey || '').trim();
+    if (!id) return null;
+    const endpoint = `https://www.pornhub.com/oembed?url=${encodeURIComponent(`https://www.pornhub.com/view_video.php?viewkey=${id}`)}&format=json`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+        const response = await fetch(endpoint, {
+            signal: controller.signal,
+            headers: {
+                accept: 'application/json,text/plain,*/*',
+                'user-agent': 'Mozilla/5.0',
+            },
+        });
+        if (!response.ok) return null;
+        const data = await response.json();
+        if (!data || typeof data !== 'object') return null;
+        return {
+            title: typeof data.title === 'string' ? data.title.trim() : null,
+            thumbnailUrl: typeof data.thumbnail_url === 'string' ? data.thumbnail_url : null,
+        };
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
 const pornstarListCache = new Map();
 const PORNSTAR_CACHE_TTL = 15 * 60 * 1000;
 
@@ -718,7 +745,21 @@ app.get('/watch/:id', async (req, res, next) => {
             try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Eporner] Rekomendasi gagal:', error.message); }
             return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
         }
-        if (!allowPornhubDetailScrape) throw new Error('403 Forbidden at Pornhub detail endpoint');
+        if (!allowPornhubDetailScrape) {
+            const embedUrl = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
+            const description = `${localized(res.locals.lang, { id: 'Tonton video dari sumber resmi.', en: 'Watch this video from the official source.', ms: 'Tonton video daripada sumber rasmi.', es: 'Mira este vídeo desde la fuente oficial.', ja: '公式ソースから動画をご覧ください。' })} ${localized(res.locals.lang, { id: 'Khusus dewasa 18+.', en: 'Adults 18+ only.', ms: 'Untuk dewasa 18+ sahaja.', es: 'Solo para mayores de 18 años.', ja: '18歳以上限定。' })}`;
+            const oembed = await getPornhubOembed(id);
+            const title = oembed?.title || `Pornhub video ${id}`;
+            const preview = oembed?.thumbnailUrl || '';
+            let recommendations = [];
+            try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Recommendations] Eporner fallback gagal:', error.message); }
+            return res.status(200).render('watch', {
+                video: { id, source: 'pornhub', title, preview, embed: embedUrl, description, mediaDefinitions: [] },
+                recommendations,
+                localUrl: `/watch/${id}`,
+                seo: buildSeo(req, { title, description, pathname: `/watch/${encodeURIComponent(id)}`, explicit: true, robots: 'noindex, nofollow', image: preview || undefined, video: embedUrl }),
+            });
+        }
         const videoData = await ph.video(id);
 
         let recommendations = [];
@@ -821,9 +862,11 @@ app.get('/watch/:id', async (req, res, next) => {
             const fallbackTitle = `Pornhub video ${id}`;
             const fallbackEmbed = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
             const fallbackDescription = `${localized(res.locals.lang, { id: 'Tonton video dari sumber resmi.', en: 'Watch this video from the official source.', ms: 'Tonton video daripada sumber rasmi.', es: 'Mira este vídeo desde la fuente oficial.', ja: '公式ソースから動画をご覧ください。' })} ${localized(res.locals.lang, { id: 'Khusus dewasa 18+.', en: 'Adults 18+ only.', ms: 'Untuk dewasa 18+ sahaja.', es: 'Solo para mayores de 18 años.', ja: '18歳以上限定。' })}`;
+            let recommendations = [];
+            try { recommendations = await getEpornerRecommendations(id); } catch (recError) { console.error('[Recommendations] Eporner fallback gagal:', recError.message); }
             return res.status(200).render('watch', {
                 video: { id, title: fallbackTitle, preview: '', embed: fallbackEmbed, description: fallbackDescription, mediaDefinitions: [] },
-                recommendations: [],
+                recommendations,
                 localUrl: `/watch/${id}`,
                 seo: buildSeo(req, { title: fallbackTitle, description: fallbackDescription, pathname: `/watch/${encodeURIComponent(id)}`, explicit: true, robots: 'noindex, nofollow', video: fallbackEmbed }),
             });
