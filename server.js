@@ -1,7 +1,7 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, readFileSync } from 'fs';
 import { createInterface } from 'readline';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
@@ -64,7 +64,7 @@ const execFileAsync = promisify(execFile);
 let pornstarThumbIndex = {};
 let pornstarThumbIndexBuilding = false;
 try {
-    if (existsSync(PORNSTAR_THUMB_INDEX_FILE)) pornstarThumbIndex = JSON.parse(await (await import('fs/promises')).readFile(PORNSTAR_THUMB_INDEX_FILE, 'utf8'));
+    if (existsSync(PORNSTAR_THUMB_INDEX_FILE)) pornstarThumbIndex = JSON.parse(readFileSync(PORNSTAR_THUMB_INDEX_FILE, 'utf8'));
 } catch (error) {
     console.error('[Pornstar thumbnails] Cache tidak dapat dibaca:', error.message);
 }
