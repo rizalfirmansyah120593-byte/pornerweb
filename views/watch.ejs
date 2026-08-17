@@ -135,7 +135,11 @@
                                     <div class='thumbnail'>
                                         <img src='<%= Array.isArray(thumbnailUrl) ? thumbnailUrl[0] : (typeof thumbnailUrl === "object" ? (thumbnailUrl.url || thumbnailUrl.src || "/images/placeholder.svg") : thumbnailUrl) %>' alt='<%= item.title %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
                                     </div>
-                                    <div class='card-body'><h2><%= item.title %></h2></div>
+                                    <div class='card-body'>
+                                        <h2><%= item.title %></h2>
+                                        <div class='card-meta'><% if (item.views) { %><span><%= Number(item.views).toLocaleString() %> views</span><% } %></div>
+                                        <button class='watch-later-button' type='button' data-watch-later='<%= item.id %>'>♡ Simpan</button>
+                                    </div>
                                 </a>
                             </article>
                         <% }); %>
@@ -227,7 +231,8 @@
             article.className = 'video-card';
             const href = '/watch/' + encodeURIComponent(item.id);
             const image = item.preview || item.thumb || item.default_thumb || '/images/placeholder.svg';
-            article.innerHTML = `<a href="${href}"><div class="thumbnail"><img src="${image}" alt="${String(item.title || 'Video').replace(/"/g, '&quot;')}" width="320" height="180" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder.svg';"></div><div class="card-body"><h2>${String(item.title || 'Video')}</h2></div></a>`;
+            const views = item.views ? `<div class="card-meta"><span>${Number(item.views).toLocaleString()} views</span></div>` : '<div class="card-meta"></div>';
+            article.innerHTML = `<a href="${href}"><div class="thumbnail"><img src="${image}" alt="${String(item.title || 'Video').replace(/"/g, '&quot;')}" width="320" height="180" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder.svg';"></div><div class="card-body"><h2>${String(item.title || 'Video')}</h2>${views}<button class="watch-later-button" type="button" data-watch-later="${String(item.id).replace(/"/g, '&quot;')}">♡ Simpan</button></div></a>`;
             grid.appendChild(article);
         });
         const loadMore = async () => {
