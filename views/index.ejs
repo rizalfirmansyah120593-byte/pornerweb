@@ -101,7 +101,7 @@
                 <nav class='pagination' aria-label='Navigasi halaman'>
                     <% if (currentPage > 1) { %><a class='page-nav' rel='prev' href='<%= paginationPath(currentPage - 1) %>'>← <%= t.previous %></a><% } %>
                     <% for (let page = 1; page <= Math.min(10, totalPages); page += 1) { %>
-                        <a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a>
+                        <a class='<%= page === currentPage ? 'is-current' : '' %>' href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a>
                     <% } %>
                     <% if (currentPage < totalPages) { %><a class='page-nav' rel='next' href='<%= paginationPath(currentPage + 1) %>'><%= t.next %> →</a><% } %>
                 </nav>

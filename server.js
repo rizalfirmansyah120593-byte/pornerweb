@@ -236,7 +236,10 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         }
         if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
-        const videos = uniqueVideos.slice((page - 1) * pageSize, page * pageSize);
+        // The upstream requests above already target the requested page.
+        // Slicing with (page - 1) here would empty page 2 and redirect it to
+        // page 1, making every pagination link appear broken.
+        const videos = uniqueVideos.slice(0, pageSize);
         if (!videos.length && page > 1) {
             // Do not render a blank page when an upstream reports fewer pages
             // than its metadata suggests. Keep navigation usable by stepping

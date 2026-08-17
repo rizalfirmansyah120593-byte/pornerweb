@@ -1341,7 +1341,8 @@ img {
     font-weight: 700;
 }
 
-.pagination a[aria-current='page'] {
+.pagination a[aria-current='page'],
+.pagination a.is-current {
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     border-color: transparent;
     box-shadow: 0 8px 20px rgba(255, 107, 44, 0.25);
