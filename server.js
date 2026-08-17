@@ -34,6 +34,25 @@ function fallbackPornstars(gender = '') {
         : ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
     return names.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg' }));
 }
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+async function loadPornstarListWithRetry(options, attempts = 3) {
+    let lastError;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+            const result = await ph.pornstarList(options);
+            // An empty parser result is also retried: it commonly means the
+            // upstream returned a transient challenge/interstitial page.
+            if (Array.isArray(result?.data) && result.data.length) return result;
+            if (attempt === attempts) return result;
+        } catch (error) {
+            lastError = error;
+            if (attempt === attempts) throw error;
+        }
+        await wait(700 * attempt);
+    }
+    throw lastError || new Error('Pornstar list unavailable');
+}
 async function getEpornerRecommendations(excludeId) {
     const result = await epornerSearch({ query: 'all', page: 1, perPage: 24, thumbsize: 'big', order: 'most-popular' });
     return (Array.isArray(result?.videos) ? result.videos : [])
@@ -417,7 +436,7 @@ app.get('/pornstars', async (req, res) => {
     const shouldIndex = page === 1 && !gender;
     if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
     try {
-        const result = await ph.pornstarList({ page, ...(gender ? { gender } : {}) });
+        const result = await loadPornstarListWithRetry({ page, ...(gender ? { gender } : {}) });
         // Keep compatibility with library/provider response variants.
         let pornstars = Array.isArray(result?.data)
             ? result.data
