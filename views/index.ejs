@@ -98,13 +98,9 @@
             <% } %>
 
             <% if (totalPages > 1) { %>
-                <% const maxVisiblePages = 10; %>
-                <% const halfWindow = Math.floor(maxVisiblePages / 2); %>
-                <% const startPage = Math.max(1, Math.min(currentPage - halfWindow, totalPages - maxVisiblePages + 1)); %>
-                <% const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1); %>
                 <nav class='pagination' aria-label='Navigasi halaman'>
                     <% if (currentPage > 1) { %><a class='page-nav' rel='prev' href='<%= paginationPath(currentPage - 1) %>'>← <%= t.previous %></a><% } %>
-                    <% for (let page = startPage; page <= endPage; page += 1) { %>
+                    <% for (let page = 1; page <= Math.min(10, totalPages); page += 1) { %>
                         <a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a>
                     <% } %>
                     <% if (currentPage < totalPages) { %><a class='page-nav' rel='next' href='<%= paginationPath(currentPage + 1) %>'><%= t.next %> →</a><% } %>

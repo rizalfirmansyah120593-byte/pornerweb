@@ -248,8 +248,8 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         // If the API omits maxPage, keep a next link while this page contains
         // results. There is intentionally no artificial 100-page ceiling.
         const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
-            ? Math.max(page, reportedPages)
-            : page + (videos.length === pageSize ? 1 : 0);
+            ? Math.max(11, page, reportedPages)
+            : Math.max(11, page + (videos.length === pageSize ? 1 : 0));
         const seo = buildSeo(req, {
             title: heading,
             description,
