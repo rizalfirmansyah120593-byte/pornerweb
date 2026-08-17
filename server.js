@@ -1,6 +1,8 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
+import { createReadStream, existsSync } from 'fs';
+import { createInterface } from 'readline';
 import cookieParser from 'cookie-parser';
 import { epornerSearch } from './eporner.js';
 
@@ -49,6 +51,59 @@ async function hydratePornstarPhotos(stars, limit = 4) {
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const pornstarListCache = new Map();
 const PORNSTAR_CACHE_TTL = 15 * 60 * 1000;
+
+// CSV Webmasters berukuran sangat besar, jadi diproses sekali secara streaming.
+// Kolom CSV: embed|thumbnail|preview|title|tags|categories|models|...
+const PORNSTAR_THUMB_INDEX_FILE = join(__dirname, 'config', 'pornstar-thumbnails.json');
+const PORNSTAR_CSV_FILE = join(__dirname, 'pornhub.com-db.csv');
+let pornstarThumbIndex = {};
+let pornstarThumbIndexBuilding = false;
+try {
+    if (existsSync(PORNSTAR_THUMB_INDEX_FILE)) pornstarThumbIndex = JSON.parse(await (await import('fs/promises')).readFile(PORNSTAR_THUMB_INDEX_FILE, 'utf8'));
+} catch (error) {
+    console.error('[Pornstar thumbnails] Cache tidak dapat dibaca:', error.message);
+}
+const normalizePornstarName = (name) => String(name || '').trim().toLowerCase().replace(/[^a-z0-9]+/gi, ' ').trim();
+async function buildPornstarThumbnailIndex() {
+    if (pornstarThumbIndexBuilding || !existsSync(PORNSTAR_CSV_FILE)) return;
+    pornstarThumbIndexBuilding = true;
+    try {
+        const next = { ...pornstarThumbIndex };
+        const input = createInterface({ input: createReadStream(PORNSTAR_CSV_FILE, { encoding: 'utf8' }), crlfDelay: Infinity });
+        let rows = 0;
+        for await (const line of input) {
+            const fields = line.split('|');
+            const thumbnail = String(fields[1] || '').trim();
+            if (!thumbnail) continue;
+            for (const model of String(fields[6] || '').split(';')) {
+                const key = normalizePornstarName(model);
+                if (key && !next[key]) next[key] = thumbnail;
+            }
+            rows += 1;
+            if (rows % 100000 === 0) {
+                pornstarThumbIndex = next;
+                const fsPromises = await import('fs/promises');
+                await fsPromises.writeFile(PORNSTAR_THUMB_INDEX_FILE, JSON.stringify(next), 'utf8');
+            }
+        }
+        pornstarThumbIndex = next;
+        const fsPromises = await import('fs/promises');
+        await fsPromises.writeFile(PORNSTAR_THUMB_INDEX_FILE, JSON.stringify(next), 'utf8');
+        console.log(`[Pornstar thumbnails] Index selesai: ${Object.keys(next).length} model.`);
+    } catch (error) {
+        console.error('[Pornstar thumbnails] Gagal membuat index:', error.message);
+    } finally {
+        pornstarThumbIndexBuilding = false;
+    }
+}
+function applyPornstarThumbnailFallback(stars) {
+    return stars.map((star) => ({
+        ...star,
+        photo: star.photo && !star.photo.endsWith('/placeholder.svg')
+            ? star.photo
+            : (pornstarThumbIndex[normalizePornstarName(star.name)] || '/images/placeholder.svg'),
+    }));
+}
 
 async function loadPornstarListWithRetry(options, attempts = 3) {
     const cacheKey = JSON.stringify(options);
@@ -514,6 +569,8 @@ app.get('/models', (req, res) => renderVideoListing(req, res, {
 }));
 
 app.get('/pornstars', async (req, res) => {
+    // Bangun di latar belakang agar request pertama tetap cepat.
+    void buildPornstarThumbnailIndex();
     const page = parsePage(req.query.page);
     const gender = ['female', 'male'].includes(String(req.query.gender)) ? String(req.query.gender) : '';
     const shouldIndex = page === 1 && !gender;
@@ -537,6 +594,8 @@ app.get('/pornstars', async (req, res) => {
             videoNum: star.videoNum ?? star.videoCount ?? star.videos ?? 0,
             likes: star.likes ?? star.likeCount ?? star.likesCount ?? 'N/A',
         }));
+        // Jika avatar profil tidak tersedia, pakai thumbnail video dari CSV.
+        pornstars = applyPornstarThumbnailFallback(pornstars);
         // The list parser can lose image attributes when the provider changes
         // markup. Resolve missing avatars through the library's profile page
         // parser, which reads #getAvatar/topProfileHeader directly.
@@ -582,17 +641,18 @@ app.get('/pornstars', async (req, res) => {
         // Provider outages must not turn this navigational page into a 502.
         // Render a usable fallback and preserve gender/page navigation.
         const fallback = fallbackPornstars(gender);
-        const profileResults = await Promise.allSettled(fallback.map((star) => ph.pornstar(star.name)));
+        const indexedFallback = applyPornstarThumbnailFallback(fallback);
+        const profileResults = await Promise.allSettled(indexedFallback.map((star) => ph.pornstar(star.name)));
         profileResults.forEach((item, index) => {
             if (item.status !== 'fulfilled' || !item.value) return;
             const detail = item.value;
-            fallback[index].photo = detail.avatar || fallback[index].photo;
-            fallback[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
+            indexedFallback[index].photo = detail.avatar || indexedFallback[index].photo;
+            indexedFallback[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
             fallback[index].likes = detail.profileViews ?? 'N/A';
         });
         const paginationPath = (target) => `/pornstars?${new URLSearchParams({ ...(gender ? { gender } : {}), ...(target > 1 ? { page: String(target) } : {}) })}`;
         return res.status(200).render('pornstars', {
-            pornstars: fallback, gender, currentPage: page, totalPages: 10, paginationPath,
+            pornstars: indexedFallback, gender, currentPage: page, totalPages: 10, paginationPath,
             seo: buildSeo(req, { title: 'Pornstar Populer', description: 'Jelajahi profil pornstar populer dan video mereka.', pathname: paginationPath(page), explicit: true, robots: shouldIndex ? undefined : 'noindex, follow' }),
         });
     }
