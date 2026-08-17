@@ -54,7 +54,9 @@ export function safeJson(value) {
 
 export function parsePage(value) {
     const page = Number.parseInt(value, 10);
-    return Number.isInteger(page) && page > 0 ? Math.min(page, 100) : 1;
+    // Keep pagination open-ended. The upstream source decides how many pages
+    // are actually available; this only prevents invalid/unsafe values.
+    return Number.isInteger(page) && page > 0 ? Math.min(page, 1000000) : 1;
 }
 
 export function normalizeQuery(value) {

@@ -210,12 +210,12 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     const paginationPath = (target) => target > 1 ? `${canonicalBase}${separator}page=${target}` : canonicalBase;
 
     try {
-        // Ambil semua halaman sebelumnya terlebih dahulu. Kedua sumber memiliki
-        // pagination yang berbeda, jadi mem-paginasi keduanya secara terpisah
-        // dapat membuat item yang sama muncul kembali di halaman berikutnya.
-        const sourcePages = Array.from({ length: page }, (_, index) => index + 1);
+        // Fetch only the requested source page. Fetching pages 1..N and then
+        // slicing the merged array causes page-1 items to leak into page 2.
+        // Each page is now a stable, independent batch of 24 items.
+        const sourcePages = [page];
         // A single failed upstream page must not turn the entire listing into
-        // a 502. Keep successful pages and let the other source fill gaps.
+        // a 502. Keep successful sources and let the other source fill gaps.
         const pornHubResults = await Promise.allSettled(
             sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage }))
         );
@@ -226,7 +226,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
         if (req.query.source !== 'pornhub') {
             try {
-                const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 12, thumbsize: 'big', order: 'latest' })));
+                const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
                 allVideos.push(...epornerResults
                     .filter((item) => item.status === 'fulfilled')
                     .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
@@ -237,15 +237,19 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
         const videos = uniqueVideos.slice((page - 1) * pageSize, page * pageSize);
-        if (!videos.length && page > 1 && uniqueVideos.length) {
-            // Upstream pagination can change while a visitor is browsing.
-            // Redirect to the last locally available page instead of showing
-            // an empty page with missing navigation.
-            const lastAvailablePage = Math.ceil(uniqueVideos.length / pageSize);
-            return res.redirect(302, paginationPath(lastAvailablePage));
+        if (!videos.length && page > 1) {
+            // Do not render a blank page when an upstream reports fewer pages
+            // than its metadata suggests. Keep navigation usable by stepping
+            // back one page.
+            return res.redirect(302, paginationPath(page - 1));
         }
         const shouldIndex = indexFirstPage && page === 1;
-        const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
+        const reportedPages = Number(result?.paging?.maxPage);
+        // If the API omits maxPage, keep a next link while this page contains
+        // results. There is intentionally no artificial 100-page ceiling.
+        const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
+            ? Math.max(page, reportedPages)
+            : page + (videos.length === pageSize ? 1 : 0);
         const seo = buildSeo(req, {
             title: heading,
             description,
