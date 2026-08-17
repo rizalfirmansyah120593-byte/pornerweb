@@ -1719,7 +1719,54 @@ img {
     }
 
     .video-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .video-grid .video-card,
+    .more-videos-section .video-card {
+        min-width: 0;
+        height: 100%;
+    }
+
+    .video-grid .card-body,
+    .more-videos-section .card-body {
+        min-height: 72px;
+        padding: 8px;
+    }
+
+    .video-grid .card-body h2,
+    .more-videos-section .card-body h2 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        min-height: 2.5em;
+        margin-bottom: 6px;
+        font-size: .76rem;
+        line-height: 1.25;
+    }
+
+    .video-grid .card-meta,
+    .more-videos-section .card-meta {
+        margin-top: auto;
+        font-size: .65rem;
+        line-height: 1.2;
+    }
+
+    .recommendations-section .video-grid,
+    .more-videos-section .video-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        overflow: visible;
+        padding: 0;
+    }
+
+    .recommendations-section .video-card {
+        flex: initial;
+        min-width: 0;
     }
 
     .header-controls {
