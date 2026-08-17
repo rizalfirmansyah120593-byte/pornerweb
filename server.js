@@ -23,6 +23,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const isProduction = process.env.NODE_ENV === 'production';
+// Hostinger datacenter IP sering diblokir Pornhub untuk halaman detail.
+// Aktifkan hanya jika server Anda memang diizinkan upstream.
+const allowPornhubDetailScrape = process.env.PORNHUB_SERVER_SCRAPE === 'true';
 const SUPPORTED_LANGUAGES = ['id', 'en', 'ms', 'es', 'ja'];
 const localized = (lang, values) => values[lang] || values.en;
 const epornerId = (id) => `ep_${String(id).replace(/^ep_/, '')}`;
@@ -171,6 +174,7 @@ async function getEpornerRecommendations(excludeId) {
 }
 
 async function hydrateGenericVideoTitles(videos) {
+    if (!allowPornhubDetailScrape) return videos;
     const isGenericTitle = (title) => {
         const value = String(title || '').trim();
         return /on popular demand|^popular video\b|^ep\s+[a-z0-9_-]{6,}$/i.test(value);
@@ -446,7 +450,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             trendingPornstars = (Array.isArray(starResult?.data) ? starResult.data : [])
                 .sort(() => Math.random() - 0.5).slice(0, 4);
         } catch (error) {
-            console.error('[Trending Pornstars] Gagal memuat:', error.message);
+            if (!isExpectedUpstreamStatus(error)) console.error('[Trending Pornstars] Gagal memuat:', error.message);
             trendingPornstars = fallbackPornstars('').slice(0, 4);
         }
         if (!trendingPornstars.length) trendingPornstars = fallbackPornstars('').slice(0, 4);
@@ -580,6 +584,7 @@ app.get('/api/video-preview/:id', async (req, res) => {
     if (!id) return res.status(400).json({ error: 'Invalid video id' });
 
     try {
+        if (!allowPornhubDetailScrape) throw new Error('403 Forbidden at Pornhub detail endpoint');
         const detail = await ph.video(id);
         const media = Array.isArray(detail?.mediaDefinitions)
             ? detail.mediaDefinitions
@@ -591,7 +596,7 @@ app.get('/api/video-preview/:id', async (req, res) => {
         res.set('Cache-Control', 'public, max-age=3600');
         return res.json({ url: media.videoUrl, type: `video/${String(media.format).toLowerCase()}` });
     } catch (error) {
-        console.error(`[Preview] Gagal memuat ${id}:`, error.message);
+        if (!isExpectedUpstreamStatus(error)) console.error(`[Preview] Gagal memuat ${id}:`, error.message);
         return res.status(502).json({ error: 'Preview unavailable' });
     }
 });
@@ -673,7 +678,7 @@ app.get('/pornstars', async (req, res) => {
             }),
         });
     } catch (error) {
-        console.error('[Pornstars] Gagal memuat daftar:', error.message);
+        if (!isExpectedUpstreamStatus(error)) console.error('[Pornstars] Gagal memuat daftar:', error.message);
         // Provider outages must not turn this navigational page into a 502.
         // Render a usable fallback and preserve gender/page navigation.
         const fallback = fallbackPornstars(gender);
@@ -713,6 +718,7 @@ app.get('/watch/:id', async (req, res, next) => {
             try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Eporner] Rekomendasi gagal:', error.message); }
             return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
         }
+        if (!allowPornhubDetailScrape) throw new Error('403 Forbidden at Pornhub detail endpoint');
         const videoData = await ph.video(id);
 
         let recommendations = [];
@@ -808,7 +814,7 @@ app.get('/watch/:id', async (req, res, next) => {
         });
         
     } catch (error) {
-        console.error(`Gagal memuat video ${id}:`, error.message);
+        if (!isExpectedUpstreamStatus(error)) console.error(`Gagal memuat video ${id}:`, error.message);
         // Pornhub dapat memblokir IP datacenter Hostinger dengan 403. Tetap
         // tampilkan player embed resmi agar halaman tidak berubah menjadi 502.
         if (!isEpornerId(id) && /403\s+Forbidden/i.test(String(error?.message || ''))) {
