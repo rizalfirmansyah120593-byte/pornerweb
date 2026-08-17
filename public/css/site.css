@@ -1052,12 +1052,24 @@ img {
 
 .hero-stat {
     min-width: 128px;
-    padding: 16px 18px;
-    border-radius: 18px;
+    padding: 10px 16px;
+    border-radius: 999px;
     text-align: center;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+/* On larger screens the action and count form one tidy toolbar. */
+.hero-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.hero-bottom-row .hero-actions {
+    margin-top: 0;
 }
 
 .hero-stat strong {
