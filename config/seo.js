@@ -1,6 +1,6 @@
 export const SITE_NAME = process.env.SITE_NAME || 'PORNERWEB';
 export const SITE_DESCRIPTION = process.env.SITE_DESCRIPTION
-    || 'PORNERWEB adalah platform penemuan video dewasa 18+ dengan koleksi populer dari berbagai sumber. Jelajahi video berdasarkan kategori, negara, popularitas, dan kata kunci dalam pengalaman browsing yang rapi, cepat, dan nyaman.';
+    || 'PORNERWEB is an 18+ adult video discovery platform with popular collections from multiple sources. Explore videos by category, country, popularity, and keyword in a clean, fast, and comfortable browsing experience.';
 
 const configuredSiteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
@@ -29,8 +29,13 @@ export const COUNTRY_FILTERS = Object.freeze([
     ['japan', 'japanese', 'Jepang'],
     ['korea', 'korean', 'Korea'],
     ['india', 'indian', 'India'],
-    ['united-states', 'american', 'Amerika Serikat'],
-    ['united-kingdom', 'british', 'Inggris'],
+    ['united-states', 'american', 'United States'],
+    ['united-kingdom', 'british', 'United Kingdom'],
+    ['canada', 'canadian', 'Canada'],
+    ['australia', 'australian', 'Australia'],
+    ['ireland', 'irish', 'Ireland'],
+    ['new-zealand', 'new zealand', 'New Zealand'],
+    ['south-africa', 'south african', 'South Africa'],
     ['brazil', 'brazilian', 'Brasil'],
     ['france', 'french', 'Prancis'],
     ['germany', 'german', 'Jerman'],
@@ -116,11 +121,11 @@ export function collectionJsonLd(req, title, description, videos, pathname) {
         '@graph': [
             {
                 '@type': 'WebSite', '@id': `${getSiteUrl(req)}/#website`, url: `${getSiteUrl(req)}/`,
-                name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: 'id-ID',
+                name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: 'en-US',
             },
             {
                 '@type': 'CollectionPage', '@id': `${canonical}#webpage`, url: canonical, name: title,
-                description, isPartOf: { '@id': `${getSiteUrl(req)}/#website` }, inLanguage: 'id-ID',
+                description, isPartOf: { '@id': `${getSiteUrl(req)}/#website` }, inLanguage: 'en-US',
                 mainEntity: { '@type': 'ItemList', numberOfItems: items.length, itemListElement: items },
             },
         ],
