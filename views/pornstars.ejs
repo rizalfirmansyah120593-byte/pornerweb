@@ -50,10 +50,12 @@
             <% } %>
 
             <% if (totalPages > 1) { %>
+                <% const pageBlockStart = Math.floor((currentPage - 1) / 10) * 10 + 1; %>
+                <% const pageBlockEnd = Math.min(pageBlockStart + 9, totalPages); %>
                 <nav class='pagination' aria-label='Pornstar pagination'>
                     <% if (currentPage > 1) { %><a rel='prev' href='<%= paginationPath(currentPage - 1) %>'>← Sebelumnya</a><% } %>
-                    <% for (let page = 1; page <= totalPages; page += 1) { %>
-                        <% if (page <= 10) { %><a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a><% } %>
+                    <% for (let page = pageBlockStart; page <= pageBlockEnd; page += 1) { %>
+                        <a href='<%= paginationPath(page) %>' <% if (page === currentPage) { %>aria-current='page'<% } %>><%= page %></a>
                     <% } %>
                     <% if (currentPage < totalPages) { %><a rel='next' href='<%= paginationPath(currentPage + 1) %>'>Berikutnya →</a><% } %>
                 </nav>
