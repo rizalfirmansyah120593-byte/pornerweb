@@ -28,6 +28,12 @@ function normalizeEpornerVideo(item) {
     if (!item?.id) return null;
     return { id: epornerId(item.id), source: 'eporner', title: item.title || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', durationFormatted: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
 }
+function fallbackPornstars(gender = '') {
+    const names = gender === 'male'
+        ? ['Johnny Sins', 'James Deen', 'Manuel Ferrara', 'Rocco Siffredi', 'Keiran Lee', 'Jordi El Nino Polla']
+        : ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
+    return names.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg' }));
+}
 async function getEpornerRecommendations(excludeId) {
     const result = await epornerSearch({ query: 'all', page: 1, perPage: 24, thumbsize: 'big', order: 'most-popular' });
     return (Array.isArray(result?.videos) ? result.videos : [])
@@ -421,10 +427,7 @@ app.get('/pornstars', async (req, res) => {
         // returns an empty list without throwing. Keep the page useful with a
         // safe local fallback instead of showing a blank “not found” state.
         if (!pornstars.length && page === 1) {
-            const fallbackNames = gender === 'male'
-                ? ['Johnny Sins', 'James Deen', 'Manuel Ferrara', 'Rocco Siffredi', 'Keiran Lee', 'Jordi El Nino Polla']
-                : ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
-            pornstars = fallbackNames.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A' }));
+            pornstars = fallbackPornstars(gender);
         }
         pornstars = pornstars.map((star) => ({
             ...star,
@@ -474,10 +477,21 @@ app.get('/pornstars', async (req, res) => {
         });
     } catch (error) {
         console.error('[Pornstars] Gagal memuat daftar:', error.message);
-        return res.status(502).render('error', {
-            statusCode: 502,
-            message: localized(res.locals.lang, { id: 'Daftar pornstar sedang tidak tersedia.', en: 'Pornstar list is temporarily unavailable.', ms: 'Senarai pornstar tidak tersedia buat sementara waktu.', es: 'La lista de pornstars no está disponible temporalmente.', ja: 'ポルノスター一覧は一時的に利用できません。' }),
-            seo: buildSeo(req, { title: 'Pornstar Tidak Tersedia', description: 'Daftar pornstar tidak dapat dimuat.', pathname: '/pornstars', robots: 'noindex, nofollow' }),
+        // Provider outages must not turn this navigational page into a 502.
+        // Render a usable fallback and preserve gender/page navigation.
+        const fallback = fallbackPornstars(gender);
+        const profileResults = await Promise.allSettled(fallback.map((star) => ph.pornstar(star.name)));
+        profileResults.forEach((item, index) => {
+            if (item.status !== 'fulfilled' || !item.value) return;
+            const detail = item.value;
+            fallback[index].photo = detail.avatar || fallback[index].photo;
+            fallback[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
+            fallback[index].likes = detail.profileViews ?? 'N/A';
+        });
+        const paginationPath = (target) => `/pornstars?${new URLSearchParams({ ...(gender ? { gender } : {}), ...(target > 1 ? { page: String(target) } : {}) })}`;
+        return res.status(200).render('pornstars', {
+            pornstars: fallback, gender, currentPage: page, totalPages: 10, paginationPath,
+            seo: buildSeo(req, { title: 'Pornstar Populer', description: 'Jelajahi profil pornstar populer dan video mereka.', pathname: paginationPath(page), explicit: true, robots: shouldIndex ? undefined : 'noindex, follow' }),
         });
     }
 });
