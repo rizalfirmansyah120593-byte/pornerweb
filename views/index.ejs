@@ -67,7 +67,7 @@
                     <a class='<%= sourceFilter === "all" ? "is-active" : "" %>' href='<%= sourceFilterBase %>all'>Semua</a>
                     <a class='<%= sourceFilter === "pornhub" ? "is-active" : "" %>' href='<%= sourceFilterBase %>pornhub'>Pornhub</a>
                     <a class='<%= sourceFilter === "eporner" ? "is-active" : "" %>' href='<%= sourceFilterBase %>eporner'>Eporner</a>
-                    <a class='<%= isRandomListing ? "is-active" : "" %>' href='/random'>Random Video</a>
+                    <a class='<%= sourceFilter === "random" ? "is-active" : "" %>' href='/random'>Random Video</a>
                 </div>
                 <section class='video-grid' id='video-grid' aria-label='<%= title %>'>
                     <% data.forEach((item, index) => { %>

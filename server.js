@@ -128,8 +128,12 @@ app.use((req, res, next) => {
     res.locals.categories = INDEXABLE_CATEGORIES;
     res.locals.countries = COUNTRY_FILTERS;
     res.locals.currentPath = req.path;
-    res.locals.sourceFilter = ['pornhub', 'eporner'].includes(String(req.query.source)) ? String(req.query.source) : 'all';
-    res.locals.isRandomListing = req.path === '/random';
+    const requestedSource = String(req.query.source || '');
+    const isRandomRoute = req.path === '/random' && !['pornhub', 'eporner'].includes(requestedSource);
+    res.locals.sourceFilter = isRandomRoute
+        ? 'random'
+        : (['pornhub', 'eporner'].includes(requestedSource) ? requestedSource : 'all');
+    res.locals.isRandomListing = isRandomRoute;
     res.locals.sourceFilterBase = req.path === '/' && req.query.q
         ? `/?q=${encodeURIComponent(String(req.query.q))}&source=` : '?source=';
     const pathSlug = String(req.path).split('/')[2] || '';
