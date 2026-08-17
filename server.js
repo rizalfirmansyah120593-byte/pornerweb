@@ -806,6 +806,19 @@ app.get('/watch/:id', async (req, res, next) => {
         
     } catch (error) {
         console.error(`Gagal memuat video ${id}:`, error.message);
+        // Pornhub dapat memblokir IP datacenter Hostinger dengan 403. Tetap
+        // tampilkan player embed resmi agar halaman tidak berubah menjadi 502.
+        if (!isEpornerId(id) && /403\s+Forbidden/i.test(String(error?.message || ''))) {
+            const fallbackTitle = `Pornhub video ${id}`;
+            const fallbackEmbed = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
+            const fallbackDescription = `${localized(res.locals.lang, { id: 'Tonton video dari sumber resmi.', en: 'Watch this video from the official source.', ms: 'Tonton video daripada sumber rasmi.', es: 'Mira este vídeo desde la fuente oficial.', ja: '公式ソースから動画をご覧ください。' })} ${localized(res.locals.lang, { id: 'Khusus dewasa 18+.', en: 'Adults 18+ only.', ms: 'Untuk dewasa 18+ sahaja.', es: 'Solo para mayores de 18 años.', ja: '18歳以上限定。' })}`;
+            return res.status(200).render('watch', {
+                video: { id, title: fallbackTitle, preview: '', embed: fallbackEmbed, description: fallbackDescription, mediaDefinitions: [] },
+                recommendations: [],
+                localUrl: `/watch/${id}`,
+                seo: buildSeo(req, { title: fallbackTitle, description: fallbackDescription, pathname: `/watch/${encodeURIComponent(id)}`, explicit: true, robots: 'noindex, nofollow', video: fallbackEmbed }),
+            });
+        }
         res.set('X-Robots-Tag', 'noindex, nofollow');
         return res.status(502).render('error', {
             statusCode: 502,
