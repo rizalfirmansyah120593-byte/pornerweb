@@ -1,5 +1,7 @@
 <title><%= seo.title %></title>
 <meta name='theme-color' content='#09090b'>
+<link rel='preconnect' href='https://<%= site.url.replace(/\/$/, '') %>' crossorigin>
+<link rel='dns-prefetch' href='//<%= site.url.replace(/^https?:\/\//, '').replace(/\/$/, '') %>'>
 <script>
 (() => {
     const root = document.documentElement;

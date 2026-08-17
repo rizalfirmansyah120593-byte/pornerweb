@@ -74,7 +74,7 @@
                         <article class='video-card' data-preview-id='<%= item.id || item.viewKey || item.video_id || "" %>'>
                             <a href='<%= videoPath(item) %>'>
                                 <div class='thumbnail'>
-                                    <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index < 4 ? 'eager' : 'lazy' %>' decoding='async'>
+                                    <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
                                     <video class='hover-preview' muted playsinline preload='metadata' poster='<%= item.preview %>' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
                                     <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
@@ -124,7 +124,7 @@
                         <% trendingPornstars.forEach((star) => { %>
                             <article class='pornstar-card'>
                                 <a class='pornstar-card__photo' href='/?q=<%= encodeURIComponent(star.name) %>' aria-label='Lihat video <%= star.name %>'>
-                                    <img src='<%= star.photo || "/images/placeholder.svg" %>' alt='<%= star.name %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+                                <img src='<%= star.photo || "/images/placeholder.svg" %>' alt='<%= star.name %>' width='320' height='240' loading='lazy' decoding='async' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
                                 </a>
                                 <div class='pornstar-card__body'><h2><a href='/?q=<%= encodeURIComponent(star.name) %>'><%= star.name %></a></h2></div>
                             </article>
