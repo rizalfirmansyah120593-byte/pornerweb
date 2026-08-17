@@ -51,6 +51,7 @@ async function hydratePornstarPhotos(stars, limit = 4) {
     return stars;
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const isExpectedUpstreamStatus = (error) => /\b(?:403|404)\b/.test(String(error?.message || error || ''));
 const pornstarListCache = new Map();
 const PORNSTAR_CACHE_TTL = 15 * 60 * 1000;
 
@@ -750,8 +751,10 @@ app.get('/watch/:id', async (req, res, next) => {
                 try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 16 - recommendations.length)); } catch (error) { console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
             }
         } catch (error) {
-            console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
-            try { recommendations = await getEpornerRecommendations(id); } catch (fallbackError) { console.error('[Recommendations] Semua sumber gagal:', fallbackError.message); }
+            if (!isExpectedUpstreamStatus(error)) console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
+            try { recommendations = await getEpornerRecommendations(id); } catch (fallbackError) {
+                if (!isExpectedUpstreamStatus(fallbackError)) console.error('[Recommendations] Semua sumber gagal:', fallbackError.message);
+            }
         }
         recommendations = [...new Map(recommendations
             .filter((item) => item?.id)
