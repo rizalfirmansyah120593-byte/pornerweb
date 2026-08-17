@@ -397,8 +397,8 @@ app.get('/live-sex', (req, res) => renderVideoListing(req, res, {
 
 app.get('/random', (req, res) => renderVideoListing(req, res, {
     query: 'popular',
-    heading: localized(res.locals.lang, { id: 'Video Acak', en: 'Random Videos', ms: 'Video Rawak', es: 'Vídeos aleatorios', ja: 'ランダム動画' }),
-    description: localized(res.locals.lang, { id: 'Temukan pilihan video acak dari sumber yang tersedia.', en: 'Discover a fresh selection of videos from available sources.', ms: 'Temui pilihan video rawak daripada sumber yang tersedia.', es: 'Descubre una selección de vídeos de las fuentes disponibles.', ja: '利用可能なソースからランダムな動画を見つけます。' }),
+    heading: localized(res.locals.lang, { id: 'Video Viral', en: 'Viral Videos', ms: 'Video Viral', es: 'Vídeos virales', ja: 'バイラル動画' }),
+    description: localized(res.locals.lang, { id: 'Temukan konten video populer dan viral dari sumber yang tersedia.', en: 'Discover popular and viral videos from available sources.', ms: 'Temui kandungan video popular dan viral daripada sumber yang tersedia.', es: 'Descubre vídeos populares y virales de las fuentes disponibles.', ja: '人気で話題の動画を見つけます。' }),
     canonicalBase: '/random',
     indexFirstPage: false,
 }));
