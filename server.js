@@ -403,6 +403,35 @@ app.get('/random', (req, res) => renderVideoListing(req, res, {
     indexFirstPage: false,
 }));
 
+// Infinite recommendations for watch pages. Each request uses a new source
+// page and excludes the video currently being watched.
+app.get('/api/watch-more/:id', async (req, res) => {
+    const currentId = extractVideoId(req.params.id);
+    const page = parsePage(req.query.page);
+    if (!currentId) return res.status(400).json({ error: 'Invalid video id' });
+    try {
+        const [pornhubResult, epornerResult] = await Promise.allSettled([
+            ph.searchVideo('popular', { page }),
+            epornerSearch({ query: 'popular', page, perPage: 12, thumbsize: 'big', order: 'most-popular' }),
+        ]);
+        const videos = [];
+        if (pornhubResult.status === 'fulfilled') {
+            videos.push(...(pornhubResult.value?.data || []).map((item) => ({ ...item, source: 'pornhub' })));
+        }
+        if (epornerResult.status === 'fulfilled') {
+            videos.push(...(epornerResult.value?.videos || []).map(normalizeEpornerVideo).filter(Boolean));
+        }
+        const unique = [...new Map(videos
+            .filter((item) => item?.id && String(item.id) !== String(currentId))
+            .map((item) => [`${item.source || 'pornhub'}:${item.id}`, item])).values()];
+        res.set('Cache-Control', 'public, max-age=60');
+        return res.json({ videos: unique.slice(0, 24), page, hasMore: unique.length > 0 });
+    } catch (error) {
+        console.error('[Watch more] Gagal memuat:', error.message);
+        return res.json({ videos: [], page, hasMore: false });
+    }
+});
+
 // Media preview is loaded on demand so listing pages do not download every
 // video's source before the visitor actually hovers a card.
 app.get('/api/video-preview/:id', async (req, res) => {

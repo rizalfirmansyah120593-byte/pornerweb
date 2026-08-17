@@ -120,8 +120,7 @@
                 </div>
             </section>
             <% const recommendationItems = (video && (video.recommended || video.recommendations)) || (typeof recommended !== 'undefined' ? recommended : (typeof recommendations !== 'undefined' ? recommendations.slice(8) : [])); %>
-            <% if (recommendationItems && recommendationItems.length) { %>
-                <section class='recommendations-section more-videos-section' aria-labelledby='recommended-title'>
+            <section class='recommendations-section more-videos-section' aria-labelledby='recommended-title' data-watch-more data-video-id='<%= video.id %>' data-next-page='2'>
                     <div class='section-heading'>
                         <div>
                             <h2 id='recommended-title'>More videos to explore</h2>
@@ -129,7 +128,7 @@
                         </div>
                     </div>
                     <div class='video-grid'>
-                        <% recommendationItems.forEach((item) => { %>
+                        <% (recommendationItems || []).forEach((item) => { %>
                             <% const thumbnailUrl = item.thumbnail || item.thumb || item.image || item.preview || item.poster || item.thumbnail_url || item.thumbUrl || (item.images && item.images[0]) || (item.thumbnails && item.thumbnails[0]) || '/images/placeholder.svg'; %>
                             <article class='video-card'>
                                 <a href='/watch/<%= item.id %>'>
@@ -141,8 +140,8 @@
                             </article>
                         <% }); %>
                     </div>
+                    <div class='watch-more-status' data-watch-more-status aria-live='polite'></div>
                 </section>
-            <% } %>
         </main>
     </div>
 
@@ -209,6 +208,47 @@
                 } catch { /* cross-origin embeds are expected; keep the iframe */ }
             }, 3500);
         })();
+    </script>
+
+    <script>
+    (() => {
+        const section = document.querySelector('[data-watch-more]');
+        const grid = section?.querySelector('.video-grid');
+        const status = section?.querySelector('[data-watch-more-status]');
+        if (!section || !grid) return;
+        const currentId = section.dataset.videoId;
+        let page = Number(section.dataset.nextPage) || 2;
+        let loading = false;
+        const seen = new Set([currentId, ...Array.from(grid.querySelectorAll('a[href^="/watch/"]')).map((a) => a.getAttribute('href').split('/').pop())]);
+        const addVideos = (videos) => videos.forEach((item) => {
+            if (!item?.id || seen.has(String(item.id))) return;
+            seen.add(String(item.id));
+            const article = document.createElement('article');
+            article.className = 'video-card';
+            const href = '/watch/' + encodeURIComponent(item.id);
+            const image = item.preview || item.thumb || item.default_thumb || '/images/placeholder.svg';
+            article.innerHTML = `<a href="${href}"><div class="thumbnail"><img src="${image}" alt="${String(item.title || 'Video').replace(/"/g, '&quot;')}" width="320" height="180" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder.svg';"></div><div class="card-body"><h2>${String(item.title || 'Video')}</h2></div></a>`;
+            grid.appendChild(article);
+        });
+        const loadMore = async () => {
+            if (loading) return;
+            loading = true;
+            if (status) status.textContent = 'Memuat video lainnya…';
+            try {
+                const response = await fetch(`/api/watch-more/${encodeURIComponent(currentId)}?page=${page}`, { headers: { accept: 'application/json' } });
+                const data = response.ok ? await response.json() : { videos: [], hasMore: false };
+                addVideos(Array.isArray(data.videos) ? data.videos : []);
+                page += 1;
+                if (status) status.textContent = data.hasMore ? '' : 'Belum ada video tambahan saat ini.';
+            } catch { if (status) status.textContent = 'Video tambahan belum tersedia.'; }
+            finally { loading = false; }
+        };
+        const observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting) loadMore(); }, { rootMargin: '700px 0px' });
+        const sentinel = document.createElement('div');
+        sentinel.className = 'watch-more-sentinel';
+        section.appendChild(sentinel);
+        observer.observe(sentinel);
+    })();
     </script>
 
     <script>

@@ -1453,6 +1453,8 @@ img {
 .recommendations-section .video-card h2, .recommendations-section .video-card h3 { font-size: .82rem; }
 .more-videos-section .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); flex-wrap: initial; overflow: visible; padding: 0; }
 .more-videos-section .video-card { min-width: 0; }
+.watch-more-sentinel { height: 2px; margin-top: 12px; }
+.watch-more-status { min-height: 20px; margin-top: 12px; color: var(--muted); font-size: .78rem; text-align: center; }
 .recommendation-carousel-controls { display: flex; justify-content: flex-end; gap: 6px; margin: -5px 0 8px; }
 .recommendation-carousel-controls button { width: 30px; height: 28px; border: 1px solid var(--border); border-radius: 7px; background: var(--control-bg); color: var(--text); cursor: pointer; }
 .recommendation-carousel-controls button:hover { color: #111827; background: #ffa31a; border-color: #ffa31a; }
