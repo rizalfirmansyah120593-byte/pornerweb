@@ -103,6 +103,14 @@ app.use((req, res, next) => {
     res.locals.categories = INDEXABLE_CATEGORIES;
     res.locals.countries = COUNTRY_FILTERS;
     res.locals.currentPath = req.path;
+    res.locals.sourceFilter = ['pornhub', 'eporner'].includes(String(req.query.source)) ? String(req.query.source) : 'all';
+    res.locals.isRandomListing = req.path === '/random';
+    res.locals.sourceFilterBase = req.path === '/' && req.query.q
+        ? `/?q=${encodeURIComponent(String(req.query.q))}&source=` : '?source=';
+    const pathSlug = String(req.path).split('/')[2] || '';
+    const activeCategory = categoriesBySlug.get(pathSlug.toLowerCase());
+    const activeCountry = countriesBySlug.get(pathSlug.toLowerCase());
+    res.locals.activeMenuQuery = activeCategory?.query || activeCountry?.query || normalizeQuery(req.query.q).toLowerCase();
     res.locals.adsEnabled = req.path === '/'
         || ['/recommended', '/models'].includes(req.path)
         || req.path.startsWith('/category/')
@@ -358,14 +366,13 @@ app.get('/live-sex', (req, res) => renderVideoListing(req, res, {
     indexFirstPage: true,
 }));
 
-app.get('/random', async (req, res, next) => {
-    try {
-        const result = await ph.searchVideo('popular', { page: 1 });
-        const items = Array.isArray(result?.data) ? result.data : [];
-        const item = items[Math.floor(Math.random() * items.length)];
-        return item?.id ? res.redirect(`/watch/${encodeURIComponent(item.id)}`) : next();
-    } catch { return next(); }
-});
+app.get('/random', (req, res) => renderVideoListing(req, res, {
+    query: 'popular',
+    heading: localized(res.locals.lang, { id: 'Video Acak', en: 'Random Videos', ms: 'Video Rawak', es: 'Vídeos aleatorios', ja: 'ランダム動画' }),
+    description: localized(res.locals.lang, { id: 'Temukan pilihan video acak dari sumber yang tersedia.', en: 'Discover a fresh selection of videos from available sources.', ms: 'Temui pilihan video rawak daripada sumber yang tersedia.', es: 'Descubre una selección de vídeos de las fuentes disponibles.', ja: '利用可能なソースからランダムな動画を見つけます。' }),
+    canonicalBase: '/random',
+    indexFirstPage: false,
+}));
 
 // Media preview is loaded on demand so listing pages do not download every
 // video's source before the visitor actually hovers a card.
@@ -416,9 +423,15 @@ app.get('/pornstars', async (req, res) => {
         if (!pornstars.length && page === 1) {
             const fallbackNames = ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
             pornstars = fallbackNames.map((name, index) => ({
-                name, rank: index + 1, videoNum: 0, photo: '/images/placeholder.svg',
+                name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg',
             }));
         }
+        pornstars = pornstars.map((star) => ({
+            ...star,
+            photo: star.photo || star.thumb_url || star.thumbUrl || star.image || '/images/placeholder.svg',
+            videoNum: star.videoNum ?? star.videoCount ?? star.videos ?? 0,
+            likes: star.likes ?? star.likeCount ?? star.likesCount ?? 'N/A',
+        }));
         const reportedPages = Number(result?.paging?.maxPage);
         const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
             ? Math.max(10, page, reportedPages) : Math.max(10, page + (pornstars.length ? 1 : 0));

@@ -63,7 +63,12 @@
                 <%- include('partials/ad-banner-728') %>
                 <%- include('partials/ad-banner-320') %>
 
-                <div class='listing-tools'><a href='?source=all'>Semua</a><a href='?source=pornhub'>Pornhub</a><a href='?source=eporner'>Eporner</a><a href='/random'>Random Video</a></div>
+                <div class='listing-tools'>
+                    <a class='<%= sourceFilter === "all" ? "is-active" : "" %>' href='<%= sourceFilterBase %>all'>Semua</a>
+                    <a class='<%= sourceFilter === "pornhub" ? "is-active" : "" %>' href='<%= sourceFilterBase %>pornhub'>Pornhub</a>
+                    <a class='<%= sourceFilter === "eporner" ? "is-active" : "" %>' href='<%= sourceFilterBase %>eporner'>Eporner</a>
+                    <a class='<%= isRandomListing ? "is-active" : "" %>' href='/random'>Random Video</a>
+                </div>
                 <section class='video-grid' id='video-grid' aria-label='<%= title %>'>
                     <% data.forEach((item, index) => { %>
                         <article class='video-card' data-preview-id='<%= item.id || item.viewKey || item.video_id || "" %>'>
