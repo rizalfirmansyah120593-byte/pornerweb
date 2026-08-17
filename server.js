@@ -47,16 +47,27 @@ async function hydratePornstarPhotos(stars, limit = 4) {
     return stars;
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const pornstarListCache = new Map();
+const PORNSTAR_CACHE_TTL = 15 * 60 * 1000;
 
 async function loadPornstarListWithRetry(options, attempts = 3) {
+    const cacheKey = JSON.stringify(options);
+    const cached = pornstarListCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) return cached.value;
     let lastError;
     for (let attempt = 1; attempt <= attempts; attempt += 1) {
         try {
             const result = await ph.pornstarList(options);
             // An empty parser result is also retried: it commonly means the
             // upstream returned a transient challenge/interstitial page.
-            if (Array.isArray(result?.data) && result.data.length) return result;
-            if (attempt === attempts) return result;
+            if (Array.isArray(result?.data) && result.data.length) {
+                pornstarListCache.set(cacheKey, { value: result, expiresAt: Date.now() + PORNSTAR_CACHE_TTL });
+                return result;
+            }
+            if (attempt === attempts) {
+                pornstarListCache.set(cacheKey, { value: result, expiresAt: Date.now() + 60 * 1000 });
+                return result;
+            }
         } catch (error) {
             lastError = error;
             if (attempt === attempts) throw error;
@@ -332,7 +343,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         let trendingPornstars = [];
         try {
             const starPage = Math.floor(Math.random() * 3) + 1;
-            const starResult = await ph.pornstarList({ page: starPage });
+            const starResult = await loadPornstarListWithRetry({ page: starPage });
             trendingPornstars = (Array.isArray(starResult?.data) ? starResult.data : [])
                 .sort(() => Math.random() - 0.5).slice(0, 4);
         } catch (error) {
