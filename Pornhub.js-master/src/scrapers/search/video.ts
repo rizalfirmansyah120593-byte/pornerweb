@@ -1,6 +1,6 @@
 import urlcat from 'urlcat'
 import { Route } from '../../apis'
-import { getAttribute, getCheerio } from '../../utils/cheerio'
+import { getAttribute, getCheerio, getDataAttribute } from '../../utils/cheerio'
 import { BASE_URL } from '../../utils/constant'
 import { UrlParser } from '../../utils/url'
 import { nonNullable } from '../../utils/utils'
@@ -54,6 +54,8 @@ export function parseVideoResult($: CheerioAPI, container: string | Cheerio<Elem
         const item = $(el)
         const thumb = item.find('.linkVideoThumb').eq(0)
         const title = getAttribute<string>(thumb, 'title', '')
+            || item.find('.title, .videoTitle, [data-title]').first().text().trim()
+            || getDataAttribute<string>(thumb, 'title', '')
         const path = getAttribute<string>(thumb, 'href', '')
         // premium videos have no path
         if (path === 'javascript:void(0)') return null

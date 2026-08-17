@@ -1289,7 +1289,7 @@ function parseVideoResult($, container) {
   const result = list.map((_, el) => {
     const item = $(el);
     const thumb = item.find(".linkVideoThumb").eq(0);
-    const title = getAttribute(thumb, "title", "");
+    const title = getAttribute(thumb, "title", "") || item.find(".title, .videoTitle, [data-title]").first().text().trim() || getDataAttribute(thumb, "title", "");
     const path2 = getAttribute(thumb, "href", "");
     if (path2 === "javascript:void(0)") return null;
     const url = urlcat3(BASE_URL, path2);

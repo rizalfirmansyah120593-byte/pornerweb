@@ -84,15 +84,23 @@ async function getEpornerRecommendations(excludeId) {
 }
 
 async function hydrateGenericVideoTitles(videos) {
-    const generic = videos.filter((item) => item?.id && /on popular demand/i.test(String(item.title || ''))).slice(0, 24);
+    const generic = videos.filter((item) => item?.id && /on popular demand|^popular video\b/i.test(String(item.title || ''))).slice(0, 24);
     const results = await Promise.allSettled(generic.map((item) => ph.video(item.id)));
     results.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value?.title) {
             generic[index].title = result.value.title;
             generic[index].preview = generic[index].preview || result.value.preview || result.value.thumb || '';
         }
-        if (/on popular demand/i.test(String(generic[index].title || ''))) {
-            generic[index].title = `Popular video ${generic[index].id}`;
+        if (/on popular demand|^popular video\b/i.test(String(generic[index].title || ''))) {
+            const sourceUrl = String(generic[index].url || '');
+            const slug = sourceUrl.split('/').filter(Boolean).pop() || '';
+            const readable = decodeURIComponent(slug)
+                .replace(/[-_]+/g, ' ')
+                .replace(/\b\w/g, (letter) => letter.toUpperCase())
+                .trim();
+            generic[index].title = readable && !/^[a-z0-9_-]{4,80}$/i.test(readable)
+                ? readable
+                : 'Video populer';
         }
     });
     return videos;
