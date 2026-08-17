@@ -405,8 +405,23 @@ app.get('/pornstars', async (req, res) => {
     if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
     try {
         const result = await ph.pornstarList({ page, ...(gender ? { gender } : {}) });
-        const pornstars = Array.isArray(result?.data) ? result.data : [];
-        const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
+        // Keep compatibility with library/provider response variants.
+        let pornstars = Array.isArray(result?.data)
+            ? result.data
+            : Array.isArray(result?.pornstars) ? result.pornstars : [];
+
+        // The upstream page occasionally changes its HTML card selectors and
+        // returns an empty list without throwing. Keep the page useful with a
+        // safe local fallback instead of showing a blank “not found” state.
+        if (!pornstars.length && page === 1) {
+            const fallbackNames = ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
+            pornstars = fallbackNames.map((name, index) => ({
+                name, rank: index + 1, videoNum: 0, photo: '/images/placeholder.svg',
+            }));
+        }
+        const reportedPages = Number(result?.paging?.maxPage);
+        const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
+            ? Math.max(10, page, reportedPages) : Math.max(10, page + (pornstars.length ? 1 : 0));
         const paginationPath = (target) => {
             const params = new URLSearchParams();
             if (gender) params.set('gender', gender);
