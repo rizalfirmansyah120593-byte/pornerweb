@@ -214,13 +214,22 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         // pagination yang berbeda, jadi mem-paginasi keduanya secara terpisah
         // dapat membuat item yang sama muncul kembali di halaman berikutnya.
         const sourcePages = Array.from({ length: page }, (_, index) => index + 1);
-        const results = await Promise.all(sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage })));
-        const result = results[results.length - 1];
+        // A single failed upstream page must not turn the entire listing into
+        // a 502. Keep successful pages and let the other source fill gaps.
+        const pornHubResults = await Promise.allSettled(
+            sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage }))
+        );
+        const results = pornHubResults
+            .filter((item) => item.status === 'fulfilled')
+            .map((item) => item.value);
+        const result = [...results].pop();
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
         if (req.query.source !== 'pornhub') {
             try {
-                const epornerResults = await Promise.all(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 12, thumbsize: 'big', order: 'latest' })));
-                allVideos.push(...epornerResults.flatMap((item) => (Array.isArray(item?.videos) ? item.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
+                const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 12, thumbsize: 'big', order: 'latest' })));
+                allVideos.push(...epornerResults
+                    .filter((item) => item.status === 'fulfilled')
+                    .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
             } catch (error) {
                 console.error('[Eporner] Gagal memuat video tambahan:', error.message);
             }
@@ -228,6 +237,13 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
         const videos = uniqueVideos.slice((page - 1) * pageSize, page * pageSize);
+        if (!videos.length && page > 1 && uniqueVideos.length) {
+            // Upstream pagination can change while a visitor is browsing.
+            // Redirect to the last locally available page instead of showing
+            // an empty page with missing navigation.
+            const lastAvailablePage = Math.ceil(uniqueVideos.length / pageSize);
+            return res.redirect(302, paginationPath(lastAvailablePage));
+        }
         const shouldIndex = indexFirstPage && page === 1;
         const totalPages = Math.max(1, Math.min(Number(result?.paging?.maxPage) || 10, 100));
         const seo = buildSeo(req, {
