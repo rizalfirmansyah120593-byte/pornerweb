@@ -1,3 +1,6 @@
 node_modules
 .env
 .DS_Store
+pornhub.com-db.zip
+pornhub.com-db.csv
+.pornhub-csv-extract/
