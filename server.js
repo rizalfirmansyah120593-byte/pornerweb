@@ -34,6 +34,18 @@ function fallbackPornstars(gender = '') {
         : ['Angela White', 'Mia Khalifa', 'Lana Rhoades', 'Riley Reid', 'Abella Danger', 'Adriana Chechik', 'Alexis Texas', 'Eva Elfie', 'Jenna Jameson', 'Lisa Ann', 'Kendra Lust', 'Asa Akira'];
     return names.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg' }));
 }
+async function hydratePornstarPhotos(stars, limit = 4) {
+    const missing = stars.filter((star) => star?.name && (!star.photo || star.photo.endsWith('/placeholder.svg'))).slice(0, limit);
+    const results = await Promise.allSettled(missing.map((star) => ph.pornstar(star.name)));
+    results.forEach((result, index) => {
+        if (result.status !== 'fulfilled' || !result.value) return;
+        const detail = result.value;
+        if (detail.avatar) missing[index].photo = detail.avatar;
+        if (!missing[index].videoNum) missing[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
+        if ((missing[index].likes === 'N/A' || missing[index].likes == null) && detail.profileViews != null) missing[index].likes = detail.profileViews;
+    });
+    return stars;
+}
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 async function loadPornstarListWithRetry(options, attempts = 3) {
@@ -328,6 +340,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             trendingPornstars = fallbackPornstars('').slice(0, 4);
         }
         if (!trendingPornstars.length) trendingPornstars = fallbackPornstars('').slice(0, 4);
+        await hydratePornstarPhotos(trendingPornstars, 4);
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
