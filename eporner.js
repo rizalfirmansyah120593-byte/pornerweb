@@ -1,5 +1,6 @@
 const EPORNER_API = 'https://www.eporner.com/api/v2/video/search/';
 const EPORNER_ID_API = 'https://www.eporner.com/api/v2/video/id/';
+const titleCache = new Map();
 
 const allowedOrders = new Set([
     'latest', 'longest', 'shortest', 'top-rated',
@@ -35,6 +36,8 @@ export async function epornerSearch({ query, id, page = 1, perPage = 24, thumbsi
 export async function epornerPageTitle(id) {
     const rawId = String(id || '').replace(/^ep_/, '').trim();
     if (!rawId) return '';
+    const cached = titleCache.get(rawId);
+    if (cached && cached.expiresAt > Date.now()) return cached.title;
     const response = await fetch(`https://www.eporner.com/video-${encodeURIComponent(rawId)}/`, {
         headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 (compatible; PornerWeb/1.0)' },
         signal: AbortSignal.timeout(8_000),
@@ -43,7 +46,9 @@ export async function epornerPageTitle(id) {
     const html = await response.text();
     const match = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
         || html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    return String(match?.[1] || '').replace(/\s+/g, ' ').replace(/\s*[-|]\s*Eporner.*$/i, '').trim();
+    const title = String(match?.[1] || '').replace(/\s+/g, ' ').replace(/\s*[-|]\s*Eporner.*$/i, '').trim();
+    titleCache.set(rawId, { title, expiresAt: Date.now() + 30 * 60 * 1000 });
+    return title;
 }
 
 export { EPORNER_API };
