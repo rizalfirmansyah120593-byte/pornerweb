@@ -32,4 +32,18 @@ export async function epornerSearch({ query, id, page = 1, perPage = 24, thumbsi
     return id ? { videos: data?.id ? [data] : [] } : data;
 }
 
+export async function epornerPageTitle(id) {
+    const rawId = String(id || '').replace(/^ep_/, '').trim();
+    if (!rawId) return '';
+    const response = await fetch(`https://www.eporner.com/video-${encodeURIComponent(rawId)}/`, {
+        headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 (compatible; PornerWeb/1.0)' },
+        signal: AbortSignal.timeout(8_000),
+    });
+    if (!response.ok) return '';
+    const html = await response.text();
+    const match = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
+        || html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    return String(match?.[1] || '').replace(/\s+/g, ' ').replace(/\s*[-|]\s*Eporner.*$/i, '').trim();
+}
+
 export { EPORNER_API };

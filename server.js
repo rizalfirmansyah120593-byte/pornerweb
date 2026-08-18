@@ -6,7 +6,7 @@ import { createInterface } from 'readline';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import cookieParser from 'cookie-parser';
-import { epornerSearch } from './eporner.js';
+import { epornerSearch, epornerPageTitle } from './eporner.js';
 
 import { PornHub } from './Pornhub.js-master/dist/index.mjs';
 import {
@@ -240,6 +240,12 @@ async function hydrateEpornerTitles(videos) {
         if (/on popular demand|^popular video$/i.test(String(generic[index].title || ''))) {
             generic[index].title = `Eporner video ${epornerRawId(generic[index].id)}`;
         }
+    });
+    const stillGeneric = generic.filter((item) => /on popular demand|^popular video$|^eporner video /i.test(String(item.title || '')));
+    const pageTitles = await Promise.allSettled(stillGeneric.map((item) => epornerPageTitle(item.id)));
+    pageTitles.forEach((result, index) => {
+        const title = result.status === 'fulfilled' ? result.value : '';
+        if (title && !/on popular demand|^popular video$|^eporner video /i.test(title)) stillGeneric[index].title = title;
     });
     return videos;
 }
