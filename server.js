@@ -228,6 +228,18 @@ async function hydrateGenericVideoTitles(videos) {
     return videos;
 }
 
+// Eporner search results can occasionally return the catalogue placeholder
+// "On Popular Demand". Fetch the detail record so cards use the source title.
+async function hydrateEpornerTitles(videos) {
+    const generic = videos.filter((item) => item?.source === 'eporner' && item?.id && /on popular demand|^popular video$/i.test(String(item.title || '').trim()));
+    const results = await Promise.allSettled(generic.map((item) => epornerSearch({ id: epornerRawId(item.id) })));
+    results.forEach((result, index) => {
+        const title = result.status === 'fulfilled' ? result.value?.videos?.[0]?.title : '';
+        if (typeof title === 'string' && title.trim()) generic[index].title = title.trim();
+    });
+    return videos;
+}
+
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.set('view engine', 'ejs');
@@ -422,9 +434,9 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         const sourcePages = [page];
         // A single failed upstream page must not turn the entire listing into
         // a 502. Keep successful sources and let the other source fill gaps.
-        const pornHubResults = await Promise.allSettled(
-            sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage }))
-        );
+        const pornHubResults = req.query.source === 'eporner'
+            ? []
+            : await Promise.allSettled(sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage })));
         const results = pornHubResults
             .filter((item) => item.status === 'fulfilled')
             .map((item) => item.value);
@@ -442,6 +454,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         }
         if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
+        await hydrateEpornerTitles(uniqueVideos.slice(0, pageSize));
         await hydrateGenericVideoTitles(uniqueVideos.slice(0, pageSize));
         // The upstream requests above already target the requested page.
         // Slicing with (page - 1) here would empty page 2 and redirect it to
