@@ -56,6 +56,7 @@ async function hydratePornstarPhotos(stars, limit = 4) {
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const isExpectedUpstreamStatus = (error) => /\b(?:403|404)\b/.test(String(error?.message || error || ''));
+const isExpectedNetworkFailure = (error) => /fetch failed|aborted due to timeout|timed out|timeout|network/i.test(String(error?.message || error || ''));
 async function getPornhubOembed(viewkey) {
     const id = String(viewkey || '').trim();
     if (!id) return null;
@@ -771,7 +772,7 @@ app.get('/watch/:id', async (req, res, next) => {
             if (!videoData) return next();
             const description = `${localized(res.locals.lang, { id: 'Tonton', en: 'Watch', ms: 'Tonton', es: 'Mira', ja: 'Watch' })} ${videoData.title}. Adults 18+ only.`;
             let recommendations = [];
-            try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Eporner] Rekomendasi gagal:', error.message); }
+            try { recommendations = await getEpornerRecommendations(id); } catch (error) { if (!isExpectedNetworkFailure(error)) console.error('[Eporner] Rekomendasi gagal:', error.message); }
             return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
         }
         if (!allowPornhubDetailScrape) {
@@ -781,7 +782,7 @@ app.get('/watch/:id', async (req, res, next) => {
             const title = oembed?.title || `Pornhub video ${id}`;
             const preview = oembed?.thumbnailUrl || '';
             let recommendations = [];
-            try { recommendations = await getEpornerRecommendations(id); } catch (error) { console.error('[Recommendations] Eporner fallback gagal:', error.message); }
+            try { recommendations = await getEpornerRecommendations(id); } catch (error) { if (!isExpectedNetworkFailure(error)) console.error('[Recommendations] Eporner fallback gagal:', error.message); }
             return res.status(200).render('watch', {
                 video: { id, source: 'pornhub', title, preview, embed: embedUrl, description, mediaDefinitions: [] },
                 recommendations,
@@ -824,7 +825,7 @@ app.get('/watch/:id', async (req, res, next) => {
 
             recommendations = [...pool].sort(() => Math.random() - 0.5).slice(0, 16);
             if (recommendations.length < 16) {
-                try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 16 - recommendations.length)); } catch (error) { console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
+                try { recommendations.push(...(await getEpornerRecommendations(id)).slice(0, 16 - recommendations.length)); } catch (error) { if (!isExpectedNetworkFailure(error)) console.error('[Eporner] Rekomendasi tambahan gagal:', error.message); }
             }
         } catch (error) {
             if (!isExpectedUpstreamStatus(error)) console.error(`Gagal mengambil rekomendasi untuk ${id}:`, error.message);
@@ -892,7 +893,7 @@ app.get('/watch/:id', async (req, res, next) => {
             const fallbackEmbed = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
             const fallbackDescription = `${localized(res.locals.lang, { id: 'Tonton video dari sumber resmi.', en: 'Watch this video from the official source.', ms: 'Tonton video daripada sumber rasmi.', es: 'Mira este vídeo desde la fuente oficial.', ja: '公式ソースから動画をご覧ください。' })} ${localized(res.locals.lang, { id: 'Khusus dewasa 18+.', en: 'Adults 18+ only.', ms: 'Untuk dewasa 18+ sahaja.', es: 'Solo para mayores de 18 años.', ja: '18歳以上限定。' })}`;
             let recommendations = [];
-            try { recommendations = await getEpornerRecommendations(id); } catch (recError) { console.error('[Recommendations] Eporner fallback gagal:', recError.message); }
+            try { recommendations = await getEpornerRecommendations(id); } catch (recError) { if (!isExpectedNetworkFailure(recError)) console.error('[Recommendations] Eporner fallback gagal:', recError.message); }
             return res.status(200).render('watch', {
                 video: { id, title: fallbackTitle, preview: '', embed: fallbackEmbed, description: fallbackDescription, mediaDefinitions: [] },
                 recommendations,
