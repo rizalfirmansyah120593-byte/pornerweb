@@ -5,6 +5,9 @@
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <%- include('partials/seo-head') %>
+    <% if (data && data.length && data[0].preview) { %>
+    <link rel='preload' as='image' href='<%= data[0].preview %>' fetchpriority='high'>
+    <% } %>
     <link rel='stylesheet' href='/css/site.css'>
 </head>
 <body>
@@ -74,7 +77,10 @@
                         <article class='video-card' data-preview-id='<%= item.id || item.viewKey || item.video_id || "" %>'>
                             <a href='<%= videoPath(item) %>'>
                                 <div class='thumbnail'>
-                                    <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
+                                    <picture>
+                                        <% if (item.previewWebp) { %><source srcset='<%= item.previewWebp %>' type='image/webp'><% } %>
+                                        <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
+                                    </picture>
                                     <video class='hover-preview' muted playsinline preload='metadata' poster='<%= item.preview %>' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
                                     <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>

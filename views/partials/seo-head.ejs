@@ -3,9 +3,10 @@
 <link rel='preconnect' href='https://<%= site.url.replace(/\/$/, '') %>' crossorigin>
 <link rel='dns-prefetch' href='//<%= site.url.replace(/^https?:\/\//, '').replace(/\/$/, '') %>'>
 <link rel='preconnect' href='https://www.googletagmanager.com' crossorigin>
-<link rel='preconnect' href='https://www.eporner.com' crossorigin>
-<link rel='preconnect' href='https://www.pornhub.com' crossorigin>
+<!-- Keep preconnect limited to origins needed during the initial render. -->
 <link rel='preconnect' href='https://<%= adScriptHost %>' crossorigin>
+<link rel='dns-prefetch' href='//www.eporner.com'>
+<link rel='dns-prefetch' href='//www.pornhub.com'>
 <script>
 (() => {
     const root = document.documentElement;
@@ -43,7 +44,6 @@
 <meta name='twitter:card' content='<%= seo.image ? 'summary_large_image' : 'summary' %>'>
 <meta name='twitter:title' content='<%= seo.title %>'>
 <meta name='twitter:description' content='<%= seo.description %>'>
-<script src='/Script.js' defer></script>
 <% if (seo.image) { %><meta name='twitter:image' content='<%= seo.image %>'><% } %>
 <% if (seo.jsonLd) { %>
 <script type='application/ld+json'><%- safeJson(seo.jsonLd) %></script>
