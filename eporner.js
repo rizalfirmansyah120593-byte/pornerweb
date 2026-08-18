@@ -40,7 +40,8 @@ export async function epornerPageTitle(id) {
     if (cached && cached.expiresAt > Date.now()) return cached.title;
     const response = await fetch(`https://www.eporner.com/video-${encodeURIComponent(rawId)}/`, {
         headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 (compatible; PornerWeb/1.0)' },
-        signal: AbortSignal.timeout(8_000),
+        // Metadata is a quality enhancement; never let it block first paint.
+        signal: AbortSignal.timeout(2_500),
     });
     if (!response.ok) return '';
     const html = await response.text();

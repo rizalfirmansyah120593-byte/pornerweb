@@ -5,6 +5,7 @@ import { createReadStream, existsSync, readFileSync } from 'fs';
 import { createInterface } from 'readline';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { createGzip, createBrotliCompress, constants as zlibConstants } from 'zlib';
 import cookieParser from 'cookie-parser';
 import { epornerSearch, epornerPageTitle } from './eporner.js';
 
@@ -254,7 +255,9 @@ async function hydrateEpornerTitles(videos) {
             generic[index].title = `Eporner video ${epornerRawId(generic[index].id)}`;
         }
     });
-    const stillGeneric = generic.filter((item) => /on popular demand|^popular video$|^eporner video /i.test(String(item.title || '')));
+    // Resolve a small visible batch during SSR; remaining cards keep their API
+    // title and can be corrected when opened on the watch page.
+    const stillGeneric = generic.filter((item) => /on popular demand|^popular video$|^eporner video /i.test(String(item.title || ''))).slice(0, 8);
     const pageTitles = await Promise.allSettled(stillGeneric.map((item) => epornerPageTitle(item.id)));
     pageTitles.forEach((result, index) => {
         const title = result.status === 'fulfilled' ? result.value : '';
@@ -271,6 +274,35 @@ app.set('views', join(__dirname, 'views'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Compress server-rendered HTML and JSON before sending it to mobile users.
+// This is intentionally middleware-only so no extra dependency is needed.
+app.use((req, res, next) => {
+    if (req.method === 'HEAD' || req.headers['x-no-compression']) return next();
+    const originalWrite = res.write.bind(res);
+    const originalEnd = res.end.bind(res);
+    let chunks = [];
+    let finished = false;
+    const flush = () => {
+        if (finished) return;
+        finished = true;
+        const body = Buffer.concat(chunks);
+        chunks = [];
+        const type = String(res.getHeader('content-type') || '');
+        const accepts = String(req.headers['accept-encoding'] || '');
+        if (body.length < 1024 || !/(text\/|application\/json|application\/javascript)/i.test(type)) return originalEnd(body);
+        const compressor = accepts.includes('br')
+            ? createBrotliCompress({ params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 } })
+            : accepts.includes('gzip') ? createGzip({ level: 6 }) : null;
+        if (!compressor) return originalEnd(body);
+        const output = [];
+        compressor.on('data', (chunk) => output.push(chunk));
+        compressor.on('end', () => { res.removeHeader('Content-Length'); res.setHeader('Content-Encoding', accepts.includes('br') ? 'br' : 'gzip'); res.setHeader('Vary', 'Accept-Encoding'); originalEnd(Buffer.concat(output)); });
+        compressor.end(body);
+    };
+    res.write = (chunk, encoding) => { chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding)); return true; };
+    res.end = (chunk, encoding) => { if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding)); flush(); return res; };
+    next();
+});
 app.use((req, res, next) => {
     if (!isProduction) {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
