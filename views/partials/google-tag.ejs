@@ -1,11 +1,20 @@
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2ERQGYPM39"></script>
 <script>
-  // Defer analytics work until the browser is idle so it cannot compete with first paint.
-  window.__gtagQueue = window.__gtagQueue || [];
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-2ERQGYPM39');
+  // Analytics is non-critical: keep it out of the critical rendering path.
+  (() => {
+    const load = () => {
+      if (window.__gtagLoaded) return;
+      window.__gtagLoaded = true;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', 'G-2ERQGYPM39');
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-2ERQGYPM39';
+      document.head.appendChild(script);
+    };
+    const schedule = window.requestIdleCallback || ((callback) => setTimeout(callback, 2500));
+    schedule(load);
+    ['pointerdown', 'keydown', 'touchstart'].forEach((event) => window.addEventListener(event, load, { once: true, passive: true }));
+  })();
 </script>

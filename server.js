@@ -319,7 +319,10 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.use(express.static(join(__dirname, 'public'), { maxAge: isProduction ? '7d' : 0 }));
+app.use(express.static(join(__dirname, 'public'), {
+    maxAge: isProduction ? '1y' : 0,
+    immutable: isProduction,
+}));
 
 // Proxy terkontrol ke Eporner API v2. Parameter dibatasi agar endpoint tidak
 // dapat dipakai untuk meneruskan URL arbitrer atau membebani upstream.

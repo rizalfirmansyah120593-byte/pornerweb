@@ -1,3 +1,17 @@
-<!-- Loaded after the page content to protect crawlable text and first paint. -->
-<script defer src='https://<%= adScriptHost %>/d7/8b/7f/d78b7fa6d26363c072384617ac012edc.js'></script>
-<script defer src='https://<%= adScriptHost %>/82/57/21/825721e1ea20139cfbfcf240739dd347.js'></script>
+<!-- Loaded after the first paint; advertising remains available after idle. -->
+<script>
+  (() => {
+    const loadAds = () => {
+      if (window.__globalAdsLoaded) return;
+      window.__globalAdsLoaded = true;
+      ['d7/8b/7f/d78b7fa6d26363c072384617ac012edc.js','82/57/21/825721e1ea20139cfbfcf240739dd347.js'].forEach((path) => {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://<%= adScriptHost %>/' + path;
+        document.body.appendChild(script);
+      });
+    };
+    const schedule = window.requestIdleCallback || ((callback) => setTimeout(callback, 1800));
+    schedule(loadAds);
+  })();
+</script>
