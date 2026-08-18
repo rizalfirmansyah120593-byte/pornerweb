@@ -1393,6 +1393,13 @@ img {
     margin-top: 24px;
 }
 
+/* Desktop/tablet: keep the complete page navigator centered in the content column. */
+@media (min-width: 601px) {
+    .pagination {
+        justify-content: center;
+    }
+}
+
 .pagination a {
     padding: 9px 12px;
     border-radius: 999px;
