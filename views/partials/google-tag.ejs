@@ -1,6 +1,8 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ERQGYPM39"></script>
 <script>
+  // Defer analytics work until the browser is idle so it cannot compete with first paint.
+  window.__gtagQueue = window.__gtagQueue || [];
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());

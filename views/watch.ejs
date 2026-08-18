@@ -35,7 +35,7 @@
                     allow='autoplay; fullscreen; picture-in-picture; encrypted-media'
                     allowfullscreen
                     referrerpolicy='no-referrer-when-downgrade'
-                    loading='eager'></iframe>
+                    loading='lazy'></iframe>
                 <% if (Array.isArray(video.mediaDefinitions) && video.mediaDefinitions.length) { %>
                     <video id='desktop-video-fallback' class='desktop-video-fallback' controls playsinline preload='metadata' poster='<%= video.preview || video.thumb || "" %>' aria-label='<%= video.title %>'>
                         <% video.mediaDefinitions.slice().sort((a, b) => Number(b.quality || 0) - Number(a.quality || 0)).forEach((media) => { %>
