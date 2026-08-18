@@ -478,6 +478,10 @@ app.use((req, res, next) => {
 async function renderVideoListing(req, res, { query, heading, description, canonicalBase, indexFirstPage }) {
     const page = parsePage(req.query.page);
     const pageSize = 24;
+    // Eporner's search endpoint may return an empty set for the synthetic
+    // homepage query "popular". The source-only filter needs a real catalog
+    // query so /?source=eporner is useful without requiring q.
+    const upstreamQuery = req.query.source === 'eporner' && !normalizeQuery(req.query.q) ? 'all' : query;
     const separator = canonicalBase.includes('?') ? '&' : '?';
     // Keep the selected source on every pagination link. Previously the
     // source parameter was dropped, so page 2 silently switched to "all".
@@ -504,7 +508,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
         if (req.query.source !== 'pornhub') {
             try {
-                const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: query || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
+                const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: upstreamQuery || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
                 allVideos.push(...epornerResults
                     .filter((item) => item.status === 'fulfilled')
                     .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
