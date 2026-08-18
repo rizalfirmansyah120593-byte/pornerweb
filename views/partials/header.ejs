@@ -3,8 +3,9 @@
         <span class="pornhub-logo"><span class="pornhub-logo__name">PORNER</span><span class="pornhub-logo__badge">WEB</span></span>
     </a>
 
-    <form action="/" method="GET" class="search-box">
-        <input type="text" name="q" placeholder="<%= t.placeholder %>" required>
+    <form action="/" method="GET" class="search-box" id="site-search-form" role="search">
+        <input type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" list="search-suggestions" aria-label="<%= t.searchLabel %>">
+        <datalist id="search-suggestions"></datalist>
         <button type="submit" aria-label="Cari">🔍</button>
     </form>
 
@@ -146,6 +147,22 @@
     });
 
     applyTheme(getStoredTheme(), false);
+
+    const searchForm = document.getElementById('site-search-form');
+    const searchInput = searchForm?.querySelector('input[name="q"]');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    const searchHistoryKey = 'pornerweb-search-history';
+    const getSearchHistory = () => { try { return JSON.parse(localStorage.getItem(searchHistoryKey) || '[]').filter(Boolean).slice(0, 8); } catch { return []; } };
+    const renderSearchHistory = () => {
+        if (!searchSuggestions) return;
+        searchSuggestions.replaceChildren(...getSearchHistory().map((value) => { const option = document.createElement('option'); option.value = value; return option; }));
+    };
+    renderSearchHistory();
+    searchForm?.addEventListener('submit', () => {
+        const value = searchInput?.value.trim().replace(/\s+/g, ' ');
+        if (!value) return;
+        try { localStorage.setItem(searchHistoryKey, JSON.stringify([value, ...getSearchHistory().filter((item) => item.toLowerCase() !== value.toLowerCase())].slice(0, 8))); } catch {}
+    });
 
     document.getElementById('language-selector')?.addEventListener('change', (event) => {
         window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;

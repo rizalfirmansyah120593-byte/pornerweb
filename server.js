@@ -308,6 +308,7 @@ app.use((req, res, next) => {
     const activeCategory = categoriesBySlug.get(pathSlug.toLowerCase());
     const activeCountry = countriesBySlug.get(pathSlug.toLowerCase());
     res.locals.activeMenuQuery = activeCategory?.query || activeCountry?.query || normalizeQuery(req.query.q).toLowerCase();
+    res.locals.searchQuery = normalizeQuery(req.query.q);
     res.locals.adsEnabled = req.path === '/'
         || ['/recommended', '/models'].includes(req.path)
         || req.path.startsWith('/category/')

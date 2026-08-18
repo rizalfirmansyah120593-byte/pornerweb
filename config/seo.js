@@ -65,7 +65,7 @@ export function parsePage(value) {
 }
 
 export function normalizeQuery(value) {
-    return String(value || '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+    return String(value || '').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/[-_]+/g, ' ').replace(/[^\p{L}\p{N}\s.'']/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
 }
 
 export function extractVideoId(value) {
