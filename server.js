@@ -485,14 +485,20 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     // homepage query "popular". The source-only filter needs a real catalog
     // query so /?source=eporner is useful without requiring q.
     const upstreamQuery = req.query.source === 'eporner' && !normalizeQuery(req.query.q) ? 'all' : query;
-    const separator = canonicalBase.includes('?') ? '&' : '?';
-    // Keep the selected source on every pagination link. Previously the
-    // source parameter was dropped, so page 2 silently switched to "all".
-    const sourceParam = ['pornhub', 'eporner'].includes(String(req.query.source || ''))
-        ? `&source=${encodeURIComponent(String(req.query.source))}` : '';
-    const canonicalPath = page > 1 ? `${canonicalBase}${separator}page=${page}${sourceParam}` : `${canonicalBase}${sourceParam}`;
-    const paginationPath = (target) => target > 1
-        ? `${canonicalBase}${separator}page=${target}${sourceParam}` : `${canonicalBase}${sourceParam}`;
+    // Build pagination URLs from the listing's canonical query every time.
+    // This keeps q/source intact on mobile too, where the next/previous links
+    // are commonly the only way users navigate after a search.
+    const buildListingPath = (targetPage) => {
+        const url = new URL(canonicalBase, 'https://pornerweb.local');
+        if (targetPage > 1) url.searchParams.set('page', String(targetPage));
+        else url.searchParams.delete('page');
+        const source = String(req.query.source || '');
+        if (['pornhub', 'eporner'].includes(source)) url.searchParams.set('source', source);
+        else url.searchParams.delete('source');
+        return `${url.pathname}${url.search}`;
+    };
+    const canonicalPath = buildListingPath(page);
+    const paginationPath = (target) => buildListingPath(target);
 
     try {
         // Fetch only the requested source page. Fetching pages 1..N and then
