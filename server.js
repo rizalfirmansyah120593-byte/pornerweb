@@ -501,10 +501,11 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     const paginationPath = (target) => buildListingPath(target);
 
     try {
-        // Fetch only the requested source page. Fetching pages 1..N and then
-        // slicing the merged array causes page-1 items to leak into page 2.
-        // Each page is now a stable, independent batch of 24 items.
-        const sourcePages = [page];
+        // Build the unified listing from all source pages up to the requested
+        // page. Some upstream/proxy combinations ignore `page` and return
+        // page 1 repeatedly; collecting the range and slicing by the unified
+        // offset makes page navigation deterministic in that case as well.
+        const sourcePages = Array.from({ length: page }, (_, index) => index + 1);
         // A single failed upstream page must not turn the entire listing into
         // a 502. Keep successful sources and let the other source fill gaps.
         const pornHubResults = req.query.source === 'eporner'
@@ -529,10 +530,8 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
         await hydrateEpornerTitles(uniqueVideos.slice(0, pageSize));
         await hydrateGenericVideoTitles(uniqueVideos.slice(0, pageSize));
-        // The upstream requests above already target the requested page.
-        // Slicing with (page - 1) here would empty page 2 and redirect it to
-        // page 1, making every pagination link appear broken.
-        const videos = uniqueVideos.slice(0, pageSize);
+        const pageStart = (page - 1) * pageSize;
+        const videos = uniqueVideos.slice(pageStart, pageStart + pageSize);
         if (!videos.length && page > 1) {
             // Do not render a blank page when an upstream reports fewer pages
             // than its metadata suggests. Keep navigation usable by stepping
