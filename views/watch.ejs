@@ -149,7 +149,7 @@
         </main>
     </div>
 
-    <script>
+    <script type='module'>
         (() => {
             const metadata = document.getElementById('watch-metadata');
             const currentVideoId = metadata?.dataset.videoId || '';
@@ -214,7 +214,7 @@
         })();
     </script>
 
-    <script>
+    <script type='module'>
     (() => {
         const section = document.querySelector('[data-watch-more]');
         const grid = section?.querySelector('.video-grid');
@@ -256,7 +256,7 @@
     })();
     </script>
 
-    <script>
+    <script type='module'>
     (() => {
         const button = document.querySelector('[data-watch-later]');
         if (!button) return;

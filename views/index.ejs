@@ -79,7 +79,7 @@
                                 <div class='thumbnail'>
                                     <picture>
                                         <% if (item.previewWebp) { %><source srcset='<%= item.previewWebp %>' type='image/webp'><% } %>
-                                        <img src='<%= item.preview %>' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
+                                        <img src='<%= item.previewSmall || item.preview %>' srcset='<%= [item.previewSmall && `${item.previewSmall} 320w`, item.previewMedium && `${item.previewMedium} 640w`, item.previewLarge && `${item.previewLarge} 1280w`].filter(Boolean).join(", ") %>' sizes='(max-width: 600px) 92vw, (max-width: 1100px) 45vw, 320px' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
                                     </picture>
                                     <video class='hover-preview' muted playsinline preload='metadata' poster='<%= item.preview %>' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
@@ -172,7 +172,7 @@
 
     <%- include('partials/footer') %>
     <%- include('partials/ad-global') %>
-    <script>
+    <script type='module'>
         (() => {
             if (!window.matchMedia('(hover: hover)').matches) return;
             const cards = document.querySelectorAll('[data-preview-id]');
@@ -212,7 +212,7 @@
             });
         })();
     </script>
-    <script>
+    <script type='module'>
     (() => {
         const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } };
         const write = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
@@ -229,7 +229,7 @@
         });
     })();
     </script>
-    <script>
+    <script type='module'>
     (() => {
         const root = document.getElementById('about-pornerweb');
         const toggle = document.getElementById('about-pornerweb-toggle');
