@@ -33,7 +33,8 @@ const isEpornerId = (id) => String(id || '').startsWith('ep_');
 const epornerRawId = (id) => String(id || '').replace(/^ep_/, '');
 function normalizeEpornerVideo(item) {
     if (!item?.id) return null;
-    return { id: epornerId(item.id), source: 'eporner', title: item.title || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', durationFormatted: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
+    const title = item.title || item.video_title || item.name || item.caption || '';
+    return { id: epornerId(item.id), source: 'eporner', title: String(title).trim() || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', durationFormatted: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
 }
 function fallbackPornstars(gender = '') {
     const names = gender === 'male'
@@ -235,7 +236,10 @@ async function hydrateEpornerTitles(videos) {
     const results = await Promise.allSettled(generic.map((item) => epornerSearch({ id: epornerRawId(item.id) })));
     results.forEach((result, index) => {
         const title = result.status === 'fulfilled' ? result.value?.videos?.[0]?.title : '';
-        if (typeof title === 'string' && title.trim()) generic[index].title = title.trim();
+        if (typeof title === 'string' && title.trim() && !/on popular demand|^popular video$/i.test(title.trim())) generic[index].title = title.trim();
+        if (/on popular demand|^popular video$/i.test(String(generic[index].title || ''))) {
+            generic[index].title = `Eporner video ${epornerRawId(generic[index].id)}`;
+        }
     });
     return videos;
 }
@@ -424,8 +428,13 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     const page = parsePage(req.query.page);
     const pageSize = 24;
     const separator = canonicalBase.includes('?') ? '&' : '?';
-    const canonicalPath = page > 1 ? `${canonicalBase}${separator}page=${page}` : canonicalBase;
-    const paginationPath = (target) => target > 1 ? `${canonicalBase}${separator}page=${target}` : canonicalBase;
+    // Keep the selected source on every pagination link. Previously the
+    // source parameter was dropped, so page 2 silently switched to "all".
+    const sourceParam = ['pornhub', 'eporner'].includes(String(req.query.source || ''))
+        ? `&source=${encodeURIComponent(String(req.query.source))}` : '';
+    const canonicalPath = page > 1 ? `${canonicalBase}${separator}page=${page}${sourceParam}` : `${canonicalBase}${sourceParam}`;
+    const paginationPath = (target) => target > 1
+        ? `${canonicalBase}${separator}page=${target}${sourceParam}` : `${canonicalBase}${sourceParam}`;
 
     try {
         // Fetch only the requested source page. Fetching pages 1..N and then
