@@ -516,6 +516,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             .map((item) => item.value);
         const result = [...results].pop();
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
+        let usedSourceFallback = false;
         if (req.query.source !== 'pornhub') {
             try {
                 const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: upstreamQuery || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
@@ -523,10 +524,32 @@ async function renderVideoListing(req, res, { query, heading, description, canon
                     .filter((item) => item.status === 'fulfilled')
                     .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
             } catch (error) {
-                console.error('[Eporner] Gagal memuat video tambahan:', error.message);
+                if (!isExpectedNetworkFailure(error)) console.error('[Eporner] Gagal memuat video tambahan:', error.message);
             }
         }
-        if (req.query.source === 'eporner') allVideos = allVideos.filter((item) => item.source === 'eporner');
+        // Pornhub dapat mengembalikan halaman anti-bot dengan HTTP 200 tetapi
+        // tanpa data. Jika hasil utama kosong, ambil sumber lainnya.
+        if (!allVideos.length && req.query.source === 'pornhub') {
+            try {
+                const fallbackResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: upstreamQuery || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
+                allVideos = fallbackResults
+                    .filter((item) => item.status === 'fulfilled')
+                    .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean));
+                usedSourceFallback = allVideos.length > 0;
+            } catch (error) {
+                if (!isExpectedNetworkFailure(error)) console.error('[Fallback] Eporner gagal:', error.message);
+            }
+        }
+        // Jika filter Eporner dipilih tetapi Eporner sedang gagal, gunakan
+        // Pornhub agar halaman tetap berisi konten.
+        if (!allVideos.length && req.query.source === 'eporner') {
+            const fallbackResults = await Promise.allSettled(sourcePages.map((sourcePage) => ph.searchVideo(query, { page: sourcePage })));
+            allVideos = fallbackResults
+                .filter((item) => item.status === 'fulfilled')
+                .flatMap((item) => (item.value?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
+            usedSourceFallback = allVideos.length > 0;
+        }
+        if (req.query.source === 'eporner' && !usedSourceFallback) allVideos = allVideos.filter((item) => item.source === 'eporner');
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
         await hydrateEpornerTitles(uniqueVideos.slice(0, pageSize));
         await hydrateGenericVideoTitles(uniqueVideos.slice(0, pageSize));
