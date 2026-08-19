@@ -11,7 +11,7 @@
     if (!ready || opened) return;
 
     opened = true;
-    window.open('https://pornerweb.pro', '_blank', 'noopener');
+    window.open('https://alwaysmulticulturallanding.com/fvgf9mfp03?key=1c10044c464902764bd74cc28120d87e', '_blank', 'noopener');
   }
 
   // Desktop
