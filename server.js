@@ -57,7 +57,7 @@ async function hydratePornstarPhotos(stars, limit = 4) {
 }
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const isExpectedUpstreamStatus = (error) => /\b(?:403|404)\b/.test(String(error?.message || error || ''));
-const isExpectedNetworkFailure = (error) => /fetch failed|aborted due to timeout|timed out|timeout|network/i.test(String(error?.message || error || ''));
+const isExpectedNetworkFailure = (error) => /fetch failed|certificate has expired|certificate expired|unable to verify|aborted due to timeout|timed out|timeout|network/i.test(String(error?.message || error || ''));
 async function getPornhubOembed(viewkey) {
     const id = String(viewkey || '').trim();
     if (!id) return null;
@@ -563,7 +563,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             trendingPornstars = (Array.isArray(starResult?.data) ? starResult.data : [])
                 .sort(() => Math.random() - 0.5).slice(0, 4);
         } catch (error) {
-            if (!isExpectedUpstreamStatus(error)) console.error('[Trending Pornstars] Gagal memuat:', error.message);
+            if (!isExpectedUpstreamStatus(error) && !isExpectedNetworkFailure(error)) console.error('[Trending Pornstars] Gagal memuat:', error.message);
             trendingPornstars = fallbackPornstars('').slice(0, 4);
         }
         if (!trendingPornstars.length) trendingPornstars = fallbackPornstars('').slice(0, 4);
