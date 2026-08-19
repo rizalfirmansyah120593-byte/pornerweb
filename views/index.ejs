@@ -130,7 +130,7 @@
                         <% trendingPornstars.forEach((star) => { %>
                             <article class='pornstar-card'>
                                 <a class='pornstar-card__photo' href='/?q=<%= encodeURIComponent(star.name) %>' aria-label='Lihat video <%= star.name %>'>
-                                <img src='<%= star.photo || "/images/placeholder.svg" %>' alt='<%= star.name %>' width='320' height='240' loading='lazy' decoding='async' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+                                <img src='<%= star.photo || "/images/placeholder.svg" %>' data-fallbacks='<%= JSON.stringify(star.photoFallbacks || []).replace(/'/g, "&#39;") %>' alt='<%= star.name %>' width='320' height='240' loading='lazy' decoding='async' onerror="const f=JSON.parse(this.dataset.fallbacks||'[]');const n=Number(this.dataset.fallbackIndex||0)+1;this.dataset.fallbackIndex=n;if(f[n])this.src=f[n];else{this.onerror=null;this.src='/images/placeholder.svg';}">
                                 </a>
                                 <div class='pornstar-card__body'><h2><a href='/?q=<%= encodeURIComponent(star.name) %>'><%= star.name %></a></h2></div>
                             </article>

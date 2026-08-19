@@ -44,14 +44,31 @@ function fallbackPornstars(gender = '') {
     return names.map((name, index) => ({ name, rank: index + 1, videoNum: 0, likes: 'N/A', photo: '/images/placeholder.svg' }));
 }
 async function hydratePornstarPhotos(stars, limit = 4) {
-    const missing = stars.filter((star) => star?.name && (!star.photo || star.photo.endsWith('/placeholder.svg'))).slice(0, limit);
-    const results = await Promise.allSettled(missing.map((star) => ph.pornstar(star.name)));
+    // Ambil cadangan untuk semua kartu, karena avatar yang ada tetap bisa
+    // mengembalikan 403/404 ketika dirender oleh browser.
+    const missing = stars.filter((star) => star?.name).slice(0, limit);
+    const results = await Promise.allSettled(missing.map(async (star) => {
+        const [detail, phVideos, epVideos] = await Promise.allSettled([
+            ph.pornstar(star.name),
+            ph.searchVideo(star.name, { page: 1 }),
+            epornerSearch({ query: star.name, page: 1, perPage: 8, thumbsize: 'big', order: 'most-popular' }),
+        ]);
+        const detailValue = detail.status === 'fulfilled' ? detail.value : null;
+        const videoPhotos = [
+            ...(phVideos.status === 'fulfilled' ? (phVideos.value?.data || []) : []),
+            ...(epVideos.status === 'fulfilled' ? (epVideos.value?.videos || []) : []),
+        ].map((video) => video.preview || video.default_thumb?.src || video.thumbs?.[0]?.src).filter(Boolean);
+        return { detail: detailValue, photos: [...new Set([detailValue?.avatar, ...videoPhotos].filter(Boolean))] };
+    }));
     results.forEach((result, index) => {
-        if (result.status !== 'fulfilled' || !result.value) return;
-        const detail = result.value;
-        if (detail.avatar) missing[index].photo = detail.avatar;
-        if (!missing[index].videoNum) missing[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
-        if ((missing[index].likes === 'N/A' || missing[index].likes == null) && detail.profileViews != null) missing[index].likes = detail.profileViews;
+        if (result.status !== 'fulfilled') return;
+        const { detail, photos } = result.value;
+        if (photos.length) {
+            missing[index].photo = photos[0];
+            missing[index].photoFallbacks = photos;
+        }
+        if (!missing[index].videoNum && detail) missing[index].videoNum = Number(detail.uploadedVideoCount || 0) + Number(detail.taggedVideoCount || 0);
+        if ((missing[index].likes === 'N/A' || missing[index].likes == null) && detail?.profileViews != null) missing[index].likes = detail.profileViews;
     });
     return stars;
 }
