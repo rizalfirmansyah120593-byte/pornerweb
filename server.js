@@ -516,7 +516,9 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             .map((item) => item.value);
         const result = [...results].pop();
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
-        if (req.query.source !== 'pornhub') {
+        // Fallback ke Eporner hanya saat filter Pornhub benar-benar kosong.
+        const shouldFallbackToEporner = req.query.source === 'pornhub' && allVideos.length === 0;
+        if (req.query.source !== 'pornhub' || shouldFallbackToEporner) {
             try {
                 const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: upstreamQuery || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
                 allVideos.push(...epornerResults
