@@ -946,7 +946,11 @@ app.get('/watch/:id', async (req, res, next) => {
         });
         
     } catch (error) {
-        if (!isExpectedUpstreamStatus(error)) console.error(`Gagal memuat video ${id}:`, error.message);
+        // Hostinger sering gagal menjangkau halaman detail Eporner dari
+        // datacenter. Ini bukan error aplikasi dan tidak perlu memenuhi log.
+        if (!isExpectedUpstreamStatus(error) && !isExpectedNetworkFailure(error)) {
+            console.error(`Gagal memuat video ${id}:`, error.message);
+        }
         // Pornhub dapat memblokir IP datacenter Hostinger dengan 403. Tetap
         // tampilkan player embed resmi agar halaman tidak berubah menjadi 502.
         if (!isEpornerId(id) && /403\s+Forbidden/i.test(String(error?.message || ''))) {
@@ -1699,6 +1703,7 @@ app.use((req, res) => {
 export function startServer(port = PORT) {
     return app.listen(port, '0.0.0.0', () => {
         console.log(`Server berjalan di port ${port}`);
+        console.log(`Buka di browser: http://localhost:${port}`);
     });
 }
 
