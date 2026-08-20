@@ -172,9 +172,9 @@
             <li><a href="/?q=webcam" class="menu-item">📷 Webcam</a></li>
         </ul>
         </details>
-<script>
+<script data-active-query="<%= activeMenuQuery || '' %>">
 (() => {
-    const activeQuery = '<%= String(activeMenuQuery || "").replace(/'/g, "\\'") %>'.toLowerCase();
+    const activeQuery = document.currentScript.dataset.activeQuery.toLowerCase();
     const currentPath = window.location.pathname;
     document.querySelectorAll('.menu-item').forEach((link) => {
         const url = new URL(link.href, window.location.origin);
