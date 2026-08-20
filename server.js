@@ -532,11 +532,15 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             .filter((item) => item.status === 'fulfilled')
             .map((item) => item.value);
         const result = [...results].pop();
+        let reportedPages = Math.max(0, ...results.map((item) => Number(item?.paging?.maxPage) || 0));
         let allVideos = results.flatMap((item) => (item?.data || []).map((video) => ({ ...video, source: 'pornhub' })));
         let usedSourceFallback = false;
         if (req.query.source !== 'pornhub') {
             try {
                 const epornerResults = await Promise.allSettled(sourcePages.map((sourcePage) => epornerSearch({ query: upstreamQuery || 'all', page: sourcePage, perPage: 24, thumbsize: 'big', order: 'latest' })));
+                reportedPages = Math.max(reportedPages, ...epornerResults
+                    .filter((item) => item.status === 'fulfilled')
+                    .map((item) => Number(item.value?.total_pages || item.value?.totalPages || item.value?.pages) || 0));
                 allVideos.push(...epornerResults
                     .filter((item) => item.status === 'fulfilled')
                     .flatMap((item) => (Array.isArray(item.value?.videos) ? item.value.videos : []).map(normalizeEpornerVideo).filter(Boolean)));
@@ -579,12 +583,14 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             return res.redirect(302, paginationPath(page - 1));
         }
         const shouldIndex = indexFirstPage && page === 1;
-        const reportedPages = Number(result?.paging?.maxPage);
         // If the API omits maxPage, keep a next link while this page contains
-        // results. There is intentionally no artificial 100-page ceiling.
-        const totalPages = Number.isInteger(reportedPages) && reportedPages > 0
-            ? Math.max(11, page, reportedPages)
-            : Math.max(11, page + (videos.length === pageSize ? 1 : 0));
+        // results. The total is based on the actual upstream page count.
+        const totalPages = reportedPages > 0
+            ? Math.max(page, reportedPages)
+            : Math.max(page, page + (videos.length === pageSize ? 1 : 0));
+        const totalVideos = reportedPages > 0
+            ? reportedPages * pageSize
+            : Math.max(uniqueVideos.length, totalPages * pageSize);
         const seo = buildSeo(req, {
             title: heading,
             description,
@@ -612,7 +618,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
         return res.render('index', {
-            data: videos, title: heading, intro: description, query, currentPage: page,
+            data: videos, totalVideos, title: heading, intro: description, query, currentPage: page,
             totalPages, paginationPath, seo, trendingPornstars,
             blogPosts: typeof BLOG_POSTS !== 'undefined' ? BLOG_POSTS.map((post) => ({ slug: post.slug, title: localized(res.locals.lang, post.title), summary: localized(res.locals.lang, post.summary) })) : [],
         });
