@@ -351,6 +351,20 @@ img {
     .sidebar { position: sticky; top: 72px; height: calc(100dvh - 72px); max-height: calc(100dvh - 72px); }
     .content, .watch-content { min-height: calc(100dvh - 72px); overflow: visible; }
     .site-footer { position: relative; z-index: 1; }
+
+    .main-header .search-box {
+        position: relative;
+        overflow: visible;
+        z-index: 100001;
+    }
+
+    .main-header .search-suggestions {
+        top: 100%;
+        right: 0;
+        left: 0;
+        margin-top: 9px;
+        width: 100%;
+    }
 }
 
 .sidebar {
