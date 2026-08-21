@@ -239,6 +239,7 @@ img {
 
 .search-box button {
     border: 0;
+    border-radius: 0 999px 999px 0;
     padding: 0 15px;
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     color: #fff;
