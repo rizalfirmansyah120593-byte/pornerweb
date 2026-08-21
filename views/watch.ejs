@@ -52,12 +52,12 @@
             <div class='donation-modal' id='donation-modal' hidden role='dialog' aria-modal='true' aria-labelledby='donation-modal-title'>
                 <div class='donation-modal__box'>
                     <button class='donation-modal__close' id='donation-modal-close' type='button' aria-label='Tutup'>×</button>
-                    <span class='eyebrow'>Dukung PORNERWEB</span>
-                    <h2 id='donation-modal-title'>Bantu website ini tetap berjalan</h2>
-                    <p>Dukungan Anda membantu membayar server dan mengembangkan fitur baru untuk PORNERWEB.</p>
+                    <span class='eyebrow'><%= localized(lang, { id: 'Dukung PORNERWEB', en: 'Support PORNERWEB', ms: 'Sokong PORNERWEB', es: 'Apoya PORNERWEB', ja: 'PORNERWEBを支援' }) %></span>
+                    <h2 id='donation-modal-title'><%= localized(lang, { id: 'Bantu website ini tetap berjalan', en: 'Help keep this website running', ms: 'Bantu laman web ini terus berjalan', es: 'Ayuda a mantener este sitio activo', ja: 'このサイトの運営を支援してください' }) %></h2>
+                    <p><%= localized(lang, { id: 'Dukungan Anda membantu membayar server dan mengembangkan fitur baru untuk PORNERWEB.', en: 'Your support helps pay for the server and develop new PORNERWEB features.', ms: 'Sokongan anda membantu membayar pelayan dan membangunkan ciri baharu PORNERWEB.', es: 'Tu apoyo ayuda a pagar el servidor y desarrollar nuevas funciones para PORNERWEB.', ja: '皆様の支援はサーバー費用と新機能の開発に役立ちます。' }) %></p>
                     <div class='donation-modal__actions'>
                         <a class='donation-button' href='https://saweria.co/RizalFirmansyah' target='_blank' rel='noopener noreferrer'>♥ Dukung melalui Saweria</a>
-                        <button class='btn donation-modal__continue' id='donation-modal-continue' type='button'>Lanjutkan menonton</button>
+                        <button class='btn donation-modal__continue' id='donation-modal-continue' type='button'><%= localized(lang, { id: 'Lanjutkan menonton', en: 'Continue watching', ms: 'Teruskan menonton', es: 'Continuar viendo', ja: '視聴を続ける' }) %></button>
                     </div>
                 </div>
             </div>
