@@ -8,8 +8,13 @@
   <strong>PornerWeb</strong> adalah aplikasi web server-side rendered yang mengagregasi data video dari sumber eksternal, lalu menyajikannya melalui antarmuka yang responsif, ringan, dan mudah dinavigasi.
 </p>
 
+## Preview
+
+![Pornerweb Preview Dekstop](public/preview-dekstop.png)
+![Pornerweb Preview Mobile](public/preview-hp.png)
+
 <p>
-  <a href="https://deeppink-alpaca-783059.hostingersite.com">
+  <a href="https://pornerweb.pro">
     <img src="https://img.shields.io/badge/🚀_Demo_Live-Visit_Website-ff6b35?style=for-the-badge" alt="Demo live PornerWeb">
   </a>
   <a href="https://github.com/rizalfirmansyah120593-byte/pornerweb">
