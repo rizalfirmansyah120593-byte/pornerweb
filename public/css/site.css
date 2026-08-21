@@ -1377,6 +1377,43 @@ img {
 
 :root[data-theme='light'] .video-card .card-meta span:first-child { color: #42516b; }
 
+/* Light theme: keep the thumbnail rich, but make the video information card
+   bright, layered, and readable instead of inheriting the dark theme card. */
+:root[data-theme='light'] .video-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+    border-color: rgba(71, 85, 105, 0.2);
+    box-shadow: 0 10px 24px rgba(30, 41, 59, 0.11);
+}
+
+:root[data-theme='light'] .video-card:hover {
+    border-color: rgba(234, 142, 0, 0.55);
+    box-shadow: 0 16px 30px rgba(30, 41, 59, 0.16);
+}
+
+:root[data-theme='light'] .video-card .card-body h2,
+:root[data-theme='light'] .video-card .card-body h3 {
+    color: #172033;
+}
+
+:root[data-theme='light'] .video-card .card-body h2:hover,
+:root[data-theme='light'] .video-card .card-body h3:hover {
+    color: #b86200;
+}
+
+:root[data-theme='light'] .video-card .card-meta,
+:root[data-theme='light'] .video-card .card-meta span:first-child {
+    color: #52627d;
+}
+
+:root[data-theme='light'] .video-card .watch-later-button {
+    color: #52627d;
+}
+
+:root[data-theme='light'] .video-card .watch-later-button:hover,
+:root[data-theme='light'] .video-card .watch-later-button.is-saved {
+    color: #b86200;
+}
+
 .empty {
     padding: 32px;
     text-align: center;
