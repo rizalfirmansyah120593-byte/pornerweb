@@ -736,6 +736,24 @@ app.get('/api/watch-more/:id', async (req, res) => {
     }
 });
 
+app.get('/api/search-suggestions', async (req, res) => {
+    const query = normalizeQuery(req.query.q).slice(0, 80);
+    if (query.length < 2) return res.json([]);
+    try {
+        const result = await ph.autoComplete(query);
+        const suggestions = [
+            ...(result?.models || []).map((item) => ({ label: item.name || item.title, type: 'Model' })),
+            ...(result?.pornstars || []).map((item) => ({ label: item.name || item.title, type: 'Pornstar' })),
+            ...(result?.channels || []).map((item) => ({ label: item.name || item.title, type: 'Channel' })),
+        ].filter((item) => item.label).filter((item, index, list) => list.findIndex((other) => other.label.toLowerCase() === item.label.toLowerCase()) === index).slice(0, 8);
+        res.set('Cache-Control', 'public, max-age=60');
+        return res.json(suggestions);
+    } catch (error) {
+        if (!isExpectedNetworkFailure(error)) console.error('[Search suggestions] Gagal memuat:', error.message);
+        return res.json([]);
+    }
+});
+
 // Media preview is loaded on demand so listing pages do not download every
 // video's source before the visitor actually hovers a card.
 app.get('/api/video-preview/:id', async (req, res) => {

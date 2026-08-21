@@ -213,6 +213,23 @@ img {
 
 .search-box:focus-within { border-color: #ffa31a; box-shadow: 0 0 0 2px rgba(255, 163, 26, 0.22); }
 
+.search-suggestions {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 48px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-elevated);
+    box-shadow: var(--shadow);
+}
+.search-box { position: relative; }
+.search-suggestion { display: flex; width: 100%; justify-content: space-between; gap: 12px; padding: 9px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text); text-align: left; cursor: pointer; font: inherit; }
+.search-suggestion:hover, .search-suggestion:focus { background: var(--accent-soft); outline: none; }
+.search-suggestion small { color: var(--muted); font-size: .7rem; }
+
 .search-box input::placeholder {
     color: var(--muted);
 }

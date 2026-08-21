@@ -4,8 +4,8 @@
     </a>
 
     <form action="/" method="GET" class="search-box" id="site-search-form" role="search">
-        <input type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" list="search-suggestions" aria-label="<%= t.searchLabel %>">
-        <datalist id="search-suggestions"></datalist>
+        <input type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" aria-autocomplete="list" aria-controls="search-suggestions" aria-expanded="false" aria-label="<%= t.searchLabel %>">
+        <div class="search-suggestions" id="search-suggestions" role="listbox" hidden></div>
         <button type="submit" aria-label="Cari">🔍</button>
     </form>
 
@@ -153,15 +153,58 @@
     const searchSuggestions = document.getElementById('search-suggestions');
     const searchHistoryKey = 'pornerweb-search-history';
     const getSearchHistory = () => { try { return JSON.parse(localStorage.getItem(searchHistoryKey) || '[]').filter(Boolean).slice(0, 8); } catch { return []; } };
-    const renderSearchHistory = () => {
+    let searchRequest;
+    let searchTimer;
+    const closeSearchSuggestions = () => {
         if (!searchSuggestions) return;
-        searchSuggestions.replaceChildren(...getSearchHistory().map((value) => { const option = document.createElement('option'); option.value = value; return option; }));
+        searchSuggestions.hidden = true;
+        searchInput?.setAttribute('aria-expanded', 'false');
     };
-    renderSearchHistory();
+    const showSearchSuggestions = (items) => {
+        if (!searchSuggestions) return;
+        searchSuggestions.replaceChildren(...items.map((item) => {
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'search-suggestion';
+            option.setAttribute('role', 'option');
+            const label = document.createElement('span');
+            label.textContent = item.label;
+            const type = document.createElement('small');
+            type.textContent = item.type;
+            option.append(label, type);
+            option.addEventListener('click', () => {
+                searchInput.value = item.label;
+                closeSearchSuggestions();
+                searchForm.requestSubmit();
+            });
+            return option;
+        }));
+        searchSuggestions.hidden = !items.length;
+        searchInput?.setAttribute('aria-expanded', String(Boolean(items.length)));
+    };
+    searchInput?.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        const value = searchInput.value.trim();
+        if (value.length < 2) { closeSearchSuggestions(); return; }
+        searchTimer = setTimeout(async () => {
+            searchRequest?.abort();
+            searchRequest = new AbortController();
+            try {
+                const response = await fetch(`/api/search-suggestions?q=${encodeURIComponent(value)}`, { signal: searchRequest.signal, headers: { accept: 'application/json' } });
+                if (!response.ok) return closeSearchSuggestions();
+                showSearchSuggestions(await response.json());
+            } catch (error) {
+                if (error.name !== 'AbortError') closeSearchSuggestions();
+            }
+        }, 280);
+    });
+    searchInput?.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSearchSuggestions(); });
+    document.addEventListener('click', (event) => { if (!searchForm?.contains(event.target)) closeSearchSuggestions(); });
     searchForm?.addEventListener('submit', () => {
         const value = searchInput?.value.trim().replace(/\s+/g, ' ');
         if (!value) return;
         try { localStorage.setItem(searchHistoryKey, JSON.stringify([value, ...getSearchHistory().filter((item) => item.toLowerCase() !== value.toLowerCase())].slice(0, 8))); } catch {}
+        closeSearchSuggestions();
     });
 
     document.getElementById('language-selector')?.addEventListener('change', (event) => {
