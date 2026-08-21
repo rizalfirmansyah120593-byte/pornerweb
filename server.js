@@ -1672,11 +1672,9 @@ app.get('/robots.txt', (req, res) => {
     ].join('\n'));
 });
 
-let sitemapVideoCache = { expiresAt: 0, paths: [] };
-
 async function getSitemapPaths() {
-    // Hanya URL kanonis halaman yang boleh diindeks. Jangan masukkan URL
-    // pencarian, pagination, redirect, /set-lang, atau halaman noindex.
+    // Hanya URL kanonis yang boleh diindeks. Jangan masukkan URL pencarian,
+    // pagination, redirect, /set-lang, API, atau halaman noindex.
     const paths = [
         { path: '/' },
         ...INDEXABLE_CATEGORIES.map(({ slug }) => ({ path: `/category/${slug}` })),
@@ -1687,41 +1685,10 @@ async function getSitemapPaths() {
         ...BLOG_POSTS.map(({ slug }) => ({ path: `/blog/${slug}` })),
     ];
 
-    // Tambahkan URL video nyata dari feed yang memang tersedia di situs.
-    // Cache mencegah sitemap melakukan puluhan request API pada setiap crawl.
-    if (sitemapVideoCache.expiresAt <= Date.now()) {
-        const queries = [
-            'popular', 'recommended', 'model',
-            ...INDEXABLE_CATEGORIES.map(({ query }) => query),
-            ...COUNTRY_FILTERS.map(({ query }) => query),
-        ];
-        const uniqueQueries = [...new Set(queries)];
-        // Ambil beberapa halaman per feed agar sitemap berisi ratusan URL
-        // nyata, bukan hanya hasil halaman pertama yang sering berulang.
-        const requests = uniqueQueries.flatMap((query) =>
-            [1, 2, 3].map((page) => ({ query, page }))
-        );
-        const results = await Promise.allSettled([
-            ...requests.map(({ query, page }) => ph.searchVideo(query, { page })),
-            // Feed umum memberi variasi video yang lebih besar daripada
-            // pencarian kategori yang sering mengembalikan item berulang.
-            ...Array.from({ length: 10 }, (_, index) => ph.videoList({ page: index + 1 })),
-        ]);
-        const videos = results.flatMap((result) =>
-            result.status === 'fulfilled' && Array.isArray(result.value?.data)
-                ? result.value.data : []
-        );
-        const seen = new Set();
-        sitemapVideoCache.paths = videos
-            .map((video) => videoPath(video))
-            .filter((path) => path !== '/' && !seen.has(path) && seen.add(path))
-            .slice(0, 45000)
-            .map((path) => ({ path }));
-        sitemapVideoCache.expiresAt = Date.now() + 6 * 60 * 60 * 1000;
-    }
-
-    // Pastikan tidak ada URL ganda bila feed atau konfigurasi kategori berubah.
-    return [...new Map([...paths, ...sitemapVideoCache.paths].map((item) => [item.path, item])).values()];
+    // URL /watch/:id sengaja tidak dimasukkan: halaman tersebut memakai
+    // noindex karena hanya menyediakan metadata/embed dari sumber eksternal.
+    // Sitemap harus berisi canonical URL yang memang eligible untuk index.
+    return [...new Map(paths.map((item) => [item.path, item])).values()];
 }
 
 app.get('/sitemap.xml', async (req, res) => {
