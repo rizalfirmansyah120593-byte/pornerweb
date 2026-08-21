@@ -45,6 +45,23 @@
                             <% } %>
                         <% }) %>
                     </video>
+                    <div class='video-extra-controls' aria-label='Kontrol tambahan video'>
+                        <button type='button' id='video-rewind' title='Mundur 10 detik'>↶ 10s</button>
+                        <button type='button' id='video-forward' title='Maju 10 detik'>10s ↷</button>
+                        <button type='button' id='video-pip' title='Picture-in-Picture'>PiP</button>
+                        <button type='button' id='video-fullscreen' title='Layar penuh'>⛶</button>
+                    </div>
+                    <div class='video-speed-control' aria-label='Kecepatan video'>
+                        <label for='video-playback-rate'>Kecepatan</label>
+                        <select id='video-playback-rate'>
+                            <option value='0.5'>0.5×</option>
+                            <option value='0.75'>0.75×</option>
+                            <option value='1' selected>Normal</option>
+                            <option value='1.25'>1.25×</option>
+                            <option value='1.5'>1.5×</option>
+                            <option value='2'>2×</option>
+                        </select>
+                    </div>
                     <p id='desktop-video-error' class='desktop-video-error' hidden>Video tidak dapat diputar oleh browser ini. Silakan coba refresh atau gunakan browser lain.</p>
                 <% } %>
             </div>
@@ -197,6 +214,42 @@
             const frame = document.getElementById('video-embed-frame');
             const fallback = document.getElementById('desktop-video-fallback');
             if (!frame || !fallback) return;
+            const playbackRate = document.getElementById('video-playback-rate');
+            const player = document.querySelector('.player');
+            const rewind = document.getElementById('video-rewind');
+            const forward = document.getElementById('video-forward');
+            const pip = document.getElementById('video-pip');
+            const fullscreen = document.getElementById('video-fullscreen');
+            const resumeKey = `pornerweb-video-position-${currentVideoId}`;
+            const seekBy = (seconds) => { fallback.currentTime = Math.max(0, Math.min(fallback.duration || Infinity, fallback.currentTime + seconds)); };
+            rewind?.addEventListener('click', () => seekBy(-10));
+            forward?.addEventListener('click', () => seekBy(10));
+            pip?.addEventListener('click', async () => {
+                try {
+                    if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                    else if (document.pictureInPictureEnabled && fallback.requestPictureInPicture) await fallback.requestPictureInPicture();
+                } catch (_) {}
+            });
+            pip?.toggleAttribute('hidden', !document.pictureInPictureEnabled || !fallback.requestPictureInPicture);
+            fullscreen?.addEventListener('click', async () => {
+                try {
+                    if (document.fullscreenElement) await document.exitFullscreen();
+                    else if (player?.requestFullscreen) await player.requestFullscreen();
+                    else if (fallback.webkitEnterFullscreen) fallback.webkitEnterFullscreen();
+                } catch (_) {}
+            });
+            try {
+                const savedPosition = Number(localStorage.getItem(resumeKey));
+                if (Number.isFinite(savedPosition) && savedPosition > 3) fallback.addEventListener('loadedmetadata', () => { if (savedPosition < fallback.duration - 5) fallback.currentTime = savedPosition; }, { once: true });
+                fallback.addEventListener('timeupdate', () => { if (fallback.currentTime > 3 && !fallback.ended) localStorage.setItem(resumeKey, String(Math.floor(fallback.currentTime))); });
+                fallback.addEventListener('ended', () => localStorage.removeItem(resumeKey));
+            } catch (_) {}
+            playbackRate?.addEventListener('change', () => {
+                fallback.playbackRate = Number(playbackRate.value) || 1;
+            });
+            fallback.addEventListener('ratechange', () => {
+                if (playbackRate) playbackRate.value = String(fallback.playbackRate);
+            });
             const showFallback = () => {
                 frame.hidden = true;
                 fallback.classList.add('is-visible');
