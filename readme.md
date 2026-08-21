@@ -11,7 +11,8 @@
 ## Preview
 
 ![Pornerweb Preview Dekstop](public/preview-dekstop.png)
-![Pornerweb Preview Mobile](public/preview-hp.png)
+
+![Pornerweb Preview Mobile](public/preview-hp.jpeg)
 
 <p>
   <a href="https://pornerweb.pro">
