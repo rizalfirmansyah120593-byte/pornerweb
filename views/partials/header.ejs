@@ -94,15 +94,14 @@
     document.getElementById('age-gate-language')?.addEventListener('change', (event) => {
         window.location.href = `/set-lang?lang=${encodeURIComponent(event.target.value)}`;
     });
-    try {
-        if (localStorage.getItem('ageVerified') === 'true') {
-            ageGate?.classList.add('is-hidden');
-        }
-    } catch (_) {}
-    document.body.classList.add('age-gate-active');
-    if (ageGate?.classList.contains('is-hidden')) document.body.classList.remove('age-gate-active');
+    const hasAgeCookie = document.cookie.split(';').some((item) => item.trim().startsWith('ageVerified=true'));
+    let ageVerified = hasAgeCookie;
+    try { ageVerified = ageVerified || localStorage.getItem('ageVerified') === 'true'; } catch (_) {}
+    if (ageVerified) ageGate?.classList.add('is-hidden');
+    document.body.classList.toggle('age-gate-active', !ageVerified);
     ageEnter?.addEventListener('click', () => {
         try { localStorage.setItem('ageVerified', 'true'); } catch (_) {}
+        document.cookie = 'ageVerified=true; Max-Age=31536000; Path=/; SameSite=Lax';
         ageGate?.classList.add('is-hidden');
         document.body.classList.remove('age-gate-active');
     });
