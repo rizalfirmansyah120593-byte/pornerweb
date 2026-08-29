@@ -266,3 +266,25 @@ Tambahkan file `LICENSE` sesuai lisensi yang ingin digunakan pemilik repository.
 <p>Made with Node.js, Express, EJS, and ❤️</p>
 
 </div>
+## Sitemap dinamis
+
+`/sitemap.xml` menghasilkan sitemap XML publik dan otomatis berubah menjadi sitemap index ketika jumlah URL mencapai lebih dari 10.000. URL video, kategori/tag, dan model dapat disuplai dari modul database melalui environment variable:
+
+```env
+SITEMAP_DB_MODULE=./config/sitemap-db.js
+SITE_URL=https://pornerweb.pro
+```
+
+Modul tersebut harus mengembalikan URL kanonis yang memang memiliki route publik:
+
+```js
+export async function getSitemapRecords() {
+  return db.query(`
+    SELECT canonical_path AS path, updated_at AS lastmod
+    FROM pages
+    WHERE published = TRUE AND visibility = 'public' AND noindex = FALSE
+  `);
+}
+```
+
+Adapter otomatis menolak URL API, akun, login, member-only/private, `noindex`, serta URL dengan query string. `lastmod` hanya dikirim bila tanggal valid. `changefreq` dan `priority` memakai nilai yang stabil (`weekly` dan `0.5`) agar tidak memberi sinyal crawl palsu; sesuaikan di adapter jika diperlukan. Jangan menambahkan URL tag/model sebelum route publiknya benar-benar tersedia.

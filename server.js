@@ -8,6 +8,7 @@ import { promisify } from 'util';
 import { createGzip, createBrotliCompress, constants as zlibConstants } from 'zlib';
 import cookieParser from 'cookie-parser';
 import { epornerSearch, epornerPageTitle } from './eporner.js';
+import { getSitemapRecords, renderIndex, renderUrlset, SITEMAP_PAGE_SIZE } from './lib/sitemap.js';
 
 import { PornHub } from './Pornhub.js-master/dist/index.mjs';
 import {
@@ -1691,30 +1692,22 @@ async function getSitemapPaths() {
     return [...new Map(paths.map((item) => [item.path, item])).values()];
 }
 
-app.get('/sitemap.xml', async (req, res) => {
-    const configuredLastmod = String(process.env.SITEMAP_LASTMOD || '').trim();
-    const lastmod = /^\d{4}-\d{2}-\d{2}$/.test(configuredLastmod) ? configuredLastmod : '';
-    let paths;
+app.get(['/sitemap.xml', '/sitemap-:page(\\d+).xml'], async (req, res) => {
     try {
-        paths = await getSitemapPaths();
+        const records = await getSitemapRecords(await getSitemapPaths());
+        const page = req.params.page ? Math.max(1, Number(req.params.page)) : 0;
+        const chunks = Math.max(1, Math.ceil(records.length / SITEMAP_PAGE_SIZE));
+        if (!page) {
+            if (chunks === 1) return res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400').type('application/xml').send(renderUrlset(records, { absoluteUrl: (path) => absoluteUrl(req, path), xmlEscape }));
+            const files = Array.from({ length: chunks }, (_, index) => ({ path: `/sitemap-${index + 1}.xml`, lastmod: new Date().toISOString() }));
+            return res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400').type('application/xml').send(renderIndex(files, { absoluteUrl: (path) => absoluteUrl(req, path), xmlEscape }));
+        }
+        if (page > chunks) return res.status(404).type('text/plain').send('Sitemap not found');
+        return res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400').type('application/xml').send(renderUrlset(records.slice((page - 1) * SITEMAP_PAGE_SIZE, page * SITEMAP_PAGE_SIZE), { absoluteUrl: (path) => absoluteUrl(req, path), xmlEscape }));
     } catch (error) {
         console.error('Sitemap data refresh failed:', error);
-        paths = [{ path: '/' }];
+        return res.status(503).type('text/plain').send('Sitemap temporarily unavailable');
     }
-    const urls = paths.map(({ path }) => [
-        '  <url>',
-        `    <loc>${xmlEscape(absoluteUrl(req, path))}</loc>`,
-        // lastmod hanya dikirim bila tanggal deploy dikonfigurasi, supaya
-        // sitemap tidak memberi sinyal pembaruan palsu ke Google.
-        lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
-        '  </url>',
-    ].filter(Boolean).join('\n')).join('\n');
-    res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-    res.status(200).type('application/xml').send([
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-        urls, '</urlset>', '',
-    ].join('\n'));
 });
 
 app.use((req, res) => {
