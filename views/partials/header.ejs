@@ -52,7 +52,8 @@
     </select>
     <div class="age-gate__content">
         <div class="age-gate__logo pornhub-logo"><span class="pornhub-logo__name">PORNER</span><span class="pornhub-logo__badge">WEB</span></div>
-        <h1 id="age-gate-title"><%= ageCopy.title %></h1>
+        <!-- Modal bukan heading utama halaman; gunakan teks biasa agar setiap URL hanya memiliki satu H1. -->
+        <div id="age-gate-title" class="age-gate__title" role="heading" aria-level="2"><%= ageCopy.title %></div>
         <div class="age-gate__notice"><%= ageCopy.notice %></div>
         <p><%= ageCopy.body %></p>
         <a href="/terms"><%= ageCopy.law %></a>

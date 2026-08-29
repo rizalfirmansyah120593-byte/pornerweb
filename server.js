@@ -637,6 +637,43 @@ async function renderVideoListing(req, res, { query, heading, description, canon
     }
 }
 
+// Cache the rendered HTML for the slow external catalog pages.  A stale page is
+// still useful to visitors and crawlers while one background request refreshes it.
+const listingPageCache = new Map();
+const LISTING_FRESH_MS = 5 * 60 * 1000;
+const LISTING_STALE_MS = 30 * 60 * 1000;
+const listingCacheMiddleware = (req, res, next) => {
+    if (req.method !== 'GET' || !/^\/(?:category|country)\//.test(req.path)) return next();
+    const key = `${req.path}?${new URLSearchParams(req.query).toString()}`;
+    const cached = listingPageCache.get(key);
+    const serve = (entry) => {
+        res.set(entry.headers);
+        return res.status(entry.status).send(entry.body);
+    };
+    if (cached && Date.now() - cached.createdAt < LISTING_FRESH_MS) {
+        res.set('X-Listing-Cache', 'HIT');
+        return serve(cached);
+    }
+    if (cached && Date.now() - cached.createdAt < LISTING_STALE_MS && req.get('X-Listing-Revalidate') !== '1') {
+        res.set('X-Listing-Cache', 'STALE');
+        // Refresh asynchronously; the stale response is not delayed.
+        const refreshUrl = `http://127.0.0.1:${PORT}${req.originalUrl}`;
+        fetch(refreshUrl, { headers: { 'X-Listing-Revalidate': '1', 'Accept': 'text/html' } }).catch(() => {});
+        return serve(cached);
+    }
+    const originalSend = res.send.bind(res);
+    res.send = (body) => {
+        if (res.statusCode >= 200 && res.statusCode < 300 && typeof body === 'string') {
+            listingPageCache.set(key, { body, status: res.statusCode, createdAt: Date.now(), headers: { 'Content-Type': res.get('Content-Type') || 'text/html; charset=utf-8' } });
+        }
+        res.set('X-Listing-Cache', 'MISS');
+        return originalSend(body);
+    };
+    return next();
+};
+
+app.use(listingCacheMiddleware);
+
 app.get('/', async (req, res) => {
     const requestedQuery = normalizeQuery(req.query.q);
     if (requestedQuery) {
@@ -849,7 +886,7 @@ app.get('/pornstars', async (req, res) => {
             paginationPath,
             seo: buildSeo(req, {
                 title: localized(res.locals.lang, { id: 'Pornstar Populer', en: 'Popular Pornstars', ms: 'Pornstar Popular', es: 'Pornstars populares', ja: '人気のポルノスター' }),
-                description: localized(res.locals.lang, { id: 'Jelajahi profil pornstar populer dan video mereka.', en: 'Browse popular pornstar profiles and their videos.', ms: 'Terokai profil pornstar popular dan video mereka.', es: 'Explora perfiles de pornstars populares y sus vídeos.', ja: '人気のポルノスターのプロフィールと動画をご覧ください。' }),
+                description: localized(res.locals.lang, { id: 'Jelajahi profil pornstar populer, statistik, dan koleksi video dewasa pilihan yang diperbarui secara berkala.', en: 'Browse popular pornstar profiles, statistics, and curated adult video collections updated regularly.', ms: 'Terokai profil pornstar popular, statistik, dan koleksi video dewasa pilihan yang dikemas kini secara berkala.', es: 'Explora perfiles populares, estadísticas y colecciones de vídeos para adultos actualizadas.', ja: '人気ポルノスターのプロフィール、統計、定期更新されるアダルト動画コレクションをご覧ください。' }),
                 pathname: paginationPath(page),
                 explicit: true,
                 robots: shouldIndex ? undefined : 'noindex, follow',
@@ -872,7 +909,7 @@ app.get('/pornstars', async (req, res) => {
         const paginationPath = (target) => `/pornstars?${new URLSearchParams({ ...(gender ? { gender } : {}), ...(target > 1 ? { page: String(target) } : {}) })}`;
         return res.status(200).render('pornstars', {
             pornstars: indexedFallback, gender, currentPage: page, totalPages: 10, paginationPath,
-            seo: buildSeo(req, { title: 'Pornstar Populer', description: 'Jelajahi profil pornstar populer dan video mereka.', pathname: paginationPath(page), explicit: true, robots: shouldIndex ? undefined : 'noindex, follow' }),
+            seo: buildSeo(req, { title: 'Pornstar Populer', description: 'Jelajahi profil pornstar populer, statistik, dan koleksi video dewasa pilihan yang diperbarui secara berkala.', pathname: paginationPath(page), explicit: true, robots: shouldIndex ? undefined : 'noindex, follow' }),
         });
     }
 });
