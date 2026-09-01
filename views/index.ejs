@@ -150,7 +150,7 @@
                 <div class='porner-blog__heading'><span class='eyebrow'>PORNERWEB INSIGHTS</span><h2 id='porner-blog-title'><%= pornerBlog.title %></h2><p><%= pornerBlog.subtitle %></p></div>
                 <p class='porner-blog__intro'><%= pornerBlog.intro %></p>
                 <div class='porner-blog__grid'>
-                    <% const homepageBlogPosts = (typeof blogPosts !== 'undefined' && blogPosts.length) ? blogPosts : pornerBlog.cards.map(([title, summary], idx) => ({ slug: ['cara-menemukan-video-yang-sesuai', 'menjelajahi-koleksi-dari-berbagai-sumber', 'tips-menikmati-browsing-yang-nyaman', 'konten-khusus-pengunjung-dewasa'][idx], title, summary })); %>
+                    <% const homepageBlogPosts = (typeof blogPosts !== 'undefined' && blogPosts.length) ? blogPosts : pornerBlog.cards.map(([title, summary], idx) => ({ slug: ['how-to-find-matching-videos', 'exploring-collections-from-multiple-sources', 'tips-for-smooth-browsing', 'adults-only-content-responsible-browsing'][idx], title, summary })); %>
                     <% homepageBlogPosts.forEach((post) => { %>
                         <article>
                             <h3><a href='/blog/<%= post.slug %>'><%= post.title %></a></h3>

@@ -621,7 +621,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         return res.render('index', {
             data: videos, totalVideos, title: heading, intro: description, query, currentPage: page,
             totalPages, paginationPath, seo, trendingPornstars,
-            blogPosts: typeof BLOG_POSTS !== 'undefined' ? BLOG_POSTS.map((post) => ({ slug: post.slug, title: localized(res.locals.lang, post.title), summary: localized(res.locals.lang, post.summary) })) : [],
+            blogPosts: typeof BLOG_POSTS !== 'undefined' ? BLOG_POSTS.map((post) => ({ slug: post.slug, title: post.title.en, summary: post.summary.en })) : [],
         });
     } catch (error) {
         console.error(`[Listing] Gagal memuat ${query}:`, error.message);
@@ -1115,7 +1115,7 @@ const contentPages = {
 
 const BLOG_POSTS = Object.freeze([
     {
-        slug: 'cara-menemukan-video-yang-sesuai',
+        slug: 'how-to-find-matching-videos',
         title: {
             id: 'Cara menemukan video yang sesuai',
             en: 'How to find videos that match your taste',
@@ -1150,7 +1150,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'menjelajahi-koleksi-dari-berbagai-sumber',
+        slug: 'exploring-collections-from-multiple-sources',
         title: {
             id: 'Menjelajahi koleksi dari berbagai sumber',
             en: 'Exploring collections from multiple sources',
@@ -1183,7 +1183,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'tips-menikmati-browsing-yang-nyaman',
+        slug: 'tips-for-smooth-browsing',
         title: {
             id: 'Tips menikmati pengalaman browsing yang nyaman',
             en: 'Tips for a smoother browsing experience',
@@ -1216,7 +1216,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'konten-khusus-pengunjung-dewasa',
+        slug: 'adults-only-content-responsible-browsing',
         title: {
             id: 'Konten khusus pengunjung dewasa',
             en: 'Adults-only content and responsible browsing',
@@ -1249,7 +1249,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'filter-sumber-pornhub-eporner',
+        slug: 'pornhub-vs-eporner-source-filters',
         title: {
             id: 'Filter sumber: Pornhub vs Eporner (dan kapan memilih gabungan)',
             en: 'Source filters: Pornhub vs Eporner (and when to use both)',
@@ -1282,7 +1282,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'watch-later-dan-continue-watching',
+        slug: 'watch-later-and-continue-watching',
         title: {
             id: 'Watch Later & Continue Watching: cara menjaga sesi menonton tetap rapi',
             en: 'Watch Later & Continue Watching: keep sessions organized',
@@ -1315,7 +1315,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'random-video-untuk-eksplorasi',
+        slug: 'using-random-video-for-discovery',
         title: {
             id: 'Random Video: cara cepat menemukan konten baru tanpa mengetik',
             en: 'Random Video: discover new content without typing',
@@ -1348,7 +1348,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'live-sex-page-dan-cara-mencari',
+        slug: 'live-sex-page-and-how-to-search',
         title: {
             id: 'Halaman LIVE SEX: cara mencari konten live dengan lebih cepat',
             en: 'LIVE SEX page: how to find live content faster',
@@ -1381,7 +1381,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'pencarian-kategori-negara-yang-efektif',
+        slug: 'effective-category-and-country-search',
         title: {
             id: 'Pencarian kategori & negara yang efektif (tanpa hasil yang terlalu luas)',
             en: 'Effective category & country discovery (without noisy results)',
@@ -1414,7 +1414,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'trending-pornstars-dan-cara-menemukan-model',
+        slug: 'trending-pornstars-and-finding-models',
         title: {
             id: 'Trending Pornstars: cara menemukan model populer dan video terkait',
             en: 'Trending Pornstars: find popular models and related videos',
@@ -1447,7 +1447,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'privasi-keamanan-dan-kenyamanan',
+        slug: 'privacy-safety-and-browsing-comfort',
         title: {
             id: 'Privasi, keamanan, dan kenyamanan saat browsing konten dewasa',
             en: 'Privacy, safety, and comfort while browsing adult content',
@@ -1480,7 +1480,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'cara-menggunakan-pencarian-video-online',
+        slug: 'how-to-use-online-video-search',
         title: { id: 'Cara menggunakan pencarian video online dengan lebih efektif', en: 'How to use online video search more effectively' },
         summary: { id: 'Panduan praktis memilih kata kunci, membaca hasil, dan menemukan video relevan tanpa membuang waktu.', en: 'A practical guide to choosing keywords, reading results, and finding relevant videos faster.' },
         body: {
@@ -1499,7 +1499,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'panduan-memilih-kata-kunci-video',
+        slug: 'guide-to-choosing-video-keywords',
         title: { id: 'Panduan memilih kata kunci video yang relevan', en: 'Guide to choosing relevant video keywords' },
         summary: { id: 'Pelajari teknik membuat kata kunci pencarian yang singkat, jelas, dan mudah menghasilkan video sesuai minat.', en: 'Learn how to create short, clear search phrases that lead to more relevant videos.' },
         body: {
@@ -1518,7 +1518,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'strategi-browsing-video-tanpa-mengulang-hasil',
+        slug: 'how-to-browse-without-repeating-results',
         title: { id: 'Strategi browsing video tanpa mengulang hasil yang sama', en: 'How to browse videos without repeating the same results' },
         summary: { id: 'Temukan cara memakai pagination, filter sumber, dan daftar simpanan agar eksplorasi video lebih beragam.', en: 'Use pagination, source filters, and saved lists to keep video discovery varied.' },
         body: {
@@ -1537,7 +1537,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'tips-menilai-kualitas-thumbnail-video',
+        slug: 'evaluating-video-thumbnails-and-metadata',
         title: { id: 'Tips menilai kualitas thumbnail dan metadata video', en: 'Tips for evaluating video thumbnails and metadata' },
         summary: { id: 'Kenali informasi penting pada thumbnail, judul, durasi, dan jumlah views sebelum membuka video.', en: 'Understand the value of thumbnails, titles, duration, and views before opening a video.' },
         body: {
@@ -1556,7 +1556,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'cara-membuat-sesi-menonton-lebih-teratur',
+        slug: 'how-to-organize-a-better-watching-session',
         title: { id: 'Cara membuat sesi menonton video lebih teratur', en: 'How to organize a better video-watching session' },
         summary: { id: 'Atur alur pencarian, daftar Watch Later, dan Continue Watching untuk pengalaman yang lebih fokus.', en: 'Organize search, Watch Later, and Continue Watching for a more focused experience.' },
         body: {
@@ -1575,7 +1575,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'perbedaan-video-populer-dan-video-terbaru',
+        slug: 'popular-vs-latest-videos',
         title: { id: 'Perbedaan video populer dan video terbaru', en: 'Popular videos vs. latest videos: what is the difference?' },
         summary: { id: 'Pahami kapan memilih video populer untuk validasi minat dan kapan memilih video terbaru untuk menemukan konten segar.', en: 'Learn when popular videos are useful and when latest videos are better for fresh discovery.' },
         body: {
@@ -1594,7 +1594,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'panduan-menjelajah-video-di-perangkat-mobile',
+        slug: 'browsing-videos-on-mobile-devices',
         title: { id: 'Panduan menjelajah video dengan nyaman di perangkat mobile', en: 'Guide to browsing videos comfortably on mobile devices' },
         summary: { id: 'Optimalkan pengalaman pencarian video di ponsel dengan koneksi stabil, tampilan yang nyaman, dan navigasi sederhana.', en: 'Improve mobile video discovery with a stable connection, comfortable display, and simple navigation.' },
         body: {
@@ -1613,7 +1613,7 @@ const BLOG_POSTS = Object.freeze([
         },
     },
     {
-        slug: 'checklist-pencarian-video-yang-relevan',
+        slug: 'relevant-and-efficient-video-search-checklist',
         title: { id: 'Checklist pencarian video yang relevan dan efisien', en: 'A checklist for relevant and efficient video searches' },
         summary: { id: 'Checklist singkat untuk memeriksa kata kunci, filter, sumber, pagination, dan daftar video sebelum memulai sesi browsing.', en: 'A quick checklist covering keywords, filters, sources, pagination, and saved videos.' },
         body: {
@@ -1660,8 +1660,8 @@ for (const [pathname, [view, title, description]] of Object.entries(contentPages
 app.get('/blog', (req, res) => {
     const posts = BLOG_POSTS.map((post) => ({
         slug: post.slug,
-        title: localized(res.locals.lang, post.title),
-        summary: localized(res.locals.lang, post.summary),
+        title: post.title.en,
+        summary: post.summary.en,
     }));
     res.render('blog', {
         posts,
@@ -1677,9 +1677,9 @@ app.get('/blog', (req, res) => {
 app.get('/blog/:slug', (req, res, next) => {
     const post = BLOG_POSTS.find((item) => item.slug === String(req.params.slug || '').trim());
     if (!post) return next();
-    const title = localized(res.locals.lang, post.title);
-    const summary = localized(res.locals.lang, post.summary);
-    const blocks = (post.body && (post.body[res.locals.lang] || post.body.en)) || [];
+    const title = post.title.en;
+    const summary = post.summary.en;
+    const blocks = post.body?.en || [];
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -1688,7 +1688,7 @@ app.get('/blog/:slug', (req, res, next) => {
         author: { '@type': 'Organization', name: SITE_NAME },
         publisher: { '@type': 'Organization', name: SITE_NAME },
         mainEntityOfPage: absoluteUrl(req, `/blog/${post.slug}`),
-        inLanguage: res.locals.lang,
+        inLanguage: 'en-US',
         isAccessibleForFree: true,
     };
     return res.render('blog-post', {
