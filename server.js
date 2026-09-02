@@ -523,7 +523,9 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         // page. Some upstream/proxy combinations ignore `page` and return
         // page 1 repeatedly; collecting the range and slicing by the unified
         // offset makes page navigation deterministic in that case as well.
-        const sourcePages = Array.from({ length: page }, (_, index) => index + 1);
+        // Sumber upstream sudah mendukung pagination. Mengambil semua halaman
+        // sebelumnya membuat TTFB page 2+ tumbuh linear dan membebani provider.
+        const sourcePages = [page];
         // A single failed upstream page must not turn the entire listing into
         // a 502. Keep successful sources and let the other source fill gaps.
         const pornHubResults = req.query.source === 'eporner'
@@ -575,8 +577,9 @@ async function renderVideoListing(req, res, { query, heading, description, canon
         const uniqueVideos = [...new Map(allVideos.map((item) => [`${item.source}:${item.id}`, item])).values()];
         await hydrateEpornerTitles(uniqueVideos.slice(0, pageSize));
         await hydrateGenericVideoTitles(uniqueVideos.slice(0, pageSize));
-        const pageStart = (page - 1) * pageSize;
-        const videos = uniqueVideos.slice(pageStart, pageStart + pageSize);
+        // sourcePages hanya berisi halaman yang diminta, jadi hasilnya sudah
+        // berada pada offset page tersebut.
+        const videos = uniqueVideos.slice(0, pageSize);
         if (!videos.length && page > 1) {
             // Do not render a blank page when an upstream reports fewer pages
             // than its metadata suggests. Keep navigation usable by stepping
@@ -603,18 +606,12 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             prev: page > 1 ? paginationPath(page - 1) : undefined,
             next: page < totalPages ? paginationPath(page + 1) : undefined,
         });
-        let trendingPornstars = [];
-        try {
-            const starPage = Math.floor(Math.random() * 3) + 1;
-            const starResult = await loadPornstarListWithRetry({ page: starPage });
-            trendingPornstars = (Array.isArray(starResult?.data) ? starResult.data : [])
-                .sort(() => Math.random() - 0.5).slice(0, 4);
-        } catch (error) {
-            if (!isExpectedUpstreamStatus(error) && !isExpectedNetworkFailure(error)) console.error('[Trending Pornstars] Gagal memuat:', error.message);
-            trendingPornstars = fallbackPornstars('').slice(0, 4);
-        }
-        if (!trendingPornstars.length) trendingPornstars = fallbackPornstars('').slice(0, 4);
-        await hydratePornstarPhotos(trendingPornstars, 4);
+        // Jangan menambah 3 request upstream per pornstar pada critical path.
+        // Daftar pornstar sudah memiliki fallback thumbnail lokal.
+        let trendingPornstars = fallbackPornstars('').slice(0, 4).map((star) => ({
+            ...star,
+            photo: pornstarThumbIndex[normalizePornstarName(star.name)] || star.photo,
+        }));
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
@@ -643,8 +640,8 @@ const listingPageCache = new Map();
 const LISTING_FRESH_MS = 5 * 60 * 1000;
 const LISTING_STALE_MS = 30 * 60 * 1000;
 const listingCacheMiddleware = (req, res, next) => {
-    if (req.method !== 'GET' || !/^\/(?:category|country)\//.test(req.path)) return next();
-    const key = `${req.path}?${new URLSearchParams(req.query).toString()}`;
+    if (req.method !== 'GET' || !/^\/(?:category|country)\//.test(req.path) && !['/', '/recommended', '/live-sex', '/random', '/models'].includes(req.path)) return next();
+    const key = `${res.locals.lang || req.cookies.lang || 'en'}:${req.path}?${new URLSearchParams(req.query).toString()}`;
     const cached = listingPageCache.get(key);
     const serve = (entry) => {
         res.set(entry.headers);
