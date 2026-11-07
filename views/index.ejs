@@ -232,6 +232,21 @@
             });
         })();
     </script>
+    <script>
+    (() => {
+        const modelContext = navigator.modelContext;
+        if (!modelContext?.registerTool) return;
+        modelContext.registerTool({
+            name: 'search_videos',
+            description: 'Search PORNERWEB public video listings by keyword.',
+            inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Search keyword' } }, required: ['query'] },
+            execute: async ({ query }) => {
+                const response = await fetch('/?q=' + encodeURIComponent(String(query || '')));
+                return { content: [{ type: 'text', text: await response.text() }] };
+            },
+        });
+    })();
+    </script>
     <script type='module'>
     (() => {
         const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } };

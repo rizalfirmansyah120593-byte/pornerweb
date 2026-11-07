@@ -1,6 +1,8 @@
 export const SITE_NAME = process.env.SITE_NAME || 'PORNERWEB';
 export const SITE_DESCRIPTION = process.env.SITE_DESCRIPTION
     || 'PORNERWEB is an 18+ adult video discovery platform with popular collections from multiple sources. Explore videos by category, country, popularity, and keyword in a clean, fast, and comfortable browsing experience.';
+export const SITE_EMAIL = process.env.SITE_EMAIL || 'support@pornerweb.pro';
+export const SITE_SAME_AS = Object.freeze((process.env.SITE_SAME_AS || 'https://www.facebook.com/pornerweb,https://twitter.com/pornerweb').split(',').map((item) => item.trim()).filter(Boolean));
 
 const configuredSiteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
 
@@ -124,10 +126,17 @@ export function collectionJsonLd(req, title, description, videos, pathname) {
                 name: SITE_NAME, description: SITE_DESCRIPTION, inLanguage: 'en-US',
             },
             {
+                '@type': 'Organization', '@id': `${getSiteUrl(req)}/#organization`, name: SITE_NAME,
+                url: `${getSiteUrl(req)}/`, description: SITE_DESCRIPTION, email: `mailto:${SITE_EMAIL}`,
+                sameAs: SITE_SAME_AS, contactPoint: [{ '@type': 'ContactPoint', contactType: 'customer support', email: `mailto:${SITE_EMAIL}`, availableLanguage: ['id', 'en'] }],
+            },
+            {
                 '@type': 'CollectionPage', '@id': `${canonical}#webpage`, url: canonical, name: title,
-                description, isPartOf: { '@id': `${getSiteUrl(req)}/#website` }, inLanguage: 'en-US',
+                description, isPartOf: { '@id': `${getSiteUrl(req)}/#website` }, about: { '@id': `${getSiteUrl(req)}/#organization` }, inLanguage: 'en-US',
                 mainEntity: { '@type': 'ItemList', numberOfItems: items.length, itemListElement: items },
             },
+            { '@type': 'Service', '@id': `${canonical}#service`, name: `${SITE_NAME} video discovery`, provider: { '@id': `${getSiteUrl(req)}/#organization` }, serviceType: 'Video discovery and search', areaServed: 'Worldwide' },
+            { '@type': 'BreadcrumbList', '@id': `${canonical}#breadcrumb`, itemListElement: [{ '@type': 'ListItem', position: 1, name: SITE_NAME, item: `${getSiteUrl(req)}/` }, { '@type': 'ListItem', position: 2, name: title, item: canonical }] },
         ],
     };
 }

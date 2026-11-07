@@ -344,6 +344,10 @@ app.use(express.static(join(__dirname, 'public'), {
     maxAge: isProduction ? '1y' : 0,
     immutable: isProduction,
 }));
+app.use((req, res, next) => {
+    if (req.path === '/') res.set('Link', `<${absoluteUrl(req, '/llms.txt')}>; rel="describedby"; type="text/plain"`);
+    next();
+});
 
 // Proxy terkontrol ke Eporner API v2. Parameter dibatasi agar endpoint tidak
 // dapat dipakai untuk meneruskan URL arbitrer atau membebani upstream.
@@ -1706,8 +1710,37 @@ app.get('/blog/:slug', (req, res, next) => {
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send([
         'User-agent: *', 'Allow: /', 'Disallow: /set-lang', '',
+        '# Content-Signal: search=yes, ai-train=no',
+        'Content-Signal: search=yes, ai-train=no', '',
         `Sitemap: ${absoluteUrl(req, '/sitemap.xml')}`, '',
     ].join('\n'));
+});
+
+app.get('/llms.txt', (req, res) => {
+    res.type('text/plain').send(`# ${SITE_NAME}
+
+> ${SITE_DESCRIPTION}
+
+PORNERWEB is an 18+ video discovery website. It indexes metadata and links to video sources; it does not host or claim ownership of third-party media.
+
+## Key pages
+- Homepage: ${absoluteUrl(req, '/')}
+- About: ${absoluteUrl(req, '/about')}
+- Contact: ${absoluteUrl(req, '/contact')}
+- Categories: ${absoluteUrl(req, '/category/amateur')}
+- Recommended videos: ${absoluteUrl(req, '/recommended')}
+- Sitemap: ${absoluteUrl(req, '/sitemap.xml')}
+- Terms: ${absoluteUrl(req, '/terms')}
+- Privacy: ${absoluteUrl(req, '/privacy')}
+
+## Usage
+- Content is intended for adults aged 18 and over.
+- Search indexing is allowed; AI training use is not permitted.
+`);
+});
+
+app.get('/.well-known/mcp/server-card.json', (req, res) => {
+    res.json({ name: SITE_NAME, version: '1.0.0', description: SITE_DESCRIPTION, endpoint: absoluteUrl(req, '/api'), capabilities: { tools: true, resources: false, prompts: false }, tools: [{ name: 'search_videos', description: 'Search the public PORNERWEB video catalogue.', inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } }] });
 });
 
 async function getSitemapPaths() {
@@ -1719,6 +1752,7 @@ async function getSitemapPaths() {
         ...COUNTRY_FILTERS.map(({ slug }) => ({ path: `/country/${slug}` })),
         { path: '/recommended' }, { path: '/live-sex' }, { path: '/models' }, { path: '/pornstars' },
         { path: '/terms' }, { path: '/privacy' }, { path: '/contact' },
+        { path: '/about' },
         { path: '/blog' },
         ...BLOG_POSTS.map(({ slug }) => ({ path: `/blog/${slug}` })),
     ];
@@ -1726,8 +1760,13 @@ async function getSitemapPaths() {
     // URL /watch/:id sengaja tidak dimasukkan: halaman tersebut memakai
     // noindex karena hanya menyediakan metadata/embed dari sumber eksternal.
     // Sitemap harus berisi canonical URL yang memang eligible untuk index.
-    return [...new Map(paths.map((item) => [item.path, item])).values()];
+    const lastmod = new Date().toISOString();
+    return [...new Map(paths.map((item) => [item.path, { ...item, lastmod: item.lastmod || lastmod }])).values()];
 }
+
+app.get('/about', (req, res) => res.render('about', {
+    seo: buildSeo(req, { title: 'About PORNERWEB', description: SITE_DESCRIPTION, pathname: '/about' }),
+}));
 
 app.get(['/sitemap.xml', '/sitemap-:page(\\d+).xml'], async (req, res) => {
     try {
