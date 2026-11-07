@@ -81,7 +81,7 @@
                                         <% if (item.previewWebp) { %><source srcset='<%= item.previewWebp %>' type='image/webp'><% } %>
                                         <img src='<%= item.previewSmall || item.preview %>' srcset='<%= [item.previewSmall && `${item.previewSmall} 320w`, item.previewMedium && `${item.previewMedium} 640w`, item.previewLarge && `${item.previewLarge} 1280w`].filter(Boolean).join(", ") %>' sizes='(max-width: 600px) 92vw, (max-width: 1100px) 45vw, 320px' alt='Thumbnail <%= item.title %>' width='320' height='180' loading='<%= index === 0 ? 'eager' : 'lazy' %>' fetchpriority='<%= index === 0 ? 'high' : 'auto' %>' decoding='async'>
                                     </picture>
-                                    <video class='hover-preview' muted playsinline preload='metadata' poster='<%= item.preview %>' aria-hidden='true'></video>
+                                    <video class='hover-preview' muted autoplay playsinline preload='auto' poster='<%= item.preview %>' aria-hidden='true'></video>
                                     <span class='play-indicator' aria-hidden='true'></span>
                                     <% if (item.duration) { %><span class='duration'><%= item.duration %></span><% } %>
                                 </div>
@@ -174,7 +174,6 @@
     <%- include('partials/ad-global') %>
     <script type='module'>
         (() => {
-            if (!window.matchMedia('(hover: hover)').matches) return;
             const cards = document.querySelectorAll('[data-preview-id]');
             cards.forEach((card) => {
                 const video = card.querySelector('.hover-preview');
@@ -182,7 +181,7 @@
                 if (!video || !id) return;
                 let hoverTimer;
                 let hoverToken = 0;
-                card.addEventListener('pointerenter', () => {
+                const startPreview = () => {
                     hoverToken += 1;
                     const token = hoverToken;
                     hoverTimer = window.setTimeout(async () => {
@@ -192,23 +191,44 @@
                                 if (!response.ok || token !== hoverToken) return;
                                 const source = await response.json();
                                 video.src = source.url;
-                                video.type = source.type || '';
+                                if (source.type) video.setAttribute('type', source.type);
                                 video.load();
                             }
                             if (token !== hoverToken) return;
                             video.currentTime = 0;
+                            if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+                                await new Promise((resolve, reject) => {
+                                    const done = () => { cleanup(); resolve(); };
+                                    const fail = () => { cleanup(); reject(new Error('preview media error')); };
+                                    const cleanup = () => {
+                                        video.removeEventListener('loadeddata', done);
+                                        video.removeEventListener('canplay', done);
+                                        video.removeEventListener('error', fail);
+                                    };
+                                    video.addEventListener('loadeddata', done, { once: true });
+                                    video.addEventListener('canplay', done, { once: true });
+                                    video.addEventListener('error', fail, { once: true });
+                                });
+                            }
                             await video.play();
                             card.classList.add('is-previewing');
                         } catch (_) { /* preview unavailable or autoplay is blocked */ }
                     }, 180);
-                });
-                card.addEventListener('pointerleave', () => {
+                };
+                const stopPreview = () => {
                     window.clearTimeout(hoverTimer);
                     hoverToken += 1;
                     video.pause();
                     video.currentTime = 0;
                     card.classList.remove('is-previewing');
-                });
+                };
+                if (window.PointerEvent) {
+                    card.addEventListener('pointerenter', startPreview);
+                    card.addEventListener('pointerleave', stopPreview);
+                } else {
+                    card.addEventListener('mouseenter', startPreview);
+                    card.addEventListener('mouseleave', stopPreview);
+                }
             });
         })();
     </script>
