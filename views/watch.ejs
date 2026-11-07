@@ -114,10 +114,11 @@
                 <div class="video-grid">
                     <% if (typeof recommendations !== 'undefined' && recommendations.length > 0) { %>
                         <% recommendations.slice(0, 8).forEach(rec => { %>
-                            <article class="video-card">
+                            <article class="video-card" data-preview-id="<%= rec.id %>">
                                 <a class="video-card-link" href="/watch/<%= rec.id %>">
                                     <div class="thumbnail">
                                         <img src="<%= rec.preview || '/images/placeholder.svg' %>" alt="<%= rec.title %>" width="320" height="180" loading="lazy">
+                                        <video class="hover-preview" muted playsinline preload="metadata" poster="<%= rec.preview || '/images/placeholder.svg' %>" aria-hidden="true"></video>
                                     </div>
                                     <div class="card-body">
                                         <h2><%= rec.title %></h2>
@@ -147,10 +148,11 @@
                     <div class='video-grid'>
                         <% (recommendationItems || []).forEach((item) => { %>
                             <% const thumbnailUrl = item.thumbnail || item.thumb || item.image || item.preview || item.poster || item.thumbnail_url || item.thumbUrl || (item.images && item.images[0]) || (item.thumbnails && item.thumbnails[0]) || '/images/placeholder.svg'; %>
-                            <article class='video-card'>
+                            <article class='video-card' data-preview-id='<%= item.id %>'>
                                 <a href='/watch/<%= item.id %>'>
                                     <div class='thumbnail'>
                                         <img src='<%= Array.isArray(thumbnailUrl) ? thumbnailUrl[0] : (typeof thumbnailUrl === "object" ? (thumbnailUrl.url || thumbnailUrl.src || "/images/placeholder.svg") : thumbnailUrl) %>' alt='<%= item.title %>' loading='lazy' onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+                                        <video class='hover-preview' muted playsinline preload='metadata' poster='<%= Array.isArray(thumbnailUrl) ? thumbnailUrl[0] : (typeof thumbnailUrl === "object" ? (thumbnailUrl.url || thumbnailUrl.src || "/images/placeholder.svg") : thumbnailUrl) %>' aria-hidden='true'></video>
                                     </div>
                                     <div class='card-body'>
                                         <h2><%= item.title %></h2>
@@ -166,6 +168,45 @@
         </main>
     </div>
 
+    <script type='module'>
+        (() => {
+            if (!window.matchMedia('(hover: hover)').matches) return;
+            document.querySelectorAll('[data-preview-id]').forEach((card) => {
+                const video = card.querySelector('.hover-preview');
+                const id = card.dataset.previewId;
+                if (!video || !id) return;
+                let timer;
+                let token = 0;
+                card.addEventListener('pointerenter', () => {
+                    token += 1;
+                    const currentToken = token;
+                    timer = window.setTimeout(async () => {
+                        try {
+                            if (!video.src) {
+                                const response = await fetch('/api/video-preview/' + encodeURIComponent(id));
+                                if (!response.ok || currentToken !== token) return;
+                                const source = await response.json();
+                                video.src = source.url;
+                                video.type = source.type || '';
+                                video.load();
+                            }
+                            if (currentToken !== token) return;
+                            video.currentTime = 0;
+                            await video.play();
+                            card.classList.add('is-previewing');
+                        } catch (_) {}
+                    }, 180);
+                });
+                card.addEventListener('pointerleave', () => {
+                    window.clearTimeout(timer);
+                    token += 1;
+                    video.pause();
+                    video.currentTime = 0;
+                    card.classList.remove('is-previewing');
+                });
+            });
+        })();
+    </script>
     <script type='module'>
         (() => {
             const metadata = document.getElementById('watch-metadata');
@@ -282,10 +323,11 @@
             seen.add(String(item.id));
             const article = document.createElement('article');
             article.className = 'video-card';
+            article.dataset.previewId = String(item.id);
             const href = '/watch/' + encodeURIComponent(item.id);
             const image = item.preview || item.thumb || item.default_thumb || '/images/placeholder.svg';
             const views = item.views ? `<div class="card-meta"><span>${Number(item.views).toLocaleString()} views</span></div>` : '<div class="card-meta"></div>';
-            article.innerHTML = `<a href="${href}"><div class="thumbnail"><img src="${image}" alt="${String(item.title || 'Video').replace(/"/g, '&quot;')}" width="320" height="180" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder.svg';"></div><div class="card-body"><h2>${String(item.title || 'Video')}</h2>${views}<button class="watch-later-button" type="button" data-watch-later="${String(item.id).replace(/"/g, '&quot;')}">♡ Simpan</button></div></a>`;
+            article.innerHTML = `<a href="${href}"><div class="thumbnail"><img src="${image}" alt="${String(item.title || 'Video').replace(/"/g, '&quot;')}" width="320" height="180" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/placeholder.svg';"><video class="hover-preview" muted playsinline preload="metadata" poster="${image}" aria-hidden="true"></video></div><div class="card-body"><h2>${String(item.title || 'Video')}</h2>${views}<button class="watch-later-button" type="button" data-watch-later="${String(item.id).replace(/"/g, '&quot;')}">♡ Simpan</button></div></a>`;
             grid.appendChild(article);
         });
         const loadMore = async () => {
