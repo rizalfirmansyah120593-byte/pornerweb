@@ -27,7 +27,10 @@ const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const isProduction = process.env.NODE_ENV === 'production';
 // Hostinger datacenter IP sering diblokir Pornhub untuk halaman detail.
 // Aktifkan hanya jika server Anda memang diizinkan upstream.
-const allowPornhubDetailScrape = process.env.PORNHUB_SERVER_SCRAPE === 'true';
+// Preview hover membutuhkan metadata media dari endpoint detail. Aktif secara
+// default agar fitur preview bekerja tanpa konfigurasi tambahan; set ke
+// "false" jika server/deployment Anda tidak dapat mengakses endpoint sumber.
+const allowPornhubDetailScrape = process.env.PORNHUB_SERVER_SCRAPE !== 'false';
 const SUPPORTED_LANGUAGES = ['id', 'en', 'ms', 'es', 'ja'];
 const localized = (lang, values) => values[lang] || values.en;
 const epornerId = (id) => `ep_${String(id).replace(/^ep_/, '')}`;
