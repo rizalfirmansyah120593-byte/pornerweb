@@ -622,6 +622,22 @@ async function renderVideoListing(req, res, { query, heading, description, canon
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
+        if (req.path === '/' && req.accepts(['text/markdown', 'text/html']) === 'text/markdown') {
+            const markdown = [
+                `# ${heading}`,
+                '',
+                description,
+                '',
+                '## Videos',
+                ...videos.map((video) => `- [${String(video.title || 'Video').replace(/[\\[\\]\\\\]/g, '\\\\$&')}](${absoluteUrl(req, videoPath(video))})${video.duration ? ` — ${video.duration}` : ''}`),
+                '',
+                `About: ${absoluteUrl(req, '/about')}`,
+                `Contact: ${absoluteUrl(req, '/contact')}`,
+                `Terms: ${absoluteUrl(req, '/terms')}`,
+                `Privacy: ${absoluteUrl(req, '/privacy')}`,
+            ].join('\\n');
+            return res.type('text/markdown; charset=utf-8').send(markdown);
+        }
         return res.render('index', {
             data: videos, totalVideos, title: heading, intro: description, query, currentPage: page,
             totalPages, paginationPath, seo, trendingPornstars,
