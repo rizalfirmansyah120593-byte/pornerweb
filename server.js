@@ -622,7 +622,12 @@ async function renderVideoListing(req, res, { query, heading, description, canon
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
-        if (req.path === '/' && req.accepts(['text/markdown', 'text/html']) === 'text/markdown') {
+        const acceptHeader = String(req.get('accept') || '').toLowerCase();
+        const markdownQuality = acceptHeader.match(/(?:^|,)\s*text\/markdown\s*(?:;\s*q=([0-9.]+))?/i);
+        const htmlQuality = acceptHeader.match(/(?:^|,)\s*text\/html\s*(?:;\s*q=([0-9.]+))?/i);
+        const prefersMarkdown = markdownQuality
+            && Number(markdownQuality[1] || 1) > Number(htmlQuality?.[1] || 0);
+        if (req.path === '/' && prefersMarkdown) {
             const markdown = [
                 `# ${heading}`,
                 '',
