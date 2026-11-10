@@ -3,9 +3,9 @@
         <span class="pornhub-logo"><span class="pornhub-logo__name">PORNER</span><span class="pornhub-logo__badge">WEB</span></span>
     </a>
 
-    <form action="/" method="GET" class="search-box" id="site-search-form" role="search">
+    <form action="/" method="GET" class="search-box" id="site-search-form" role="search" aria-label="Pencarian situs">
         <input id="site-search-input" type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="search-suggestions" aria-expanded="false" aria-label="<%= t.searchLabel %>">
-        <div class="search-suggestions" id="search-suggestions" role="listbox" hidden></div>
+        <div class="search-suggestions" id="search-suggestions" role="listbox" aria-label="Saran pencarian" hidden></div>
         <button type="submit" aria-label="Cari">🔍</button>
     </form>
 
@@ -23,7 +23,7 @@
             <span aria-hidden="true">☰</span>
             <span class="mobile-sidebar-toggle__label">Menu</span>
         </button>
-        <div class="theme-switcher" aria-label="Pilihan tema">
+        <div class="theme-switcher" role="group" aria-label="Pilihan tema">
             <button data-theme-choice="light" aria-label="Light Mode">☀️</button>
             <button data-theme-choice="dark" aria-label="Dark Mode">🌙</button>
         </div>
