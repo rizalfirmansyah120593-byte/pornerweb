@@ -127,8 +127,8 @@ export function collectionJsonLd(req, title, description, videos, pathname) {
             },
             {
                 '@type': 'Organization', '@id': `${getSiteUrl(req)}/#organization`, name: SITE_NAME,
-                url: `${getSiteUrl(req)}/`, description: SITE_DESCRIPTION, email: `mailto:${SITE_EMAIL}`,
-                sameAs: SITE_SAME_AS, contactPoint: [{ '@type': 'ContactPoint', contactType: 'customer support', email: `mailto:${SITE_EMAIL}`, availableLanguage: ['id', 'en'] }],
+                url: `${getSiteUrl(req)}/`, description: SITE_DESCRIPTION, email: SITE_EMAIL,
+                sameAs: SITE_SAME_AS, contactPoint: [{ '@type': 'ContactPoint', contactType: 'customer support', email: SITE_EMAIL, availableLanguage: ['id', 'en'] }],
             },
             {
                 '@type': 'CollectionPage', '@id': `${canonical}#webpage`, url: canonical, name: title,

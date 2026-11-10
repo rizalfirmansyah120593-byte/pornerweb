@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /set-lang
 
+Content-Signal: search=yes, ai-train=no
+
 Sitemap: https://pornerweb.pro/sitemap.xml

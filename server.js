@@ -1726,7 +1726,6 @@ app.get('/blog/:slug', (req, res, next) => {
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send([
         'User-agent: *', 'Allow: /', 'Disallow: /set-lang', '',
-        '# Content-Signal: search=yes, ai-train=no',
         'Content-Signal: search=yes, ai-train=no', '',
         `Sitemap: ${absoluteUrl(req, '/sitemap.xml')}`, '',
     ].join('\n'));
@@ -1740,14 +1739,14 @@ app.get('/llms.txt', (req, res) => {
 PORNERWEB is an 18+ video discovery website. It indexes metadata and links to video sources; it does not host or claim ownership of third-party media.
 
 ## Key pages
-- Homepage: ${absoluteUrl(req, '/')}
-- About: ${absoluteUrl(req, '/about')}
-- Contact: ${absoluteUrl(req, '/contact')}
-- Categories: ${absoluteUrl(req, '/category/amateur')}
-- Recommended videos: ${absoluteUrl(req, '/recommended')}
-- Sitemap: ${absoluteUrl(req, '/sitemap.xml')}
-- Terms: ${absoluteUrl(req, '/terms')}
-- Privacy: ${absoluteUrl(req, '/privacy')}
+- [Homepage](${absoluteUrl(req, '/')})
+- [About](${absoluteUrl(req, '/about')})
+- [Contact](${absoluteUrl(req, '/contact')})
+- [Categories](${absoluteUrl(req, '/category/amateur')})
+- [Recommended videos](${absoluteUrl(req, '/recommended')})
+- [Sitemap](${absoluteUrl(req, '/sitemap.xml')})
+- [Terms of Service](${absoluteUrl(req, '/terms')})
+- [Privacy Policy](${absoluteUrl(req, '/privacy')})
 
 ## Usage
 - Content is intended for adults aged 18 and over.
