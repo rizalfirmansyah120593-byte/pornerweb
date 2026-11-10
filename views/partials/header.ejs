@@ -4,7 +4,7 @@
     </a>
 
     <form action="/" method="GET" class="search-box" id="site-search-form" role="search">
-        <input type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" aria-autocomplete="list" aria-controls="search-suggestions" aria-expanded="false" aria-label="<%= t.searchLabel %>">
+        <input id="site-search-input" type="search" name="q" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="<%= t.placeholder %>" required minlength="1" maxlength="80" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="search-suggestions" aria-expanded="false" aria-label="<%= t.searchLabel %>">
         <div class="search-suggestions" id="search-suggestions" role="listbox" hidden></div>
         <button type="submit" aria-label="Cari">🔍</button>
     </form>
