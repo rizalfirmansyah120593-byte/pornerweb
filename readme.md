@@ -192,6 +192,14 @@ git push
 
 Dependency `urlcat`, `cheerio`, `debug`, dan `node-fetch` sudah tercantum di `package.json` utama agar ikut terpasang di Hostinger.
 
+## Otomasi SEO harian
+
+Workflow `.github/workflows/daily-seo.yml` berjalan setiap hari pukul 10.00 WIB dan dapat dijalankan manual dari tab **Actions**. Workflow memeriksa homepage, redirect host kanonis, `robots.txt`, serta sitemap. Pemeriksaan yang gagal akan membuat run gagal agar dapat ditinjau; workflow tidak mencoba menyamarkan error server.
+
+Untuk membaca Google Search Console, siapkan service account Google Cloud, aktifkan Search Console API, lalu tambahkan alamat email service account sebagai pengguna **Restricted** pada properti `sc-domain:pornerweb.pro`. Simpan seluruh JSON key service account sebagai repository secret bernama `GSC_SERVICE_ACCOUNT_JSON` di **Settings → Secrets and variables → Actions**. Jangan commit atau mengirim key lewat chat. Tanpa secret, pemeriksaan teknis tetap berjalan tetapi tidak ada perubahan konten.
+
+Otomasi hanya mempertimbangkan deskripsi kategori bahasa Indonesia bila data 28 hari lengkap menunjukkan sekurangnya 30 tayangan, posisi rata-rata 3–20, CTR maksimal 3%, serta kueri cocok dengan kategori. Maksimal satu deskripsi diperbarui per run dan kategori yang sama memiliki masa jeda 30 hari. Kueri mentah dan metrik tidak disimpan atau ditampilkan; tidak ada artikel/halaman baru atau perubahan title otomatis. Perubahan yang memenuhi syarat masuk ke `config/seo-description-overrides.json`, dikomit ke `main`, lalu mengikuti auto-deploy Hostinger. Otomasi ini tidak menjamin kenaikan ranking atau traffic.
+
 ## SEO Checklist Produksi
 
 Gunakan checklist berikut setelah domain aktif:

@@ -23,6 +23,7 @@ const ph = new PornHub();
 app.locals.ph = ph;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const seoDescriptionOverrides = JSON.parse(readFileSync(join(__dirname, 'config', 'seo-description-overrides.json'), 'utf8'));
 const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 const isProduction = process.env.NODE_ENV === 'production';
 // Hostinger datacenter IP sering diblokir Pornhub untuk halaman detail.
@@ -747,10 +748,14 @@ app.get('/', async (req, res) => {
 app.get('/category/:slug', async (req, res, next) => {
     const category = categoriesBySlug.get(req.params.slug.toLowerCase());
     if (!category) return next();
+    const defaultDescription = localized(res.locals.lang, { id: `Jelajahi koleksi video dewasa kategori ${category.label} yang diperbarui secara berkala. Khusus pengguna berusia 18 tahun ke atas.`, en: `Explore regularly updated ${category.label} adult videos. Adults 18+ only.`, ms: `Terokai video dewasa kategori ${category.label} yang dikemas kini secara berkala. Untuk dewasa 18+ sahaja.`, es: `Explora vídeos para adultos de ${category.label} actualizados regularmente. Solo mayores de 18 años.`, ja: `${category.label}のアダルト動画をお楽しみください。18歳以上限定。` });
+    const description = res.locals.lang === 'id'
+        ? seoDescriptionOverrides[category.slug]?.id || defaultDescription
+        : defaultDescription;
     return renderVideoListing(req, res, {
         query: category.query,
         heading: res.locals.lang === 'en' ? `${category.label} Videos` : `${localized(res.locals.lang, { id: 'Video', ms: 'Video', es: 'Vídeos de', ja: '' })} ${category.label}`,
-        description: localized(res.locals.lang, { id: `Jelajahi koleksi video dewasa kategori ${category.label} yang diperbarui secara berkala. Khusus pengguna berusia 18 tahun ke atas.`, en: `Explore regularly updated ${category.label} adult videos. Adults 18+ only.`, ms: `Terokai video dewasa kategori ${category.label} yang dikemas kini secara berkala. Untuk dewasa 18+ sahaja.`, es: `Explora vídeos para adultos de ${category.label} actualizados regularmente. Solo mayores de 18 años.`, ja: `${category.label}のアダルト動画をお楽しみください。18歳以上限定。` }),
+        description,
         canonicalBase: `/category/${category.slug}`,
         indexFirstPage: true,
     });

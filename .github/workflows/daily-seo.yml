@@ -1,0 +1,42 @@
+name: Daily SEO monitoring and optimization
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-seo
+  cancel-in-progress: false
+
+jobs:
+  daily-seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Monitor and optimize SEO
+        run: npm run seo:daily
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_PROPERTY: sc-domain:pornerweb.pro
+      - name: Publish a qualifying metadata update
+        run: |
+          if git diff --quiet -- config/seo-description-overrides.json; then
+            echo "No metadata update met the confidence thresholds."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/seo-description-overrides.json
+          git commit -m "Automated GSC category description update"
+          git push origin HEAD:main
