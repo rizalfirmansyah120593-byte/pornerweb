@@ -39,7 +39,17 @@ const epornerRawId = (id) => String(id || '').replace(/^ep_/, '');
 function normalizeEpornerVideo(item) {
     if (!item?.id) return null;
     const title = item.title || item.video_title || item.name || item.caption || '';
-    return { id: epornerId(item.id), source: 'eporner', title: String(title).trim() || 'Eporner video', preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0, duration: item.length_min || '', durationFormatted: item.length_min || '', url: `/watch/${encodeURIComponent(epornerId(item.id))}`, embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`, tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12) };
+    const uploadDateValue = item.upload_date || item.uploadDate || item.added || item.created_at;
+    const uploadDate = uploadDateValue ? new Date(uploadDateValue) : undefined;
+    return {
+        id: epornerId(item.id), source: 'eporner', title: String(title).trim() || 'Eporner video',
+        preview: item.default_thumb?.src || item.thumbs?.[0]?.src || '', views: Number(item.views) || 0,
+        duration: item.length_min || '', durationFormatted: item.length_min || '',
+        uploadDate: uploadDate && !Number.isNaN(uploadDate.valueOf()) ? uploadDate : undefined,
+        url: `/watch/${encodeURIComponent(epornerId(item.id))}`,
+        embed: item.embed || `https://www.eporner.com/embed/${encodeURIComponent(item.id)}/`,
+        tags: String(item.keywords || '').split(',').map((tag) => tag.trim()).filter(Boolean).slice(0, 12),
+    };
 }
 function fallbackPornstars(gender = '') {
     const names = gender === 'male'
@@ -958,9 +968,21 @@ app.get('/watch/:id', async (req, res, next) => {
                 if (title && !/on popular demand|^popular video$|^eporner video /i.test(title)) videoData.title = title;
             }
             const description = `${localized(res.locals.lang, { id: 'Tonton', en: 'Watch', ms: 'Tonton', es: 'Mira', ja: 'Watch' })} ${videoData.title}. Adults 18+ only.`;
+            const pathname = `/watch/${encodeURIComponent(id)}`;
+            const uploadDate = videoData.uploadDate instanceof Date
+                && !Number.isNaN(videoData.uploadDate.valueOf())
+                && videoData.uploadDate.getFullYear() > 1970
+                ? videoData.uploadDate.toISOString() : undefined;
+            const jsonLd = videoData.preview ? {
+                '@context': 'https://schema.org', '@type': 'VideoObject',
+                name: videoData.title, description, thumbnailUrl: [videoData.preview],
+                uploadDate, duration: isoDuration(videoData.duration), embedUrl: videoData.embed,
+                url: absoluteUrl(req, pathname), inLanguage: 'id-ID', isFamilyFriendly: false,
+                contentRating: '18+',
+            } : undefined;
             let recommendations = [];
             try { recommendations = await getEpornerRecommendations(id); } catch (error) { if (!isExpectedNetworkFailure(error)) console.error('[Eporner] Rekomendasi gagal:', error.message); }
-            return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname: `/watch/${id}`, image: videoData.preview, explicit: true, video: videoData.embed }) });
+            return res.render('watch', { video: { ...videoData, description, mediaDefinitions: [] }, recommendations, localUrl: `/watch/${id}`, seo: buildSeo(req, { title: videoData.title, description, pathname, image: videoData.preview, type: 'video.other', explicit: true, jsonLd, video: videoData.embed }) });
         }
         if (!allowPornhubDetailScrape) {
             const embedUrl = `https://www.pornhub.com/embed/${encodeURIComponent(id)}`;
@@ -1037,7 +1059,7 @@ app.get('/watch/:id', async (req, res, next) => {
             && videoData.uploadDate.getFullYear() > 1970
             ? videoData.uploadDate.toISOString() : undefined;
 
-        const jsonLd = thumbnail && uploadDate ? {
+        const jsonLd = thumbnail ? {
             '@context': 'https://schema.org',
             '@type': 'VideoObject',
             name: videoData.title,
