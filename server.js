@@ -603,7 +603,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
             // back one page.
             return res.redirect(302, paginationPath(page - 1));
         }
-        const shouldIndex = indexFirstPage && page === 1;
+        const shouldIndex = indexFirstPage && page === 1 && videos.length > 0;
         // If the API omits maxPage, keep a next link while this page contains
         // results. The total is based on the actual upstream page count.
         const totalPages = reportedPages > 0
@@ -1799,11 +1799,9 @@ async function getSitemapPaths() {
         ...BLOG_POSTS.map(({ slug }) => ({ path: `/blog/${slug}` })),
     ];
 
-    // URL /watch/:id sengaja tidak dimasukkan: halaman tersebut memakai
-    // noindex karena hanya menyediakan metadata/embed dari sumber eksternal.
-    // Sitemap harus berisi canonical URL yang memang eligible untuk index.
-    const lastmod = new Date().toISOString();
-    return [...new Map(paths.map((item) => [item.path, { ...item, lastmod: item.lastmod || lastmod }])).values()];
+    // Video detail tidak dimasukkan ke sitemap statis; kelayakannya bergantung
+    // pada metadata sumber dan kestabilan URL video eksternal.
+    return [...new Map(paths.map((item) => [item.path, item])).values()];
 }
 
 app.get('/about', (req, res) => res.render('about', {
@@ -1817,7 +1815,7 @@ app.get(['/sitemap.xml', '/sitemap-:page(\\d+).xml'], async (req, res) => {
         const chunks = Math.max(1, Math.ceil(records.length / SITEMAP_PAGE_SIZE));
         if (!page) {
             if (chunks === 1) return res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400').type('application/xml').send(renderUrlset(records, { absoluteUrl: (path) => absoluteUrl(req, path), xmlEscape }));
-            const files = Array.from({ length: chunks }, (_, index) => ({ path: `/sitemap-${index + 1}.xml`, lastmod: new Date().toISOString() }));
+            const files = Array.from({ length: chunks }, (_, index) => ({ path: `/sitemap-${index + 1}.xml` }));
             return res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400').type('application/xml').send(renderIndex(files, { absoluteUrl: (path) => absoluteUrl(req, path), xmlEscape }));
         }
         if (page > chunks) return res.status(404).type('text/plain').send('Sitemap not found');
