@@ -33,6 +33,12 @@ const isProduction = process.env.NODE_ENV === 'production';
 const allowPornhubDetailScrape = process.env.PORNHUB_SERVER_SCRAPE !== 'false';
 const SUPPORTED_LANGUAGES = ['id', 'en', 'ms', 'es', 'ja'];
 const localized = (lang, values) => values[lang] || values.en;
+const requestPrefersMarkdown = (req) => {
+    const acceptHeader = String(req.get('accept') || '').toLowerCase();
+    const markdownQuality = acceptHeader.match(/(?:^|,)\s*text\/markdown\s*(?:;\s*q=([0-9.]+))?/i);
+    const htmlQuality = acceptHeader.match(/(?:^|,)\s*text\/html\s*(?:;\s*q=([0-9.]+))?/i);
+    return Boolean(markdownQuality && Number(markdownQuality[1] || 1) > Number(htmlQuality?.[1] || 0));
+};
 const epornerId = (id) => `ep_${String(id).replace(/^ep_/, '')}`;
 const isEpornerId = (id) => String(id || '').startsWith('ep_');
 const epornerRawId = (id) => String(id || '').replace(/^ep_/, '');
@@ -302,6 +308,15 @@ app.set('trust proxy', 1);
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
+app.use((req, res, next) => {
+    const siteUrl = getSiteUrl(req);
+    const canonicalHost = new URL(siteUrl).hostname.toLowerCase();
+    if (String(req.hostname || '').toLowerCase() === `www.${canonicalHost}`) {
+        return res.redirect(301, `${siteUrl}${req.originalUrl}`);
+    }
+    next();
+});
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -327,7 +342,7 @@ app.use((req, res, next) => {
         if (!compressor) return originalEnd(body);
         const output = [];
         compressor.on('data', (chunk) => output.push(chunk));
-        compressor.on('end', () => { res.removeHeader('Content-Length'); res.setHeader('Content-Encoding', accepts.includes('br') ? 'br' : 'gzip'); res.setHeader('Vary', 'Accept-Encoding'); originalEnd(Buffer.concat(output)); });
+        compressor.on('end', () => { res.removeHeader('Content-Length'); res.setHeader('Content-Encoding', accepts.includes('br') ? 'br' : 'gzip'); res.vary('Accept-Encoding'); originalEnd(Buffer.concat(output)); });
         compressor.end(body);
     };
     res.write = (chunk, encoding) => { chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding)); return true; };
@@ -632,12 +647,7 @@ async function renderVideoListing(req, res, { query, heading, description, canon
 
         // Keep the HTTP signal in sync with the meta robots tag.
         if (!shouldIndex) res.set('X-Robots-Tag', 'noindex, follow');
-        const acceptHeader = String(req.get('accept') || '').toLowerCase();
-        const markdownQuality = acceptHeader.match(/(?:^|,)\s*text\/markdown\s*(?:;\s*q=([0-9.]+))?/i);
-        const htmlQuality = acceptHeader.match(/(?:^|,)\s*text\/html\s*(?:;\s*q=([0-9.]+))?/i);
-        const prefersMarkdown = markdownQuality
-            && Number(markdownQuality[1] || 1) > Number(htmlQuality?.[1] || 0);
-        if (req.path === '/' && prefersMarkdown) {
+        if (req.path === '/' && requestPrefersMarkdown(req)) {
             const markdown = [
                 `# ${heading}`,
                 '',
@@ -679,7 +689,9 @@ const LISTING_FRESH_MS = 5 * 60 * 1000;
 const LISTING_STALE_MS = 30 * 60 * 1000;
 const listingCacheMiddleware = (req, res, next) => {
     if (req.method !== 'GET' || !/^\/(?:category|country)\//.test(req.path) && !['/', '/recommended', '/live-sex', '/random', '/models'].includes(req.path)) return next();
-    const key = `${res.locals.lang || req.cookies.lang || 'en'}:${req.path}?${new URLSearchParams(req.query).toString()}`;
+    if (req.path === '/') res.vary('Accept');
+    const responseFormat = requestPrefersMarkdown(req) ? 'markdown' : 'html';
+    const key = `${res.locals.lang || req.cookies.lang || 'en'}:${responseFormat}:${req.path}?${new URLSearchParams(req.query).toString()}`;
     const cached = listingPageCache.get(key);
     const serve = (entry) => {
         res.set(entry.headers);
